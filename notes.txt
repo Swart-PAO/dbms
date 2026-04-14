@@ -1,0 +1,44 @@
+//change the municipality value either from the database or input form
+//change the recording_date db column name type into date 
+-in general revision add button for update, view and delete
+-Gather all possible actions in user_history
+-add description in user_history everytime the user has an action
+-Fetch Remarks and display all:
+-for duplication make sure in inserting property get the value from faas_property and make sure the pin and muncode has no the same
+-the delete button would not directly deleting the document
+-check the previous pin to current pin. change the value
+
+SELECT * FROM user_history JOIN user ON user.user_id=user_history.user_id ORDER BY created_at
+
+Get the first letter word from user.name and display class=avatar
+
+and change the corresponding value
+if action=
+ti-danger - delete
+ti-info - add user
+ti-success-insert
+ti-warning - update
+
+if target_table=
+ligh-success-bg  - faas_property
+bg-careys-pink - user_history
+
+SELECT `mun_desc`, COUNT(*) AS total_rows
+FROM `property information`JOIN municipality on municipality.mun_code=`property information`.`MUNICIPALITY CODE`
+GROUP BY `MUNICIPALITY CODE`  ORDER BY total_rows;
+
+ <?php
+                                            include 'db_connect.php';
+
+
+
+                                            $sql = "SELECT DISTINCT `NAME OF BARANGAY` as barangay FROM `barangay list` WHERE `MUNICIPALITY CODE` = ?";
+                                            $stmt = $conn->prepare($sql);
+                                            $stmt->bind_param("i", $mun_code);
+                                            $stmt->execute();
+                                            $result = $stmt->get_result();
+
+                                            while ($row = $result->fetch_assoc()) {
+                                                echo '<option value="' . $row['barangay'] . '">' . $row['barangay'] . '</option>';
+                                            }
+                                            ?>
