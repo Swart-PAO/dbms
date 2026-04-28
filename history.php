@@ -2,7 +2,7 @@
 date_default_timezone_set('Asia/Manila');
 require_once 'php/php_class.php';
 // includes/property_functions.php
-$barangays = getBarangayProgress($mun_code);
+// $barangays = getBarangayProgress($mun_code);
 $activities = getRecentActivities();
 
 ?>
@@ -127,19 +127,21 @@ $activities = getRecentActivities();
                                             <h6 class="mb-0 fw-bold ">Brgy</h6>
                                         </div>
                                         <div class="card-body mem-list">
-                                            <?php while ($row = $barangays->fetch_assoc()):
-                                                $faas = (int)$row['faas_total'];
-                                                $info = (int)$row['info_total'];
-                                                $percentage = ($info > 0) ? ($faas / $info) * 100 : 0;
+                                            
+                                            <?php
+                                            //  while ($row = $barangays->fetch_assoc()):
+                                            //     $faas = (int)$row['faas_total'];
+                                            //     $info = (int)$row['info_total'];
+                                            //     $percentage = ($info > 0) ? ($faas / $info) * 100 : 0;
 
-                                                $barClass = match (true) {
-                                                    $percentage >= 80 => 'bg-lightgreen',
-                                                    $percentage >= 60 => 'light-success-bg',
-                                                    $percentage >= 40 => 'light-orange-bg',
-                                                    default => 'bg-lightyellow'
-                                                };
+                                            //     $barClass = match (true) {
+                                            //         $percentage >= 80 => 'bg-lightgreen',
+                                            //         $percentage >= 60 => 'light-success-bg',
+                                            //         $percentage >= 40 => 'light-orange-bg',
+                                            //         default => 'bg-lightyellow'
+                                            //     };
                                             ?>
-                                                <div class="progress-count mb-4">
+                                                <!-- <div class="progress-count mb-4">
                                                     <div class="d-flex justify-content-between mb-1">
                                                         <h6 class="fw-bold"><?= htmlspecialchars($row['barangay']) ?></h6>
                                                         <span class="small text-muted"><?= $faas ?>/<?= $info ?></span>
@@ -148,8 +150,9 @@ $activities = getRecentActivities();
                                                         <div class="progress-bar <?= $barClass ?>"
                                                             style="width: <?= round($percentage, 2) ?>%"></div>
                                                     </div>
-                                                </div>
-                                            <?php endwhile; ?>
+                                                </div> -->
+                                            <?php
+                                        //  endwhile; ?>
 
 
                                             <div class="progress-count mb-4">
