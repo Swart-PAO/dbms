@@ -24,6 +24,24 @@
                  </a>
              </li>
 
+             <li class="collapsed">
+                 <a class="m-link <?= ($currentPage === 'land' || $currentPage === 'building' || $currentPage === 'machineries') ? 'active' : '' ?>" data-bs-toggle="collapse" data-bs-target="#dashboard-Components" href="#">
+                     <i class="icofont-map fs-5"></i> <span>Property</span> <span class="arrow icofont-dotted-down ms-auto text-end fs-5"></span></a>
+                 <!-- Menu: Sub menu ul -->
+                 <ul class="sub-menu collapse  <?= ($currentPage === 'land' || $currentPage === 'building' || $currentPage === 'machineries') ? 'show' : '' ?>" id="dashboard-Components">
+                     <li><a class="ms-link <?= ($currentPage === 'land') ? 'active' : '' ?>" href="index.php?page=land"> <span>Land</span></a></li>
+                     <li><a class="ms-link <?= ($currentPage === 'building') ? 'active' : '' ?>" href="index.php?page=building"> <span>Building</span></a></li>
+                     <li><a class="ms-link <?= ($currentPage === 'machineries') ? 'active' : '' ?>" href="index.php?page=machineries"> <span>Machineries</span></a></li>
+                 </ul>
+             </li>
+
+             <!-- <li>
+                 <a class="m-link <?= ($currentPage === 'building') ? 'active' : '' ?>" href="index.php?page=building">
+                     <i class="icofont-home fs-5"></i>
+                     <span>Building</span>
+                 </a>
+             </li> -->
+
              <li>
                  <a class="m-link <?= ($currentPage === 'pending') ? 'active' : '' ?>" href="index.php?page=pending">
                      <i class="icofont-search-document fs-5"></i>

@@ -488,43 +488,61 @@ class Action
 
 	function delete_property()
 	{
-		$id = $_POST['id'];
+		$id = $_POST['id'] ?? null;
 
 		if (!$id) {
 			echo "❌ Invalid ID";
 			return;
 		}
 
-		// Start transaction (so both deletes succeed or fail together)
-		$this->db->begin_transaction();
-
 		try {
+			// Check if FAAS_ID exists FIRST
+			$check = $this->db->prepare("SELECT FAAS_ID FROM faas_property WHERE FAAS_ID = ? LIMIT 1");
+			$check->bind_param("i", $id);
+			$check->execute();
+			$result = $check->get_result();
+
+			if ($result->num_rows === 0) {
+				echo "❌ Property does not exist";
+				return;
+			}
+
+			// Start transaction
+			$this->db->begin_transaction();
+
 			// Delete from faas_property
 			$stmt = $this->db->prepare("DELETE FROM faas_property WHERE FAAS_ID = ?");
 			$stmt->bind_param("i", $id);
 			$stmt->execute();
 
-			// Delete related user_history records
+			// Optional: ensure delete really happened
+			if ($stmt->affected_rows === 0) {
+				throw new Exception("Delete failed or already removed.");
+			}
+
+			// Delete related history
 			$stmt2 = $this->db->prepare("DELETE FROM user_history WHERE record_id = ? AND target_table = 'faas_property'");
 			$stmt2->bind_param("i", $id);
 			$stmt2->execute();
 
-			$stmt3 = $this->db->prepare("UPDATE `property information` SET `faas_ID` = NULL
-            WHERE `faas_ID` = ?");
+			// Only update if actually referenced
+			$stmt3 = $this->db->prepare("
+            UPDATE `property information`
+            SET `faas_ID` = NULL
+            WHERE `faas_ID` = ?
+        ");
 			$stmt3->bind_param("i", $id);
 			$stmt3->execute();
 
-			// Commit
+			// Commit everything
 			$this->db->commit();
 
 			echo "✅ Property and history deleted successfully!";
 		} catch (Exception $e) {
-			// Rollback if error
 			$this->db->rollback();
 			echo "❌ Error: " . $e->getMessage();
 		}
 	}
-
 
 	// 	function edit_property()
 	// {

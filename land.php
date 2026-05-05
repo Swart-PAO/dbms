@@ -107,11 +107,50 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
         <div class="row g-3 mb-3 row-deck">
             <div class="col-md-8">
                 <div class="card mb-3">
-                    <div class="card-header d-flex justify-content-between align-items-center bg-transparent border-bottom-0">
-                        <h6 class="m-0 fw-bold">Basic Column</h6>
+                    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                        <div class="info-header">
+                            <h6 class="mb-0 fw-bold ">Project Information</h6>
+                        </div>
                     </div>
                     <div class="card-body">
-                        <div id="apex-basic-column"></div>
+                        <table id="myProjectTable" class="table table-hover align-middle mb-0" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>PIN</th>
+                                    <th>Name of Owner</th>
+                                    <th>Location of Property</th>
+                                    <th>Lot #</th>
+                                    <th>Date of Transaction</th>
+                                    <th>Trancode</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $results = getPropertiesByBarangay($mun_code, $brgy_session, 0);
+                                $counter = 1;
+                                while ($row = $results->fetch_assoc()):
+                                ?>
+                                    <tr>
+                                        <td><?= $counter++ ?></td>
+                                        <td><?= htmlspecialchars($row['PIN']) ?></td>
+                                        <td><?= htmlspecialchars($row['NAME OF OWNER']) ?></td>
+                                        <td><?= htmlspecialchars($row['LOCATION OF PROPERTY'] . ' ' . $mun_desc) ?></td>
+                                        <td><?= htmlspecialchars($row['CADASTRAL LOT NUMBER']) ?></td>
+                                        <td><?= htmlspecialchars($row['DATE OF TRANSACTION']) ?></td>
+                                        <td><?= htmlspecialchars($row['TRANCODE']) ?></td>
+                                        <td>
+                                            <a href="faas_form.php?property_ID=<?= $row['property_ID'] ?>"
+                                                class="btn btn-outline-secondary">
+                                                <i class="icofont-bubble-right text-success"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            </tbody>
+
+                        </table>
                     </div>
                 </div>
             </div>
@@ -181,63 +220,3 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
         </div><!-- Row End -->
     </div>
 </div>
-
-<script>
-    $(document).ready(function() {
-        var options = {
-            chart: {
-                height: 450,
-                type: 'bar',
-            },
-            colors: ['#007bff', 'var(--chart-color2)'],
-            plotOptions: {
-                bar: {
-                    horizontal: false,
-                    columnWidth: '55%',
-                    endingShape: 'rounded'
-                },
-            },
-            dataLabels: {
-                enabled: false
-            },
-            stroke: {
-                show: true,
-                width: 2,
-                colors: ['transparent']
-            },
-            series: [{
-                name: '2026',
-                data: [44, 55, 57, 56, 61, 58, 63, 60, 66]
-            }, {
-                name: '2022',
-                data: [76, 85, 101, 98, 87, 105, 91, 114, 94]
-            }],
-            xaxis: {
-                categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
-            },
-            yaxis: {
-                title: {
-                    text: '$ (thousands)'
-                }
-            },
-            fill: {
-                opacity: 1
-
-            },
-            tooltip: {
-                y: {
-                    formatter: function(val) {
-                        return "$ " + val + " thousands"
-                    }
-                }
-            }
-        }
-
-        var chart = new ApexCharts(
-            document.querySelector("#apex-basic-column"),
-            options
-        );
-
-        chart.render();
-    });
-</script>

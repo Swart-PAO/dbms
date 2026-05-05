@@ -67,8 +67,12 @@ function getPropertiesByFAASType($mun_code, $barangay, $faas_type)
     return $stmt->get_result();
 }
 
-function getPropertiesByBarangay($mun_code, $barangay, $limit = 100)
+function getPropertiesByBarangay($mun_code, $barangay, $land_type)
 {
+    $land_type_query = "";
+    if ($land_type != 4) {
+        $land_type_query = " AND `LAND TYPE` = $land_type";
+    }
     global $conn;
 
     $stmt = $conn->prepare(
@@ -80,8 +84,8 @@ function getPropertiesByBarangay($mun_code, $barangay, $limit = 100)
          FROM `property information`
          WHERE `LOCATION OF PROPERTY` = ?
            AND `MUNICIPALITY CODE` = ?
-           AND `LAND TYPE` = 0
-           AND `faas_ID` IS NULL
+           $land_type_query
+            AND `faas_ID` IS NULL
            ORDER BY PIN ASC
          "
     );
@@ -96,14 +100,9 @@ function getPropertyStats($mun_code, $barangay)
 {
     global $conn;
 
-    $sql = "
-        SELECT 
-COUNT(*) AS total_rows,
-COUNT(CASE WHEN `MUNICIPALITY CODE` = ? THEN 1 END) AS total_mun_rows,
-COUNT(CASE WHEN `MUNICIPALITY CODE` = ? AND `LOCATION OF PROPERTY` = ? THEN 1 END) AS total_mun_brgy_rows,
-COUNT(CASE WHEN `MUNICIPALITY CODE` = ? AND `LOCATION OF PROPERTY` = ? AND `faas_ID` IS NOT NULL THEN 1 END) AS total_faas_rows
-FROM `property information`
-    ";
+    $sql = "SELECT COUNT(*) AS total_rows, COUNT(CASE WHEN `MUNICIPALITY CODE` = ? THEN 1 END) AS total_mun_rows, COUNT(CASE WHEN `MUNICIPALITY CODE` = ? 
+    AND `LOCATION OF PROPERTY` = ? THEN 1 END) AS total_mun_brgy_rows, COUNT(CASE WHEN `MUNICIPALITY CODE` = ? AND `LOCATION OF PROPERTY` = ? 
+    AND `faas_ID` IS NOT NULL THEN 1 END) AS total_faas_rows FROM `property information`";
 
     $stmt = $conn->prepare($sql);
 
@@ -160,8 +159,7 @@ function getBarangayProgress($mun_code)
 {
     global $conn;
 
-    $sql = "
-        SELECT 
+    $sql = "SELECT 
             b.`NAME OF BARANGAY` AS barangay,
             COUNT(DISTINCT fp.FAAS_ID) AS faas_total,
             COUNT(DISTINCT pi.property_ID) AS info_total
@@ -172,8 +170,7 @@ function getBarangayProgress($mun_code)
             ON pi.`LOCATION OF PROPERTY` = b.`NAME OF BARANGAY`
         WHERE b.`MUNICIPALITY CODE` = ?
         GROUP BY b.`NAME OF BARANGAY`
-        ORDER BY b.`NAME OF BARANGAY`
-    ";
+        ORDER BY b.`NAME OF BARANGAY`";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $mun_code);
@@ -186,13 +183,11 @@ function getRecentActivities($limit = 10)
 {
     global $conn;
 
-    $sql = "
-        SELECT uh.*, u.name
+    $sql = "SELECT uh.*, u.name
         FROM user_history uh
         JOIN user u ON u.user_id = uh.user_id
         ORDER BY uh.created_at DESC
-        LIMIT ?
-    ";
+        LIMIT ?";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $limit);
@@ -205,9 +200,7 @@ function totalTodayTransaction($user_ID)
 {
     global $conn;
 
-    $sql = "SELECT COUNT(*) AS total_today
-FROM faas_property
-WHERE DATE(recording_date) = CURDATE() AND recording_person_ID = ?;";
+    $sql = "SELECT COUNT(*) AS total_today FROM faas_property WHERE DATE(recording_date) = CURDATE() AND recording_person_ID = ?;";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $user_ID);
     $stmt->execute();

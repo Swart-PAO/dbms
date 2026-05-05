@@ -1,6 +1,6 @@
 <?php
 require_once 'php/php_class.php';
-$stats = getPropertyStats($mun_code, $brgy_session);
+// $stats = getPropertyStats($mun_code, $brgy_session);
 $noTodayTransaction = totalTodayTransaction($_SESSION['user_ID']);
 
 $totalPrev      = $stats['total_rows'] ?? 0;
@@ -107,11 +107,50 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
         <div class="row g-3 mb-3 row-deck">
             <div class="col-md-8">
                 <div class="card mb-3">
-                    <div class="card-header d-flex justify-content-between align-items-center bg-transparent border-bottom-0">
-                        <h6 class="m-0 fw-bold">Basic Column</h6>
+                    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                        <div class="info-header">
+                            <h6 class="mb-0 fw-bold ">Project Information</h6>
+                        </div>
                     </div>
                     <div class="card-body">
-                        <div id="apex-basic-column"></div>
+                        <table id="myProjectTable" class="table table-hover align-middle mb-0" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>PIN</th>
+                                    <th>Name of Owner</th>
+                                    <th>Location of Property</th>
+                                    <th>Lot #</th>
+                                    <th>Date of Transaction</th>
+                                    <th>Trancode</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $results = getPropertiesByBarangay($mun_code, $brgy_session, 1);
+                                $counter = 1;
+                                while ($row = $results->fetch_assoc()):
+                                ?>
+                                    <tr>
+                                        <td><?= $counter++ ?></td>
+                                        <td><?= htmlspecialchars($row['PIN']) ?></td>
+                                        <td><?= htmlspecialchars($row['NAME OF OWNER']) ?></td>
+                                        <td><?= htmlspecialchars($row['LOCATION OF PROPERTY'] . ' ' . $mun_desc) ?></td>
+                                        <td><?= htmlspecialchars($row['CADASTRAL LOT NUMBER']) ?></td>
+                                        <td><?= htmlspecialchars($row['DATE OF TRANSACTION']) ?></td>
+                                        <td><?= htmlspecialchars($row['TRANCODE']) ?></td>
+                                        <td>
+                                            <a href="../building_faas/building_form.php?property_ID=<?= $row['property_ID'] ?>"
+                                                class="btn btn-outline-secondary">
+                                                <i class="icofont-bubble-right text-success"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            </tbody>
+
+                        </table>
                     </div>
                 </div>
             </div>
@@ -147,7 +186,7 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
                             </thead>
                             <tbody>
                                 <?php
-                                $sql = "SELECT * FROM faas_property WHERE DATE(recording_date) = CURDATE() AND recording_person_ID = ? ORDER BY recording_date DESC";
+                                $sql = "SELECT * FROM building_desc WHERE DATE(recording_date) = CURDATE() AND recording_person_ID = ? ORDER BY recording_date DESC";
                                 $stmt = $conn->prepare($sql);
                                 $stmt->bind_param("i", $_SESSION['user_ID']);
                                 $stmt->execute();
@@ -157,14 +196,14 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
                                     <tr>
                                         <td><?= $counter++ ?></td>
                                         <td>
-                                            <a href="ticket-detail.html" class="fw-bold text-secondary"><?= $row['lot_no'] ?></a></a>
+                                            <a href="ticket-detail.html" class="fw-bold text-secondary"><?= $row['ID_2022'] ?></a></a>
                                         </td>
-                                        <td><?= $row['revision_code'] ?></a></td>
+                                        <td><?= $row['pin'] ?></a></td>
                                         <td><?= date('m/d/Y', strtotime($row['recording_date'])) ?></td>
                                         <td>
                                             <div class="btn-group" role="group" aria-label="Basic outlined example">
-                                                <a href="faas_form.php?FAAS_ID=<?= $row['FAAS_ID'] ?>" class="btn btn-outline-secondary"><i class="icofont-edit text-success"></i></a>
-                                                <a href="printable_property.php?faas_id=<?= $row['FAAS_ID'] ?>" class="btn btn-outline-secondary"><i class="icofont-eye-alt text-info"></i></a>
+                                                <a href="../building_faas/building_form.php?building_ID=<?= $row['building_id'] ?>" class="btn btn-outline-secondary"><i class="icofont-edit text-success"></i></a>
+                                                <a href="printable_property.php?faas_id=<?= $row['building_id'] ?>" class="btn btn-outline-secondary"><i class="icofont-eye-alt text-info"></i></a>
 
                                             </div>
                                         </td>
@@ -181,63 +220,3 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
         </div><!-- Row End -->
     </div>
 </div>
-
-<script>
-    $(document).ready(function() {
-        var options = {
-            chart: {
-                height: 450,
-                type: 'bar',
-            },
-            colors: ['#007bff', 'var(--chart-color2)'],
-            plotOptions: {
-                bar: {
-                    horizontal: false,
-                    columnWidth: '55%',
-                    endingShape: 'rounded'
-                },
-            },
-            dataLabels: {
-                enabled: false
-            },
-            stroke: {
-                show: true,
-                width: 2,
-                colors: ['transparent']
-            },
-            series: [{
-                name: '2026',
-                data: [44, 55, 57, 56, 61, 58, 63, 60, 66]
-            }, {
-                name: '2022',
-                data: [76, 85, 101, 98, 87, 105, 91, 114, 94]
-            }],
-            xaxis: {
-                categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
-            },
-            yaxis: {
-                title: {
-                    text: '$ (thousands)'
-                }
-            },
-            fill: {
-                opacity: 1
-
-            },
-            tooltip: {
-                y: {
-                    formatter: function(val) {
-                        return "$ " + val + " thousands"
-                    }
-                }
-            }
-        }
-
-        var chart = new ApexCharts(
-            document.querySelector("#apex-basic-column"),
-            options
-        );
-
-        chart.render();
-    });
-</script>
