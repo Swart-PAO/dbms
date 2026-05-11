@@ -75,9 +75,9 @@ $(document).ready(function () {
           $("#total-area-residential").text(data.total_residential_area);
           $("#mvbmv").val(data.total_land_mv);
           $("#market_value").val(data.total_market_value);
-          $("#factor_first").val(data.factor_first);
-          $("#factor_second").val(data.factor_second);
-          $("#factor_third").val(data.factor_third);
+          // $("#factor_first").val(data.factor_first);
+          // $("#factor_second").val(data.factor_second);
+          // $("#factor_third").val(data.factor_third);
           $("#percentage_first").val(data.percent_first);
           $("#percentage_second").val(data.percent_second);
           $("#percentage_third").val(data.percent_third);
