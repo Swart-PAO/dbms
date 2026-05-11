@@ -182,8 +182,24 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
     </div>
 </div>
 
+<?php
+include 'db_connect.php';
+
+// Get municipality descriptions
+$sql = "SELECT mun_desc FROM municipality ORDER BY mun_desc ASC";
+$result = $conn->query($sql);
+
+$categories = [];
+
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $categories[] = $row['mun_desc'];
+    }
+}
+?>
 <script>
     $(document).ready(function() {
+        var munCategories = <?= json_encode($categories); ?>;
         var options = {
             chart: {
                 height: 450,
@@ -207,17 +223,17 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
             },
             series: [{
                 name: '2026',
-                data: [44, 55, 57, 56, 61, 58, 63, 60, 66]
+                data: [44, 55, 57, 56, 61, 58, 63, 60, 66, 44, 55, 57, 56, 61, 58, 63, 60, 66]
             }, {
                 name: '2022',
-                data: [76, 85, 101, 98, 87, 105, 91, 114, 94]
+                data: [76, 85, 101, 98, 87, 105, 91, 114, 94, 76, 85, 101, 98, 87, 105, 91, 114, 94, ]
             }],
             xaxis: {
-                categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+                categories: munCategories,
             },
             yaxis: {
                 title: {
-                    text: '$ (thousands)'
+                    text: 'No of Records'
                 }
             },
             fill: {
@@ -227,7 +243,7 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
             tooltip: {
                 y: {
                     formatter: function(val) {
-                        return "$ " + val + " thousands"
+                        return val + " records"
                     }
                 }
             }

@@ -1,7 +1,7 @@
 <?php
 include "../../db_connect.php";
 
-$sql = "SELECT description, percentage_A, percentage_B FROM adjustment_factor WHERE type='LOCATION'";
+$sql = "SELECT description, percentage_A, percentage_B FROM adjustment_factor WHERE type='Location-W'";
 $result = $conn->query($sql);
 
 $data = [];
