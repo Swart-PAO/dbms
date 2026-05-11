@@ -311,7 +311,7 @@ $(document).ready(function () {
 
             // Redirect after 1.5 seconds
             setTimeout(() => {
-              window.location.href = "index.php?page=home";
+              window.location.href = "index.php?page=land";
             }, 500);
           }, 1000);
         } else {
