@@ -1,8 +1,3 @@
-<?php
-include 'db_connect.php'; // mysqli connection
-
-?>
-
 <div class="body d-flex py-3">
     <div class="container-xxl">
 
@@ -190,25 +185,3 @@ include 'db_connect.php'; // mysqli connection
     </div><!-- Row End -->
 
 </div>
-
-<script>
-    $(document).ready(function() {
-        $("#mun_code").change(function() {
-            var mun_code = $(this).val();
-            if (mun_code !== "") {
-                $.ajax({
-                    url: "php/get_barangay.php",
-                    type: "POST",
-                    data: {
-                        mun_code: mun_code
-                    },
-                    success: function(data) {
-                        $("#brgy").html(data);
-                    }
-                });
-            } else {
-                $("#brgy").html('<option value="">-- Select Barangay --</option>');
-            }
-        });
-    });
-</script>

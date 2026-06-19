@@ -17463,8 +17463,8 @@ body.rtl_mode
 }
 .form-control,
 .form-select {
-  border-color: var(--border-color);
-  background-color: var(--color-200);
+  border-color: var(--primary-color);
+  /* background-color: var(--color-200); */
   color: var(--text-color);
   font-size: 16px;
 }
@@ -17476,7 +17476,8 @@ body.rtl_mode
 .form-select:focus {
   box-shadow: 0 0 10px rgba(33, 37, 41, 0.15);
   background-color: var(--card-color);
-  border-color: var(--primary-color);
+  border-color: #86b7fe;
+  /* border-color: var(--primary-color); */
   color: var(--text-color);
 }
 .form-control.form-control-lg,

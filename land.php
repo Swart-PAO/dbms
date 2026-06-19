@@ -1,5 +1,5 @@
 <?php
-require_once 'php/php_class.php';
+
 $stats = getPropertyStats($mun_code, $brgy_session);
 $noTodayTransaction = totalTodayTransaction($_SESSION['user_ID']);
 
@@ -128,7 +128,7 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
                             </thead>
                             <tbody>
                                 <?php
-                                $results = getPropertiesByBarangay($mun_code, $brgy_session, 0);
+                                $results = getPropertiesByBarangay($mun_code, $brgy_session, 0, false, null);
                                 $counter = 1;
                                 while ($row = $results->fetch_assoc()):
                                 ?>

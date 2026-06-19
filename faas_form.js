@@ -22,9 +22,9 @@ $(document).ready(function () {
 
           $('input[name="input_new_property_ID"]').val($.trim(data.FAAS_ID));
           // alert(data.FAAS_ID);
-          loadLandRows(data.FAAS_ID);
-          loadResidentialRows(data.FAAS_ID);
-          loadAssessmentRows(data.FAAS_ID);
+          loadAgri(data.FAAS_ID);
+          loadNonAgri(data.FAAS_ID);
+          loadAssessment(data.FAAS_ID);
           $("#search_pin").prop("disabled", true);
           $("#mun_code").prop("disabled", true);
           $("#search_pin").val(data.previous_pin);
@@ -89,13 +89,12 @@ $(document).ready(function () {
     }
   }
 
-  // loadLandRows(land_property_ID);
-  function createFilledRow(row) {
+  function filledAgri(row) {
     return `
     <tr>
         <td>
             <select class="form-control classification" name="classification[]" required>
-                ${municipalityOptions.replace(
+                ${agri_class_options.replace(
                   `value="${row.class}"`,
                   `value="${row.class}" selected`,
                 )}
@@ -133,7 +132,7 @@ $(document).ready(function () {
         <td><button class="btn btn-danger btn-sm remove-row">Remove</button></td>
     </tr>`;
   }
-  function loadLandRows(land_property_ID) {
+  function loadAgri(land_property_ID) {
     $.ajax({
       url: "php/fetch/fetch_land.php",
       type: "POST", // <-- change to POST
@@ -143,13 +142,13 @@ $(document).ready(function () {
         $("#classification-table tbody").empty();
 
         data.forEach(function (row) {
-          $("#classification-table tbody").append(createFilledRow(row));
+          $("#classification-table tbody").append(filledAgri(row));
         });
       },
     });
   }
 
-  function loadResidentialRows(land_property_ID) {
+  function loadNonAgri(land_property_ID) {
     $.ajax({
       url: "php/fetch/fetch_resid.php",
       type: "POST", // <-- change to POST
@@ -159,13 +158,13 @@ $(document).ready(function () {
         $("#residential-table tbody").empty();
 
         data.forEach(function (row) {
-          $("#residential-table tbody").append(createFilledRowResidential(row));
+          $("#residential-table tbody").append(filledNonAgri(row));
         });
       },
     });
   }
 
-  function createFilledRowResidential(row) {
+  function filledNonAgri(row) {
     return `
     <tr>
        <td>
@@ -197,7 +196,7 @@ $(document).ready(function () {
     </tr>`;
   }
 
-  function loadAssessmentRows(land_property_ID) {
+  function loadAssessment(land_property_ID) {
     $.ajax({
       url: "php/fetch/fetch_assessment.php",
       type: "POST", // <-- change to POST
@@ -207,13 +206,13 @@ $(document).ready(function () {
         $("#assessment-table tbody").empty();
 
         data.forEach(function (row) {
-          $("#assessment-table tbody").append(createFilledRowAssessment(row));
+          $("#assessment-table tbody").append(filledAssessment(row));
         });
       },
     });
   }
 
-  function createFilledRowAssessment(row) {
+  function filledAssessment(row) {
     return `
     <tr>
         <td>

@@ -19,55 +19,55 @@ function getBarangays($mun_code)
     return $stmt->get_result();
 }
 
-function getPropertiesByMunicipality($mun_code, $limit = 100)
-{
-    global $conn;
+// function getPropertiesByMunicipality($mun_code, $limit = 100)
+// {
+//     global $conn;
 
-    $stmt = $conn->prepare(
-        "SELECT *
-         FROM `property information`
-         WHERE `MUNICIPALITY CODE` = ?
-         LIMIT ?"
-    );
-    $stmt->bind_param("ii", $mun_code, $limit);
-    $stmt->execute();
+//     $stmt = $conn->prepare(
+//         "SELECT *
+//          FROM `property information`
+//          WHERE `MUNICIPALITY CODE` = ?
+//          LIMIT ?"
+//     );
+//     $stmt->bind_param("ii", $mun_code, $limit);
+//     $stmt->execute();
 
-    return $stmt->get_result();
-}
+//     return $stmt->get_result();
+// }
 
-function getPropertiesByFAASType($mun_code, $barangay, $faas_type)
-{
-    global $conn;
+// function getPropertiesByFAASType($mun_code, $barangay, $faas_type)
+// {
+//     global $conn;
 
-    $faas_type_query = "";
+//     $faas_type_query = "";
 
-    if ($faas_type === 'Building') {
-        $faas_type_query = "AND PIN LIKE '%(%'";
-    } elseif ($faas_type === 'Land') {
-        $faas_type_query = "AND PIN NOT LIKE '%(%'";
-    }
+//     if ($faas_type === 'Building') {
+//         $faas_type_query = "AND PIN LIKE '%(%'";
+//     } elseif ($faas_type === 'Land') {
+//         $faas_type_query = "AND PIN NOT LIKE '%(%'";
+//     }
 
-    $sql = "
-        SELECT property_ID, PIN, `NAME OF OWNER`,
-               `LOCATION OF PROPERTY`,
-               `CADASTRAL LOT NUMBER`,
-               `DATE OF TRANSACTION`,
-               `TRANCODE`
-        FROM `property information`
-        WHERE `LOCATION OF PROPERTY` = ?
-        AND `MUNICIPALITY CODE` = ?
-        AND `faas_ID` IS NULL
-        $faas_type_query
-    ";
+//     $sql = "
+//         SELECT property_ID, PIN, `NAME OF OWNER`,
+//                `LOCATION OF PROPERTY`,
+//                `CADASTRAL LOT NUMBER`,
+//                `DATE OF TRANSACTION`,
+//                `TRANCODE`
+//         FROM `property information`
+//         WHERE `LOCATION OF PROPERTY` = ?
+//         AND `MUNICIPALITY CODE` = ?
+//         AND `faas_ID` IS NULL
+//         $faas_type_query
+//     ";
 
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("si", $barangay, $mun_code);
-    $stmt->execute();
+//     $stmt = $conn->prepare($sql);
+//     $stmt->bind_param("si", $barangay, $mun_code);
+//     $stmt->execute();
 
-    return $stmt->get_result();
-}
+//     return $stmt->get_result();
+// }
 
-function getPropertiesByBarangay($mun_code, $barangay, $land_type)
+function getPropertiesByBarangay($mun_code, $barangay, $land_type, $faas, $limit)
 {
     $land_type_query = "";
     if ($land_type != 4) {
@@ -75,21 +75,45 @@ function getPropertiesByBarangay($mun_code, $barangay, $land_type)
     }
     global $conn;
 
-    $stmt = $conn->prepare(
-        "SELECT property_ID, PIN, `NAME OF OWNER`,
-                `LOCATION OF PROPERTY`,
-                `CADASTRAL LOT NUMBER`,
-                `DATE OF TRANSACTION`,
-                `TRANCODE`
-         FROM `property information`
-         WHERE `LOCATION OF PROPERTY` = ?
-           AND `MUNICIPALITY CODE` = ?
-           $land_type_query
-            AND `faas_ID` IS NULL
-           ORDER BY PIN ASC
-         "
-    );
-    $stmt->bind_param("si", $barangay, $mun_code);
+    $query = "
+        SELECT
+            property_ID,
+            PIN,
+            `NAME OF OWNER`,
+            `LOCATION OF PROPERTY`,
+            `CADASTRAL LOT NUMBER`,
+            `DATE OF TRANSACTION`,
+            `TRANCODE`
+        FROM `property information`
+        WHERE `LOCATION OF PROPERTY` = ?
+        AND `MUNICIPALITY CODE` = ?
+    ";
+
+    $types = "si";
+    $params = [$barangay, $mun_code];
+
+    // LAND TYPE FILTER
+    if ($land_type !== null && $land_type != 4) {
+        $query .= " AND `LAND TYPE` = ?";
+        $types .= "i";
+        $params[] = $land_type;
+    }
+
+    if ($faas !== null) {
+        $query .= $faas
+            ? " AND `faas_ID` IS NOT NULL"
+            : " AND `faas_ID` IS NULL";
+    }
+
+    $query .= " ORDER BY PIN ASC";
+    if ($limit) {
+        $query .= " LIMIT ?";
+        $types .= "i";
+        $params[] = $limit;
+    }
+
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param($types, ...$params);
     $stmt->execute();
 
     return $stmt->get_result();
@@ -207,3 +231,59 @@ function totalTodayTransaction($user_ID)
 
     return $result = $stmt->get_result()->fetch_assoc();
 }
+
+
+function selectOptionData($data)
+{
+
+    global $conn;
+
+
+    if (!$data) {
+        return '<option value="">-- No options available --</option>';
+    }
+
+    if ($data === 'land_class') {
+        $options = '<option value="">-- Select Classification --</option>';
+        $sql = "SELECT class_ID, classification FROM classification";
+        $result = $conn->query($sql);
+
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $options .= '<option value="' . $row['classification'] . '">' . $row['classification'] . '</option>';
+            }
+        }
+    } else if ($data === 'actual_use') {
+        $options = '<option value="">-- Select Actual Use --</option>';
+
+        $sql_au = "SELECT description, taxability, assessment_level FROM au_tbl";
+        $result_au = $conn->query($sql_au);
+
+        if ($result_au->num_rows > 0) {
+            while ($row = $result_au->fetch_assoc()) {
+                $options .= '
+            <option 
+                value="' . htmlspecialchars($row['description']) . '" 
+                data-taxability="' . htmlspecialchars($row['taxability']) . '"
+                data-assessment_lvl="' . htmlspecialchars($row['assessment_level']) . '">
+                ' . htmlspecialchars($row['description']) . '
+            </option>';
+            }
+        }
+    } else if ($data === 'non_agri_kind') {
+
+        $options = '<option value="">-- Select Kind --</option>';
+        $sql_nao = "SELECT `PROPERTY_DESCRIPTION` FROM non_agri_classification";
+        $result_nao = $conn->query($sql_nao);
+
+        if ($result_nao->num_rows > 0) {
+            while ($row = $result_nao->fetch_assoc()) {
+                $options .= '<option value="' . $row['PROPERTY_DESCRIPTION'] . '">' . $row['PROPERTY_DESCRIPTION'] . '</option>';
+            }
+        }
+    }
+    return $options;
+}
+?>
+
+

@@ -4,52 +4,6 @@
 require_once 'php/php_class.php';
 $municipalities = getMunicipalities(); ?>
 
-<?php
-include 'db_connect.php';
-
-$options = '<option value="">-- Select Classification --</option>';
-$sql = "SELECT class_ID, classification FROM classification ";
-$result = $conn->query($sql);
-
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $options .= '<option value="' . $row['classification'] . '">' . $row['classification'] . '</option>';
-    }
-}
-
-$au_options = '<option value="">-- Select Actual Use --</option>';
-
-$sql_au = "SELECT description, taxability, assessment_level FROM au_tbl";
-$result_au = $conn->query($sql_au);
-
-if ($result_au->num_rows > 0) {
-    while ($row = $result_au->fetch_assoc()) {
-        $au_options .= '
-            <option 
-                value="' . htmlspecialchars($row['description']) . '" 
-                data-taxability="' . htmlspecialchars($row['taxability']) . '"
-                data-assessment_lvl="' . htmlspecialchars($row['assessment_level']) . '">
-                ' . htmlspecialchars($row['description']) . '
-            </option>';
-    }
-}
-
-
-$non_agri_options = '<option value="">-- Select Kind --</option>';
-$sql_nao = "SELECT `PROPERTY_DESCRIPTION` FROM non_agri_classification";
-$result_nao = $conn->query($sql_nao);
-
-if ($result_nao->num_rows > 0) {
-    while ($row = $result_nao->fetch_assoc()) {
-        $non_agri_options .= '<option value="' . $row['PROPERTY_DESCRIPTION'] . '">' . $row['PROPERTY_DESCRIPTION'] . '</option>';
-    }
-}
-?>
-<!-- <select id="brgy-options" class="d-none">
-    <option value="">-- Select Brgy --</option>
-
-</select> -->
-
 
 <body class="bg-light">
     <div id="mytask-layout" class="theme-indigo">
@@ -493,7 +447,7 @@ if ($result_nao->num_rows > 0) {
                                                                 <td id="total-area">0</td>
                                                                 <td></td>
                                                                 <td id="total-bmv">0</td>
-                                                                <td> <button id="add-row-land" type="button" class="btn btn-sm btn-warning">Add</button></td>
+                                                                <td> <button id="add-row-agri" type="button" class="btn btn-sm btn-warning">Add</button></td>
                                                             </tr>
                                                         </tfoot>
                                                     </table>
@@ -767,7 +721,7 @@ if ($result_nao->num_rows > 0) {
 <script src="dynamic_row.js"></script>
 
 <script>
-    const municipalityOptions = <?= json_encode($options) ?>;
-    const au_options = <?= json_encode($au_options) ?>;
-    const non_agri_options = <?= json_encode($non_agri_options) ?>;
+    const agri_class_options = <?= json_encode(selectOptionData('land_class')) ?>;
+    const au_options = <?= json_encode(selectOptionData('actual_use')) ?>;
+    const non_agri_options = <?= json_encode(selectOptionData('non_agri_kind')) ?>;
 </script>

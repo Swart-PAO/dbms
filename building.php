@@ -128,7 +128,7 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
                             </thead>
                             <tbody>
                                 <?php
-                                $results = getPropertiesByBarangay($mun_code, $brgy_session, 1);
+                                $results = getPropertiesByBarangay($mun_code, $brgy_session, 1, false, null);
                                 $counter = 1;
                                 while ($row = $results->fetch_assoc()):
                                 ?>

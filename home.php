@@ -1,5 +1,5 @@
 <?php
-require_once 'php/php_class.php';
+
 $stats = getPropertyStats($mun_code, $brgy_session);
 $noTodayTransaction = totalTodayTransaction($_SESSION['user_ID']);
 
@@ -171,7 +171,7 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
                                     </tr>
                                 <?php }
 
-                                $conn->close(); ?>
+                                ?>
                             </tbody>
 
                         </table>
@@ -183,9 +183,7 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
 </div>
 
 <?php
-include 'db_connect.php';
 
-// Get municipality descriptions
 $sql = "SELECT mun_desc FROM municipality ORDER BY mun_desc ASC";
 $result = $conn->query($sql);
 

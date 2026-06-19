@@ -1,11 +1,11 @@
 $(document).ready(function () {
-  // $("#classification-table tbody").append(createRowLand());
+  // $("#classification-table tbody").append(createRowAgri());
   // $("#residential-table tbody").append(createRowResidential());
   // // $("#market-value-table tbody").append(createRowMarketValue());
   // $("#assessment-table tbody").append(createRowAssessment());
 
-  $("#add-row-land").click(function () {
-    $("#classification-table tbody").append(createRowLand());
+  $("#add-row-agri").click(function () {
+    $("#classification-table tbody").append(createRowAgri());
   });
   $("#add-row-residential").click(function () {
     $("#residential-table tbody").append(createRowResidential());
@@ -47,12 +47,12 @@ $(document).ready(function () {
     recalculateAssessment();
   });
 
-  function createRowLand() {
+  function createRowAgri() {
     return `
     <tr>
         <td>
             <select class="form-control classification" name="classification[]" required>
-                ${municipalityOptions}
+                ${agri_class_options}
             </select>
         </td>
         <td>
@@ -244,7 +244,7 @@ $(document).ready(function () {
         $("#classification-table tbody .remove-row").prop("disabled", true);
 
         // Disable Add button
-        $("#add-row-land").prop("disabled", true);
+        $("#add-row-agri").prop("disabled", true);
 
         // Disable Save button
         $("#save-land").prop("disabled", true);
