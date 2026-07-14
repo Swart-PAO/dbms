@@ -8,7 +8,7 @@ if (!$land_property_ID) {
     exit;
 }
 
-$stmt = $conn->prepare("SELECT * FROM residential WHERE property_ID = ?");
+$stmt = $conn->prepare("SELECT * FROM non_agricultural_info WHERE property_ID = ?");
 $stmt->bind_param("i", $land_property_ID);
 $stmt->execute();
 $result = $stmt->get_result();

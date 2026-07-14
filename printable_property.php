@@ -116,7 +116,7 @@
 <body>
 
     <?php
-    $faas_id = $_GET['faas_id'];
+    $property_ID = $_GET['property_ID'];
 
 
 
@@ -135,7 +135,7 @@
         <!-- Header Grid (ARP/PIN/etc.) -->
         <table class="grid small">
             <tr>
-                <input type="hidden" name="faas_id" value="<?php echo $faas_id ?>">
+                <input type="hidden" name="property_ID" value="<?php echo $property_ID ?>">
                 <td style="width:35%"><span class="label">ARP No.</span> <span id="arp_no" class="line w-140"></span></td>
                 <td style="width:30%"><span class="label">PIN</span> <span id="pin_no" class="line w-140"></span></td>
                 <td style="width:35%"><span class="label">Transaction Code</span> <span id="pin_no" class="line w-140"> GR</span></td>
@@ -420,7 +420,7 @@ include 'footer_script.php';
 ?>
 <script>
     $(document).ready(function() {
-        let some_id = $('input[name="faas_id"]').val();
+        let some_id = $('input[name="property_ID"]').val();
 
         const municipalityMap = {
             1: 'SAN JOSE (Capital)',
@@ -447,8 +447,9 @@ include 'footer_script.php';
             url: "ajax.php?action=get_property_revised",
             type: "GET",
             data: {
-                new_property_ID: some_id
-            }, // pass the FAAS_ID dynamically
+                property_ID: some_id,
+                mode: "new"
+            }, // pass the property_ID dynamically
             dataType: "json",
             success: function(data) {
                 if (data.error) {
@@ -462,8 +463,8 @@ include 'footer_script.php';
                 );
 
 
-                loadLandRows(data.FAAS_ID);
-                loadResidential(data.FAAS_ID);
+                loadLandRows(data.property_ID);
+                loadResidential(data.property_ID);
                 $('#factor_first').text($.trim(data.factor_first));
                 $('#percent_first').text($.trim(data.percent_first));
                 $('#factor_second').text($.trim(data.factor_second));

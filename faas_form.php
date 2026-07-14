@@ -15,7 +15,7 @@ $municipalities = getMunicipalities(); ?>
                         <i class="icofont-home fs-5"></i> Home
                     </a>
                     <h3 class=" mb-0">FAAS Property Form</h3>
-                    <a href="printable_property.php?faas_id=<?= $row['FAAS_ID'] ?>" class="btn btn-light btn-sm">
+                    <a href="printable_property.php?property_ID=<?= $row['property_ID'] ?>" class="btn btn-light btn-sm">
                         <i class="icofont-print fs-5"></i> Print
                     </a>
                 </div>
@@ -35,7 +35,7 @@ $municipalities = getMunicipalities(); ?>
 
                                     <?php foreach ($municipalities as $mun): ?>
                                         <option value="<?= (int) $mun['mun_code'] ?>">
-                                            <?= htmlspecialchars($mun['mun_desc']) ?>
+                                            <?= htmlspecialchars($mun['mun_name']) ?>
                                         </option>
                                     <?php endforeach; ?>
 
@@ -74,16 +74,23 @@ $municipalities = getMunicipalities(); ?>
                                 <form>
                                     <!-- Basic Property Information -->
                                     <div class="card border-success mb-4">
-                                        <input name="input_old_property_ID" id="input_old_property_ID" type="text" value="<?= isset($_GET['property_ID']) ? $_GET['property_ID'] : '' ?>" hidden>
-                                        <input name="input_new_property_ID" id="input_new_property_ID" type="text" value="<?= isset($_GET['FAAS_ID']) ? $_GET['FAAS_ID'] : '' ?>" hidden>
+                                        <input type="hidden"
+                                            id="input_property_ID"
+                                            name="input_property_ID"
+                                            value="<?= $_GET['property_ID'] ?? '' ?>">
+
+                                        <input type="hidden"
+                                            id="mode"
+                                            name="mode"
+                                            value="<?= $_GET['mode'] ?? '' ?>">
                                         <!-- <input name="input_land_ID" id="input_land_ID" type="text"> -->
                                         <div class="card-header bg-light fw-bold" data-bs-toggle="collapse" data-bs-target="#prop_info_section" style="cursor:pointer;">
                                             Administrator Information
                                         </div>
                                         <div class="card-body collapse show" id="prop_info_section">
 
-                                            <h5> Title </h5>
-                                            <div class="row mb-3 d-noneS">
+                                            <!-- <h5> Title </h5> -->
+                                            <div class="row mb-3 d-none">
                                                 <div class="col-md-4 d-flex align-items-center">
                                                     <label class="form-label me-2 mb-0" for="transaction_code">Transaction Code:</label>
 
@@ -93,26 +100,45 @@ $municipalities = getMunicipalities(); ?>
 
                                             </div>
 
+                                            <!-- PIN Highlight -->
+                                            <div class="row mb-4">
+                                                <div class="col-md-12 text-center">
+                                                    <label class="form-label fw-bold fs-5 mb-2">PROPERTY IDENTIFICATION NUMBER (PIN)</label>
+
+                                                    <div class="d-flex justify-content-center">
+                                                        <div class="input-group input-group-lg" style="max-width: 550px;">
+                                                            <span class="input-group-text fw-bold" id="pin_prefix">X X X-X X-X X X X</span>
+                                                            <input type="text"
+                                                                class="form-control text-center fw-bold fs-4"
+                                                                name="PIN_no"
+                                                                id="PIN_no"
+                                                                placeholder="0001-00001">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Remaining Fields -->
                                             <div class="row g-5">
+
                                                 <!-- Left Column -->
                                                 <div class="col-md-6">
 
                                                     <div class="row mb-3">
                                                         <div class="col-md-6 d-flex align-items-center">
-                                                            <label class="form-label me-2 mb-0" style="white-space: nowrap;">ARP No:</label>
+                                                            <label class="form-label me-2 mb-0">ARP No:</label>
                                                             <input type="text" class="form-control" name="ARP_no" id="ARP_no">
-
                                                         </div>
                                                     </div>
 
                                                     <div class="row mb-3">
                                                         <div class="col-md-6 d-flex align-items-center">
-                                                            <label class="form-label me-2 mb-0" style="white-space: nowrap;">OCT/TCT/CLOA:</label>
+                                                            <label class="form-label me-2 mb-0">OCT/TCT/CLOA:</label>
                                                             <input type="text" class="form-control" name="title_type" id="title_type">
                                                         </div>
 
                                                         <div class="col-md-6 d-flex align-items-center">
-                                                            <label class="form-label me-2 mb-0" style="white-space: nowrap;">Title Dated:</label>
+                                                            <label class="form-label me-2 mb-0">Title Dated:</label>
                                                             <input type="text" class="form-control" name="title_dated" id="title_dated">
                                                         </div>
                                                     </div>
@@ -123,37 +149,35 @@ $municipalities = getMunicipalities(); ?>
                                                 <div class="col-md-6 border-start">
 
                                                     <div class="row mb-3">
-                                                        <div class="col-md-6 d-flex align-items-center">
-                                                            <label class="form-label me-2 mb-0" style="white-space: nowrap;">PIN:</label>
-                                                            <input type="text" class="form-control" name="PIN_no" id="PIN_no">
-                                                        </div>
-                                                        <div class="col-md-6 d-flex align-items-center">
-                                                            <label class="form-label me-2 mb-0" for="transaction_code">Revision Code:</label>
+                                                        <div class="col-md-4 d-flex align-items-center">
+                                                            <label class="form-label me-2 mb-0">Revision Code:</label>
                                                             <select name="revision_code" id="revision_code" class="form-select">
                                                                 <option value="GR">GR</option>
                                                                 <option value="New">New</option>
                                                                 <option value="Cancelled">Cancelled</option>
                                                             </select>
-
                                                         </div>
                                                     </div>
 
-                                                    <div class=" row mb-3">
+                                                    <div class="row mb-3">
                                                         <div class="col-md-4 d-flex align-items-center">
-                                                            <label class="form-label me-2 mb-0" style="white-space: nowrap;">Survey:</label>
+                                                            <label class="form-label me-2 mb-0">Survey:</label>
                                                             <input type="text" class="form-control" name="survey" id="survey">
                                                         </div>
+
                                                         <div class="col-md-4 d-flex align-items-center">
-                                                            <label class="form-label me-2 mb-0" style="white-space: nowrap;">Lot No:</label>
+                                                            <label class="form-label me-2 mb-0">Lot No:</label>
                                                             <input type="text" class="form-control" name="lot_no" id="lot_no">
                                                         </div>
+
                                                         <div class="col-md-4 d-flex align-items-center">
-                                                            <label class="form-label me-2 mb-0" style="white-space: nowrap;">Block (BLK):</label>
+                                                            <label class="form-label me-2 mb-0">Block (BLK):</label>
                                                             <input type="text" class="form-control" name="BLK" id="BLK">
                                                         </div>
                                                     </div>
 
                                                 </div>
+
                                             </div>
                                             <hr>
                                             <h5> Owner Information </h5>
@@ -246,7 +270,11 @@ $municipalities = getMunicipalities(); ?>
 
                                                         <div class="col-md-6 d-flex align-items-center">
                                                             <label class="form-label me-2 mb-0">Barangay:</label>
-                                                            <input type="text" class="form-control" name="property_brgy" id="property_brgy">
+                                                            <select name="property_brgy" id="property_brgy" class="form-select" required>
+                                                                <option>-- Select Barangay --</option>
+                                                                <!-- Options will load dynamically -->
+                                                            </select>
+
                                                         </div>
                                                     </div>
 
@@ -258,7 +286,7 @@ $municipalities = getMunicipalities(); ?>
 
                                                                 <?php foreach ($municipalities as $mun): ?>
                                                                     <option value="<?= (int) $mun['mun_code'] ?>">
-                                                                        <?= htmlspecialchars($mun['mun_desc']) ?>
+                                                                        <?= htmlspecialchars($mun['mun_name']) ?>
                                                                     </option>
                                                                 <?php endforeach; ?>
 
@@ -425,7 +453,7 @@ $municipalities = getMunicipalities(); ?>
                                         <div class="row g-5">
                                             <div class="container">
                                                 <form id="agricultural-form">
-                                                    <table class="table table-bordered" id="classification-table">
+                                                    <table class="table table-bordered" id="agricultural-table">
                                                         <thead class="table-light">
                                                             <tr>
                                                                 <th>Classification</th>
@@ -446,7 +474,7 @@ $municipalities = getMunicipalities(); ?>
                                                                 <td colspan="2" class="text-end">TOTAL:</td>
                                                                 <td id="total-area">0</td>
                                                                 <td></td>
-                                                                <td id="total-bmv">0</td>
+                                                                <td id="total-bmv-agri">0</td>
                                                                 <td> <button id="add-row-agri" type="button" class="btn btn-sm btn-warning">Add</button></td>
                                                             </tr>
                                                         </tfoot>
@@ -465,16 +493,16 @@ $municipalities = getMunicipalities(); ?>
                             <!-- Residential Section -->
                             <div class="tab-pane fade" id="Non-Land-Tab">
                                 <div class="card border-success mb-4">
-                                    <div class="card-header bg-light fw-bold" data-bs-toggle="collapse" data-bs-target="#residential-section" style="cursor:pointer;">
+                                    <div class="card-header bg-light fw-bold" data-bs-toggle="collapse" data-bs-target="#non_agricultural-section" style="cursor:pointer;">
                                         Residential, Commercial, Industrial, Special
                                     </div>
-                                    <div class="card-body collapse show" id="residential-section">
+                                    <div class="card-body collapse show" id="non_agricultural-section">
 
                                         <h5> Residential </h5>
                                         <div class="row g-5">
                                             <div class="container">
-                                                <form id="residential-form">
-                                                    <table class="table table-bordered" id="residential-table">
+                                                <form id="non_agricultural-form">
+                                                    <table class="table table-bordered" id="non_agricultural-table">
                                                         <thead class="table-light">
                                                             <tr>
                                                                 <th>Kind</th>
@@ -491,15 +519,15 @@ $municipalities = getMunicipalities(); ?>
                                                         <tfoot class="table-secondary fw-bold">
                                                             <tr>
                                                                 <td colspan="2" class="text-end">TOTAL:</td>
-                                                                <td id="total-area-residential">0</td>
+                                                                <td id="total-area-non_agricultural">0</td>
                                                                 <td></td>
-                                                                <td id="total-bmv-residential">0</td>
-                                                                <td> <button id="add-row-residential" type="button" class="btn btn-sm btn-warning">Add</button></td>
+                                                                <td id="total-bmv-non_agricultural">0</td>
+                                                                <td> <button id="add-row-non_agricultural" type="button" class="btn btn-sm btn-warning">Add</button></td>
                                                             </tr>
                                                         </tfoot>
                                                     </table>
 
-                                                    <button id="save-residential" type="submit" class="btn btn-success">Save</button>
+                                                    <button id="save-non_agricultural" type="submit" class="btn btn-success">Save</button>
                                                 </form>
 
                                             </div>
@@ -653,9 +681,9 @@ $municipalities = getMunicipalities(); ?>
                                                         <tfoot class="table-secondary fw-bold">
                                                             <tr>
                                                                 <td colspan="2" class="text-end">TOTAL:</td>
-                                                                <td id="total-area-assessment">0</td>
-                                                                <td></td>
                                                                 <td id="total-bmv-assessment">0</td>
+                                                                <td></td>
+                                                                <td id="total-assessed-value">0</td>
                                                                 <td> <button id="add-row-assessment" type="button" class="btn btn-sm btn-warning">Add</button></td>
                                                             </tr>
                                                         </tfoot>

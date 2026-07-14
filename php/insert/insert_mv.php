@@ -2,41 +2,50 @@
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     include "../../db_connect.php";
 
-    // Make sure $property_ID is set somewhere before, e.g., from GET or hidden input
     $property_ID = $_POST['property_ID'] ?? 0;
 
-    // Collect form data safely
-    $mvbmv          = $_POST['mvbmv'] ?? '';
-    $factor_first    = $_POST['factor_first'] ?? '';
-    $percent_first   = $_POST['percentage_first'] ?? 0;
-    $factor_second   = $_POST['factor_second'] ?? '';
-    $percent_second  = $_POST['percentage_second'] ?? 0;
-    $factor_third    = $_POST['factor_third'] ?? '';
-    $percent_third   = $_POST['percentage_third'] ?? 0;
-    $percent_total   = $_POST['percent_total'] ?? 0;
-    $value_adjustment = $_POST['value_adjustment'] ?? '';
-    $market_value    = $_POST['market_value'] ?? '';
+    $mvbmv            = $_POST['mvbmv'] ?? 0;
+    $factor_first     = $_POST['factor_first'] ?? '';
+    $percent_first    = $_POST['percentage_first'] ?? 0;
+    $factor_second    = $_POST['factor_second'] ?? '';
+    $percent_second   = $_POST['percentage_second'] ?? 0;
+    $factor_third     = $_POST['factor_third'] ?? '';
+    $percent_third    = $_POST['percentage_third'] ?? 0;
+    $percent_total    = $_POST['percent_total'] ?? 0;
+    $value_adjustment = $_POST['value_adjustment'] ?? 0;
+    $market_value     = $_POST['market_value'] ?? 0;
 
-    // Prepare the UPDATE statement
     $stmt = $conn->prepare("
-        UPDATE faas_property
-        SET 
-        total_land_mv = ?,
-            factor_first = ?,
-            percent_first = ?,
-            factor_second = ?,
-            percent_second = ?,
-            factor_third = ?,
-            percent_third = ?,
-            percent_total = ?,
-            total_adjustment = ?,
-            total_market_value = ?
-        WHERE FAAS_ID = ?
+        INSERT INTO property_valuation_summary (
+            property_ID,
+            total_land_mv,
+            factor_first,
+            percent_first,
+            factor_second,
+            percent_second,
+            factor_third,
+            percent_third,
+            percent_total,
+            total_adjustment,
+            total_market_value
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+            total_land_mv = VALUES(total_land_mv),
+            factor_first = VALUES(factor_first),
+            percent_first = VALUES(percent_first),
+            factor_second = VALUES(factor_second),
+            percent_second = VALUES(percent_second),
+            factor_third = VALUES(factor_third),
+            percent_third = VALUES(percent_third),
+            percent_total = VALUES(percent_total),
+            total_adjustment = VALUES(total_adjustment),
+            total_market_value = VALUES(total_market_value)
     ");
 
-    // Bind parameters
     $stmt->bind_param(
-        "dsisisiiddi",
+        "idsisisiidd",
+        $property_ID,
         $mvbmv,
         $factor_first,
         $percent_first,
@@ -46,15 +55,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $percent_third,
         $percent_total,
         $value_adjustment,
-        $market_value,
-        $property_ID
+        $market_value
     );
 
-    // Execute
     if ($stmt->execute()) {
-        echo "Updated Successfully";
+        echo "Saved Successfully";
     } else {
-        echo "error: " . $stmt->error;
+        echo "Error: " . $stmt->error;
     }
 
     $stmt->close();

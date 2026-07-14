@@ -1,14 +1,14 @@
 $(document).ready(function () {
-  // $("#classification-table tbody").append(createRowAgri());
-  // $("#residential-table tbody").append(createRowResidential());
+  // $("#agricultural-table tbody").append(createRowAgri());
+  // $("#non_agricultural-table tbody").append(createRowResidential());
   // // $("#market-value-table tbody").append(createRowMarketValue());
   // $("#assessment-table tbody").append(createRowAssessment());
 
   $("#add-row-agri").click(function () {
-    $("#classification-table tbody").append(createRowAgri());
+    $("#agricultural-table tbody").append(createRowAgri());
   });
-  $("#add-row-residential").click(function () {
-    $("#residential-table tbody").append(createRowResidential());
+  $("#add-row-non_agricultural").click(function () {
+    $("#non_agricultural-table tbody").append(createRowResidential());
   });
   // $("#add-row-market-value").click(function () {
   //   $("#market-value-table tbody").append(createRowMarketValue());
@@ -17,25 +17,29 @@ $(document).ready(function () {
     $("#assessment-table tbody").append(createRowAssessment());
   });
 
-  $("#residential-table").on("click", ".remove-row-residential", function () {
-    $(this).closest("tr").remove();
-    recalculateResidential();
-  });
+  $("#non_agricultural-table").on(
+    "click",
+    ".remove-row-non_agricultural",
+    function () {
+      $(this).closest("tr").remove();
+      recalculateResidential();
+    },
+  );
 
   $("#assessment-table").on("click", ".remove-row-assessment", function () {
     $(this).closest("tr").remove();
     recalculateAssessment();
   });
 
-  $("#classification-table").on("click", ".remove-row", function () {
+  $("#agricultural-table").on("click", ".remove-row", function () {
     $(this).closest("tr").remove();
     recalculateTotals();
   });
 
-  $("#classification-table").on("input", ".area, .unit-value", function () {
+  $("#agricultural-table").on("input", ".area, .unit-value", function () {
     recalculateTotals();
   });
-  $("#residential-table").on(
+  $("#non_agricultural-table").on(
     "input",
     ".area-resid, .unit-value-resid",
     function () {
@@ -51,7 +55,7 @@ $(document).ready(function () {
     return `
     <tr>
         <td>
-            <select class="form-control classification" name="classification[]" required>
+            <select class="form-control agri_class" name="agri_class[]" required>
                 ${agri_class_options}
             </select>
         </td>
@@ -83,7 +87,7 @@ $(document).ready(function () {
         <td><input type="number" name="unit_value_resid[]" id="unit_value_resid" class="form-control unit-value-resid" placeholder="Unit Value" required></td>
          <td><input type="tex" name="adjustment_factor[]" id="adjustment_factor" class="form-control adjustment-factor" placeholder="Adjustment Factor" required></td>
         <td><input type="text" name="market_value_resid[]" id="market_value_resid" class="form-control market-value-resid" placeholder="BMV" step="any"readonly></td>
-        <td><button class="btn btn-danger btn-sm remove-row-residential">Remove</button></td>
+        <td><button class="btn btn-danger btn-sm remove-row-non_agricultural">Remove</button></td>
     </tr>`;
   }
 
@@ -113,7 +117,7 @@ $(document).ready(function () {
     let totalArea = 0;
     let totalBMV = 0;
 
-    $("#classification-table tbody tr").each(function () {
+    $("#agricultural-table tbody tr").each(function () {
       const area = parseFloat($(this).find(".area").val()) || 0;
       const unitValue = parseFloat($(this).find(".unit-value").val()) || 0;
       const baseMarketValue = area * unitValue;
@@ -127,7 +131,7 @@ $(document).ready(function () {
     $("#mvbmv").val(totalBMV);
 
     $("#total-area").text(totalArea);
-    $("#total-bmv").text(totalBMV);
+    $("#total-bmv-agri").text(totalBMV);
     calculateMarketValue();
   }
 
@@ -175,7 +179,7 @@ $(document).ready(function () {
     let totalArea = 0;
     let totalBMV = 0;
 
-    $("#residential-table tbody tr").each(function () {
+    $("#non_agricultural-table tbody tr").each(function () {
       const area = parseFloat($(this).find(".area-resid").val()) || 0;
       const unitValue =
         parseFloat($(this).find(".unit-value-resid").val()) || 0;
@@ -187,8 +191,8 @@ $(document).ready(function () {
       totalBMV += baseMarketValue;
     });
 
-    $("#total-area-residential").text(totalArea);
-    $("#total-bmv-residential").text(totalBMV);
+    $("#total-area-non_agricultural").text(totalArea);
+    $("#total-bmv-non_agricultural").text(totalBMV);
   }
 
   function recalculateAssessment() {
@@ -206,22 +210,23 @@ $(document).ready(function () {
       totalBMV += baseMarketValue;
     });
 
-    $("#total-area-assessment").text(totalArea);
+    $("#total-assessed-value").text(totalArea);
     $("#total-bmv-assessment").text(totalBMV);
   }
 
   $("#agricultural-form").on("submit", function (e) {
     e.preventDefault();
 
-    let rowCount = $("#classification-table tbody tr").length;
+    let rowCount = $("#agricultural-table tbody tr").length;
 
     if (rowCount < 1) {
-      alert("Please add at least one land classification before saving.");
+      alert("Please add at least one land agricultural before saving.");
       return;
     }
 
-    let land_property_ID = $("#input_new_property_ID").val();
+    let land_property_ID = $("#input_property_ID").val();
     let totalArea = parseFloat($("#total-area").text()) || 0;
+    let totalLandMV = parseFloat($("#total-bmv-agri").text()) || 0;
     // alert(totalArea);
 
     // alert(land_property_ID);
@@ -230,6 +235,7 @@ $(document).ready(function () {
     let formData = $(this).serialize();
     formData += "&property_ID=" + encodeURIComponent(land_property_ID);
     formData += "&total_land_area=" + encodeURIComponent(totalArea); // ✅ ADD THIS
+    formData += "&total_land_mv=" + encodeURIComponent(totalLandMV); // ✅ ADD THIS
     $.ajax({
       url: "ajax.php?action=save_land",
       type: "POST",
@@ -237,11 +243,11 @@ $(document).ready(function () {
       success: function (response) {
         alert(response);
         // Disable all inputs so the inserted values remain visible
-        $("#classification-table tbody select").prop("disabled", true);
-        $("#classification-table tbody input").prop("disabled", true);
+        $("#agricultural-table tbody select").prop("disabled", true);
+        $("#agricultural-table tbody input").prop("disabled", true);
 
         // Disable remove button
-        $("#classification-table tbody .remove-row").prop("disabled", true);
+        $("#agricultural-table tbody .remove-row").prop("disabled", true);
 
         // Disable Add button
         $("#add-row-agri").prop("disabled", true);
@@ -255,25 +261,27 @@ $(document).ready(function () {
     });
   });
 
-  $("#residential-form").on("submit", function (e) {
+  $("#non_agricultural-form").on("submit", function (e) {
     e.preventDefault();
 
-    let rowCount = $("#residential-table tbody tr").length;
+    let rowCount = $("#non_agricultural-table tbody tr").length;
 
     if (rowCount < 1) {
-      alert("Please add at least one land classification before saving.");
+      alert("Please add at least one land agricultural before saving.");
       return;
     }
 
-    let land_property_ID = $("#input_new_property_ID").val();
-    let totalAreaResid = parseFloat($("#total-area-resid").text()) || 0;
-    let totalBMWResid = parseFloat($("#total-bmv-residential").text()) || 0;
+    let land_property_ID = $("#input_property_ID").val();
+    let totalAreaResid =
+      parseFloat($("#total-area-non_agricultural").text()) || 0;
+    let totalBMWResid =
+      parseFloat($("#total-bmv-non_agricultural").text()) || 0;
 
     // This will automatically collect all fields including arrays
     let formData = $(this).serialize();
     formData += "&property_ID=" + encodeURIComponent(land_property_ID);
-    formData += "&total_residential_area=" + encodeURIComponent(totalAreaResid); // ✅ ADD THIS
-    formData += "&total_residential_mv=" + encodeURIComponent(totalBMWResid); // ✅ ADD THIS
+    formData += "&total_non_agri_area=" + encodeURIComponent(totalAreaResid); // ✅ ADD THIS
+    formData += "&total_non_agri_mv=" + encodeURIComponent(totalBMWResid); // ✅ ADD THIS
 
     $.ajax({
       url: "php/insert/insert_resid.php",
@@ -282,17 +290,17 @@ $(document).ready(function () {
       success: function (response) {
         alert(response);
         // Disable all inputs so the inserted values remain visible
-        $("#residential-table tbody select").prop("disabled", true);
-        $("#residential-table tbody input").prop("disabled", true);
+        $("#non_agricultural-table tbody select").prop("disabled", true);
+        $("#non_agricultural-table tbody input").prop("disabled", true);
 
         // Disable remove button
-        $("#residential-table tbody .remove-row").prop("disabled", true);
+        $("#non_agricultural-table tbody .remove-row").prop("disabled", true);
 
         // Disable Add button
-        $("#add-row-residential").prop("disabled", true);
+        $("#add-row-non_agricultural").prop("disabled", true);
 
         // Disable Save button
-        $("#save-residential").prop("disabled", true);
+        $("#save-non_agricultural").prop("disabled", true);
       },
       error: function (xhr, status, error) {
         alert("Error: " + error);
@@ -303,7 +311,7 @@ $(document).ready(function () {
   $("#market-value-form").on("submit", function (e) {
     e.preventDefault();
 
-    let land_property_ID = $("#input_new_property_ID").val();
+    let land_property_ID = $("#input_property_ID").val();
 
     // This will automatically collect all fields including arrays
     let formData = $(this).serialize();
@@ -331,15 +339,20 @@ $(document).ready(function () {
     let rowCount = $("#assessment-table tbody tr").length;
 
     if (rowCount < 1) {
-      alert("Please add at least one land classification before saving.");
+      alert("Please add at least one land agricultural before saving.");
       return;
     }
 
-    let land_property_ID = $("#input_new_property_ID").val();
+    let land_property_ID = $("#input_property_ID").val();
+    let totalMarketValue = $("#total-bmv-assessment").text();
+    let totalAssessedValue = $("#total-assessed-value").text();
 
     // This will automatically collect all fields including arrays
     let formData = $(this).serialize();
     formData += "&property_ID=" + encodeURIComponent(land_property_ID);
+    formData += "&total_assessment_mv=" + encodeURIComponent(totalMarketValue); // ✅ ADD THIS
+    formData +=
+      "&total_assessed_value=" + encodeURIComponent(totalAssessedValue); // ✅ ADD THIS
 
     $.ajax({
       url: "php/insert/insert_assessment.php",

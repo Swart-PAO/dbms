@@ -15,6 +15,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $assessed_value = $_POST['assessed_value'];
     $assessed_level = $_POST['assessed_level'];
 
+    $total_assessed_value = $_POST['total_assessed_value'];
+    $total_assessment_mv = $_POST['total_assessment_mv'];
+
     // 1️⃣ Check if assessment rows already exist for this property
     $check = $conn->prepare("SELECT COUNT(*) FROM assessment WHERE property_ID = ?");
     $check->bind_param("i", $property_ID);
@@ -61,6 +64,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $stmt->close();
+    // 4️⃣ INSERT OR UPDATE PROPERTY VALUATION SUMMARY
+    $summary = $conn->prepare("
+    INSERT INTO property_valuation_summary (
+        property_ID,
+        total_assessment_mv,
+        total_assessed_value
+    )
+    VALUES (?, ?, ?)
+    ON DUPLICATE KEY UPDATE
+        total_assessment_mv = VALUES(total_assessment_mv),
+        total_assessed_value = VALUES(total_assessed_value)
+");
+
+    $summary->bind_param(
+        "idd",
+        $property_ID,
+        $total_assessment_mv,
+        $total_assessed_value
+    );
+
+    if (!$summary->execute()) {
+        echo "Summary update failed: " . $summary->error;
+        exit;
+    }
+
+    $summary->close();
     $conn->close();
 
     echo "$mode $inserted assessment record(s).";

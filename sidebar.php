@@ -69,6 +69,12 @@
                      <span>Reports</span>
                  </a>
              </li>
+             <li>
+                 <a class="m-link <?= ($currentPage === 'municipal') ? 'active' : '' ?>" href="index.php?page=municipal">
+                     <i class="icofont-database fs-5"></i>
+                     <span>Municipal</span>
+                 </a>
+             </li>
 
              <li>
                  <a class="m-link <?= ($currentPage === 'database') ? 'active' : '' ?>" href="index.php?page=database">

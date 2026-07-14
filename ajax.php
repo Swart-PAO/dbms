@@ -11,10 +11,10 @@ if ($action == 'get_property_previous') {
         echo $get_property_previous;
 }
 
-if ($action == 'insert_property') {
-    $insert_property = $crud->insert_property();
-    if ($insert_property)
-        echo $insert_property;
+if ($action == 'save_property') {
+    $save_property = $crud->save_property();
+    if ($save_property)
+        echo $save_property;
 }
 if ($action == 'get_property_revised') {
     $get_property_revised = $crud->get_property_revised();

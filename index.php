@@ -86,13 +86,13 @@ include 'header_link.php';
         });
 
         $("#mun_code").change(function() {
-            var mun_code = $(this).val();
-            if (mun_code !== "") {
+            var property_municipality = $(this).val();
+            if (property_municipality !== "") {
                 $.ajax({
                     url: "php/get_barangay.php",
                     type: "POST",
                     data: {
-                        mun_code: mun_code
+                        mun_code: property_municipality
                     },
                     success: function(data) {
                         $("#brgy").html(data);

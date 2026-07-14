@@ -15,12 +15,12 @@
 include 'db_connect.php';
 
 $options = '<option value="">-- Select Municipality --</option>';
-$sql = "SELECT mun_code, mun_desc FROM municipality ORDER BY mun_desc ASC";
+$sql = "SELECT mun_code, mun_name FROM municipality_list ORDER BY mun_name ASC";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        $options .= '<option value="' . $row['mun_code'] . '">' . $row['mun_desc'] . '</option>';
+        $options .= '<option value="' . $row['mun_code'] . '">' . $row['mun_name'] . '</option>';
     }
 }
 ?>
@@ -101,7 +101,7 @@ if ($result->num_rows > 0) {
                                                 <!-- <option value="">-- Select Municipality --</option> -->
                                                 <?= $options ?>
                                             </select>
-                                            <input name="mun_desc" id="mun_desc" hidden>
+                                            <input name="mun_name" id="mun_name" hidden>
                                         </div>
                                     </div>
                                     <div class="col-12">

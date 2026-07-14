@@ -14,12 +14,12 @@
                                 <select name="mun_code" id="mun_code" class="form-select">
                                     <option value="">-- Select Municipality --</option>
                                     <?php
-                                    $sql = "SELECT mun_code, mun_desc FROM municipality ORDER BY mun_desc ASC";
+                                    $sql = "SELECT mun_code, mun_name FROM municipality_list ORDER BY mun_name ASC";
                                     $result = $conn->query($sql);
 
                                     if ($result->num_rows > 0) {
                                         while ($row = $result->fetch_assoc()) {
-                                            echo '<option value="' . $row['mun_code'] . '">' . $row['mun_desc'] . '</option>';
+                                            echo '<option value="' . $row['mun_code'] . '">' . $row['mun_name'] . '</option>';
                                         }
                                     }
                                     ?>
@@ -27,7 +27,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <select name="brgy" id="brgy" class="form-select">
+                                <select name="brgy" id="brgy" class="form-select" required>
                                     <option value="">-- Select Barangay --</option>
                                     <!-- Options will load dynamically -->
                                 </select>
@@ -65,7 +65,7 @@
                             </thead>
                             <tbody>
                                 <?php
-                                $sql = "SELECT * FROM faas_property  WHERE `property_municipality` = $mun_code ORDER BY previous_pin ASC";
+                                $sql = "SELECT * FROM property_info  WHERE `property_municipality` = $mun_code ORDER BY previous_pin ASC";
                                 $result = $conn->query($sql);
                                 $counter = 1;
                                 while ($row = $result->fetch_assoc()) { ?>
@@ -96,13 +96,13 @@
 
                                                 <ul class="dropdown-menu">
                                                     <li>
-                                                        <a class="dropdown-item" href="faas_form.php?FAAS_ID=<?= $row['FAAS_ID'] ?>">
+                                                        <a class="dropdown-item" href="faas_form.php?property_ID=<?= $row['property_ID'] ?>">
                                                             <i class="icofont-edit text-success"></i> Edit
                                                         </a>
                                                     </li>
 
                                                     <li>
-                                                        <a class="dropdown-item" href="printable_property.php?faas_id=<?= $row['FAAS_ID'] ?>">
+                                                        <a class="dropdown-item" href="printable_property.php?property_ID=<?= $row['property_ID'] ?>">
                                                             <i class="icofont-eye-alt text-info"></i> View
                                                         </a>
                                                     </li>
@@ -110,7 +110,7 @@
                                                     <li>
                                                         <button type="button"
                                                             class="dropdown-item delete_property"
-                                                            data-id="<?= $row['FAAS_ID']; ?>">
+                                                            data-id="<?= $row['property_ID']; ?>">
                                                             <i class="icofont-ui-delete text-danger"></i> Delete
                                                         </button>
                                                     </li>
@@ -157,7 +157,7 @@
                                                     <div class="col-sm text-end">
 
                                                         <div class="small text-truncate light-danger-bg py-1 px-2 rounded-1 d-inline-block fw-bold small">
-                                                            <div class="btn-group" role="group" aria-label="Basic outlined example"> <a href="faas_form.php?FAAS_ID=<?= $row['FAAS_ID'] ?>" class="btn btn-outline-secondary"><i class="icofont-edit text-success"></i></a> <a href="printable_property.php?faas_id=<?= $row['FAAS_ID'] ?>" class="btn btn-outline-secondary"><i class="icofont-eye-alt text-info"></i></a> <button type="button" class="btn btn-outline-secondary delete_property" data-id="<?= $row['FAAS_ID']; ?>"><i class="icofont-ui-delete text-danger"></i></button> </div>
+                                                            <div class="btn-group" role="group" aria-label="Basic outlined example"> <a href="faas_form.php?property_ID=<?= $row['property_ID'] ?>" class="btn btn-outline-secondary"><i class="icofont-edit text-success"></i></a> <a href="printable_property.php?property_ID=<?= $row['property_ID'] ?>" class="btn btn-outline-secondary"><i class="icofont-eye-alt text-info"></i></a> <button type="button" class="btn btn-outline-secondary delete_property" data-id="<?= $row['property_ID']; ?>"><i class="icofont-ui-delete text-danger"></i></button> </div>
                                                         </div>
                                                     </div>
                                                 </div>

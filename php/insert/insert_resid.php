@@ -9,8 +9,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $conn->begin_transaction();
 
         $property_ID = $_POST['property_ID'] ?? '';
-        $total_residential_area = $_POST['total_residential_area'] ?? 0;
-        $total_residential_mv   = $_POST['total_residential_mv'] ?? 0;
+        $total_non_agri_area = $_POST['total_non_agri_area'] ?? 0;
+        $total_non_agri_mv   = $_POST['total_non_agri_mv'] ?? 0;
 
         if (!$property_ID) {
             throw new Exception("Missing property_ID");
@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $market_value_resid = $_POST['market_value_resid'] ?? [];
 
         // 1️⃣ CHECK IF PROPERTY ALREADY EXISTS
-        $check = $conn->prepare("SELECT COUNT(*) FROM residential WHERE property_ID = ?");
+        $check = $conn->prepare("SELECT COUNT(*) FROM non_agricultural_info WHERE property_ID = ?");
         $check->bind_param("i", $property_ID);
         $check->execute();
         $check->bind_result($count);
@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($count > 0) {
             // 2️⃣ DELETE OLD ROWS
-            $delete = $conn->prepare("DELETE FROM residential WHERE property_ID = ?");
+            $delete = $conn->prepare("DELETE FROM non_agricultural_info WHERE property_ID = ?");
             $delete->bind_param("i", $property_ID);
             $delete->execute();
             $delete->close();
@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // 3️⃣ INSERT RESIDENTIAL RECORDS
         $stmt = $conn->prepare("
-            INSERT INTO residential
+            INSERT INTO non_agricultural_info
             (property_ID, kind, area_resid, unit_value_resid, adjustment_factor, market_value_resid)
             VALUES (?, ?, ?, ?, ?, ?)
         ");
@@ -68,28 +68,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $inserted++;
         }
         $stmt->close();
+        // 4️⃣ INSERT OR UPDATE VALUATION SUMMARY
+        $summary = $conn->prepare("INSERT INTO property_valuation_summary
+        (property_ID, total_non_agri_mv, total_non_agri_area)
+    VALUES (?, ?, ?)
+    ON DUPLICATE KEY UPDATE
+        total_non_agri_mv = VALUES(total_non_agri_mv),
+        total_non_agri_area = VALUES(total_non_agri_area)
+");
 
-        // 4️⃣ UPDATE TOTALS IN FAAS_PROPERTY
-        $update = $conn->prepare("
-            UPDATE faas_property
-            SET total_residential_mv = ?, total_residential_area = ?
-            WHERE FAAS_ID = ?
-        ");
-        $update->bind_param(
-            "ddi",
-            $total_residential_mv,
-            $total_residential_area,
-            $property_ID
+        $summary->bind_param(
+            "idd",
+            $property_ID,
+            $total_non_agri_mv,
+            $total_non_agri_area
         );
-        $update->execute();
-        $update->close();
 
+        $summary->execute();
+        $summary->close();
         // 5️⃣ COMMIT IF ALL SUCCESS
         $conn->commit();
 
         echo "$mode $inserted residential record(s). "
-            . "Total Area: $total_residential_area | "
-            . "Total MV: $total_residential_mv";
+            . "Total Area: $total_non_agri_area | "
+            . "Total MV: $total_non_agri_mv";
     } catch (Throwable $e) {
         // ❌ ROLLBACK ON ANY FAILURE
         $conn->rollback();
