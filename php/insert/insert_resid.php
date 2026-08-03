@@ -1,6 +1,7 @@
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    include "../../db_connect.php";
+    require_once __DIR__ . '/../../config.php';
+    require_once ROOT_PATH . '/db/db_connect.php';
 
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
     $conn->set_charset("utf8mb4");

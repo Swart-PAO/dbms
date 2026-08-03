@@ -116,6 +116,7 @@
 <body>
 
     <?php
+
     $property_ID = $_GET['property_ID'];
 
 
@@ -416,11 +417,13 @@
 </html>
 
 <?php
-include 'footer_script.php';
+// include 'link/footer_script.php';
 ?>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
         let some_id = $('input[name="property_ID"]').val();
+        // alert('123132'); // Debugging line to check the value of some_id
 
         const municipalityMap = {
             1: 'SAN JOSE (Capital)',
@@ -444,11 +447,11 @@ include 'footer_script.php';
         };
 
         $.ajax({
-            url: "ajax.php?action=get_property_revised",
+            url: "land/ajax.php?action=get_property_revised",
             type: "GET",
             data: {
                 property_ID: some_id,
-                mode: "new"
+                mode: "gr"
             }, // pass the property_ID dynamically
             dataType: "json",
             success: function(data) {
@@ -476,7 +479,7 @@ include 'footer_script.php';
                 $('#bmvmv').text('₱ ' + $.trim(data.total_land_mv));
                 $('#total_land_mv').text(formatPeso($.trim(data.total_land_mv)));
                 $('#total_resid_mv').text(formatPeso($.trim(data.total_residential_mv)));
-                $('#pin_no').text($.trim(data.previous_pin));
+                $('#pin_no').text($.trim(data.PIN_no));
                 $('#arp_no').text($.trim(data.previous_ARP_no));
                 $('#title_type').text($.trim(data.title_type));
                 $('#lot_no').text($.trim(data.lot_no));

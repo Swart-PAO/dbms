@@ -2,7 +2,10 @@
 <?php
 // includes/property_functions.php
 
-require_once 'db_connect.php';
+// Any file
+require_once __DIR__ . '/../config.php';
+require_once ROOT_PATH . '/db/db_connect.php';
+
 
 function getBarangays($mun_code)
 {

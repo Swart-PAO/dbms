@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="assets/css/my-task.style.min.css">
 </head>
 <?php
-include 'db_connect.php';
+include 'db/db_connect.php';
 
 $options = '<option value="">-- Select Municipality --</option>';
 $sql = "SELECT mun_code, mun_name FROM municipality_list ORDER BY mun_name ASC";
@@ -143,9 +143,9 @@ if ($result->num_rows > 0) {
     $(document).ready(function() {
         $("#mun_code").change(function() {
             var mun_code = $(this).val();
-            var mun_desc = $(this).find("option:selected").text();
+            var mun_name = $(this).find("option:selected").text();
 
-            $("#mun_desc").val(mun_desc);
+            $("#mun_name").val(mun_name);
             if (mun_code !== "") {
                 $.ajax({
                     url: "php/get_barangay.php",

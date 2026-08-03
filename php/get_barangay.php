@@ -1,5 +1,6 @@
 <?php
-include '../db_connect.php';
+require_once __DIR__ . '/../config.php';
+require_once ROOT_PATH . '/db/db_connect.php';
 
 if (isset($_POST['mun_code']) && !empty($_POST['mun_code'])) {
     $mun_code = intval($_POST['mun_code']);

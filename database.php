@@ -31,13 +31,13 @@
                             <option value="">-- Select Municipality --</option>
                             <?php
 
-                            $sql1 = "SELECT * FROM municipality";
+                            $sql1 = "SELECT * FROM municipality_list";
                             $result1 = $conn->query($sql1);
 
                             if ($result1->num_rows > 0) {
                                 while ($row1 = $result1->fetch_assoc()) {
 
-                                    echo '<option value="' . $row1['mun_code'] . '">' . $row1['mun_desc'] . '</option>';
+                                    echo '<option value="' . $row1['mun_code'] . '">' . $row1['mun_name'] . '</option>';
                                 }
                             }
                             ?>

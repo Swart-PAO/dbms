@@ -130,7 +130,7 @@
                                                 <td><?= $counter++ ?></td>
                                                 <td><?= htmlspecialchars($row['PIN']) ?></td>
                                                 <td><?= htmlspecialchars($row['NAME OF OWNER']) ?></td>
-                                                <td><?= htmlspecialchars($row['LOCATION OF PROPERTY'] . ' ' . $mun_desc) ?></td>
+                                                <td><?= htmlspecialchars($row['LOCATION OF PROPERTY'] . ' ' . $mun_name) ?></td>
                                                 <td><?= htmlspecialchars($row['CADASTRAL LOT NUMBER']) ?></td>
                                                 <!-- <td><?= htmlspecialchars($row['DATE OF TRANSACTION']) ?></td> -->
                                                 <!-- <td><?= htmlspecialchars($row['TRANCODE']) ?></td> -->
@@ -221,7 +221,7 @@
 
         let mun_code = $(this).val();
 
-        $.post("load_barangays.php", {
+        $.post("municipal/load_barangays.php", {
             mun_code: mun_code
         }, function(html) {
 
@@ -244,7 +244,7 @@
 
     function loadTable(mun_code, barangay) {
 
-        $.post("load_table.php", {
+        $.post("municipal/load_table.php", {
             mun_code: mun_code,
             barangay: barangay,
             land_type: 0,

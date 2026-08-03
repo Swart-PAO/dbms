@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Tax Declaration of Real Property</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #dcdcdc;
+            padding: 20px;
+        }
+
+        .page {
+
+            width: 210mm;
+            min-height: 297mm;
+            margin: auto;
+            background: #fff;
+            padding: 15mm;
+            color: #000;
+
+        }
+
+        .print-btn {
+
+            position: fixed;
+            right: 30px;
+            top: 30px;
+            padding: 10px 20px;
+            background: #222;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 14px;
+
+        }
+
+        .print-btn:hover {
+
+            background: #444;
+
+        }
+
+        @page {
+
+            size: A4;
+            margin: 10mm;
+
+        }
+
+        @media print {
+
+            body {
+
+                background: white;
+                padding: 0;
+
+            }
+
+            .print-btn {
+
+                display: none;
+
+            }
+
+            .page {
+
+                width: 100%;
+                margin: 0;
+                padding: 0;
+
+            }
+
+            input {
+
+                border: none;
+
+            }
+
+            textarea {
+
+                border: none;
+
+            }
+
+        }
+
+        .center {
+
+            text-align: center;
+
+        }
+
+        .right {
+
+            text-align: right;
+
+        }
+
+        .bold {
+
+            font-weight: bold;
+
+        }
+
+        .small {
+
+            font-size: 11px;
+
+        }
+
+        .tiny {
+
+            font-size: 10px;
+
+        }
+
+        .large {
+
+            font-size: 18px;
+
+        }
+
+        .header {
+
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+
+        }
+
+        .logo {
+
+            width: 85px;
+            height: 85px;
+            border: 2px solid #000;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 11px;
+            font-weight: bold;
+            text-align: center;
+
+        }
+
+        .logo-right {
+
+            width: 95px;
+            height: 85px;
+            border: 2px solid #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 11px;
+            text-align: center;
+
+        }
+
+        .header-center {
+
+            flex: 1;
+            text-align: center;
+            padding: 0 20px;
+
+        }
+
+        .header-center h1 {
+
+            font-size: 34px;
+            margin-top: 8px;
+
+        }
+
+        .header-center h2 {
+
+            font-size: 18px;
+            margin-top: 8px;
+
+        }
+
+        .header-center h3 {
+
+            font-size: 16px;
+            margin-top: 4px;
+
+        }
+
+        .line {
+
+            display: flex;
+            align-items: center;
+            margin-top: 4px;
+
+        }
+
+        .line label {
+
+            font-weight: bold;
+            font-size: 13px;
+            margin-right: 5px;
+            white-space: nowrap;
+
+        }
+
+        .line input {
+
+            flex: 1;
+            border: none;
+            border-bottom: 1px solid #000;
+            padding: 2px;
+            font-size: 13px;
+
+        }
+
+        .double {
+
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+
+        }
+
+        .triple {
+
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 5px;
+
+        }
+
+        .section-title {
+
+            font-weight: bold;
+            font-size: 15px;
+            margin-top: 10px;
+            margin-bottom: 5px;
+
+        }
+
+        .checkbox {
+
+            display: inline-flex;
+            align-items: center;
+            margin-right: 25px;
+
+        }
+
+        .checkbox input {
+
+            width: 18px;
+            height: 18px;
+            margin-right: 5px;
+
+        }
+
+        .table {
+
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+
+        }
+
+        .table th {
+
+            border: 1px solid #000;
+            padding: 5px;
+            font-size: 12px;
+
+        }
+
+        .table td {
+
+            border: 1px solid #000;
+            padding: 4px;
+
+        }
+
+        .table input {
+
+            width: 100%;
+            border: none;
+            text-align: center;
+
+        }
+
+        .signature {
+
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+
+        }
+
+        .sig {
+
+            text-align: center;
+
+        }
+
+        .sig-line {
+
+            margin-top: 40px;
+            border-top: 1px solid #000;
+
+        }
+
+        textarea {
+
+            width: 100%;
+            border: 1px solid #000;
+            resize: none;
+            padding: 5px;
+            font-size: 13px;
+
+        }
+
+        input {
+
+            outline: none;
+
+        }
+
+        .owner-grid {
+
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 15px;
+
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <button class="print-btn" onclick="window.print()">
+        Print Form
+    </button>
+
+    <div class="page">
+
+        <div class="header">
+
+            <div class="logo">
+
+                CITY<br>
+                SEAL
+
+            </div>
+
+            <div class="header-center">
+
+                <div>Republic of the Philippines</div>
+                <div class="bold">CITY OF MARIKINA</div>
+
+                <h3>OFFICE OF THE CITY ASSESSOR</h3>
+
+                <h2 class="bold">
+                    TAX DECLARATION OF REAL PROPERTY
+                </h2>
+
+            </div>
+
+            <div class="logo-right">
+
+                CERTIFIED TRUE COPY
+
+            </div>
+
+        </div>
+
+        <div class="double">
+
+            <div class="line">
+
+                <label>ACCOUNT NO.</label>
+
+                <input>
+
+            </div>
+
+            <div class="line">
+
+                <label>Property Update</label>
+
+                <input value="Transfer of Ownership">
+
+            </div>
+
+        </div>
+
+        <div class="double">
+
+            <div class="line">
+
+                <label>TAX DEC. NO.</label>
+
+                <input>
+
+            </div>
+
+            <div class="line">
+
+                <label>Property Identification No.</label>
+
+                <input>
+
+            </div>
+
+        </div>
+
+        <div class="owner-grid">
+
+            <div>
+
+                <div class="line">
+
+                    <label>OWNER</label>
+
+                    <input>
+
+                </div>
+
+                <div class="line">
+
+                    <label>Address</label>
+
+                    <input>
+
+                </div>
+
+                <div class="line">
+
+                    <label>Administrator / Beneficial User</label>
+
+                    <input>
+
+                </div>
+
+                <div class="line">
+
+                    <label>Address</label>
+
+                    <input>
+
+                </div>
+
+            </div>
+
+            <div>
+
+                <div class="line">
+
+                    <label>TIN</label>
+
+                    <input>
+
+                </div>
+
+                <div class="line">
+
+                    <label>Tel. No.</label>
+
+                    <input>
+
+                </div>
+
+                <div class="line">
+
+                    <label>TIN</label>
+
+                    <input>
+
+                </div>
+
+                <div class="line">
+
+                    <label>Tel. No.</label>
+
+                    <input>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="section-title">
+
+            LOCATION OF PROPERTY
+
+        </div>
+
+        <div class="triple">
+
+            <div class="line">
+
+                <label>Number & Street</label>
+
+                <input>
+
+            </div>
+
+            <div class="line">
+
+                <label>Barangay / District</label>
+
+                <input>
+
+            </div>
+
+            <div class="line">
+
+                <label>City / Province</label>
+
+                <!-- <input value="Antique"> -->
+
+            </div>
+
+        </div>
+
+
+        <div class=" double">
+
+            <div>
+
+                <div class="line">
+                    <label>OCT / TCT / CLOA No.</label>
+                    <input type="text">
+                </div>
+
+                <div class="line">
+                    <label>CCT No.</label>
+                    <input type="text">
+                </div>
+
+                <div class="line">
+                    <label>Date Issued</label>
+                    <input type="text">
+                </div>
+
+            </div>
+
+            <div>
+
+                <div class="line">
+                    <label>Survey No.</label>
+                    <input type="text">
+                </div>
+
+                <div class="line">
+                    <label>Lot No.</label>
+                    <input type="text">
+                </div>
+
+                <div class="line">
+                    <label>Block No.</label>
+                    <input type="text">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="section-title">
+            BOUNDARIES
+        </div>
+
+        <div class="double">
+
+            <div class="line">
+                <label>North</label>
+                <input type="text">
+            </div>
+
+            <div class="line">
+                <label>South</label>
+                <input type="text">
+            </div>
+
+        </div>
+
+        <div class="double">
+
+            <div class="line">
+                <label>East</label>
+                <input type="text">
+            </div>
+
+            <div class="line">
+                <label>West</label>
+                <input type="text">
+            </div>
+
+        </div>
+
+
+        <hr style="margin:15px 0;">
+
+
+        <div class="section-title">
+            KIND OF PROPERTY ASSESSED
+        </div>
+
+
+        <div style="display:grid;
+grid-template-columns:1fr 1fr;
+gap:30px;
+margin-top:10px;">
+
+
+            <div>
+
+                <div class="checkbox">
+
+                    <input type="checkbox" id="land">
+
+                    <label for="land">
+                        LAND
+                    </label>
+
+                </div>
+
+
+                <div class="checkbox">
+
+                    <input type="checkbox" id="building">
+
+                    <label for="building">
+                        BUILDING
+                    </label>
+
+                </div>
+
+                <div style="margin-left:28px;margin-top:8px;">
+
+                    <div class="line">
+
+                        <label>No. of Storeys</label>
+
+                        <input type="number">
+
+                    </div>
+
+                    <div class="line">
+
+                        <label>Brief Description</label>
+
+                        <input type="text">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <div>
+
+                <div class="checkbox">
+
+                    <input type="checkbox" id="machinery">
+
+                    <label for="machinery">
+                        MACHINERY
+                    </label>
+
+                </div>
+
+                <div style="margin-left:28px;margin-bottom:15px;">
+
+                    <div class="line">
+
+                        <label>Brief Description</label>
+
+                        <input type="text">
+
+                    </div>
+
+                </div>
+
+
+                <div class="checkbox">
+
+                    <input type="checkbox" id="others">
+
+                    <label for="others">
+                        OTHERS
+                    </label>
+
+                </div>
+
+                <div style="margin-left:28px;">
+
+                    <div class="line">
+
+                        <label>Specify</label>
+
+                        <input type="text">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <table class="table" id="assessmentTable">
+
+            <thead>
+
+                <tr>
+
+                    <th style="width:16%">
+                        Classification
+                    </th>
+
+                    <th style="width:10%">
+                        Area
+                    </th>
+
+                    <th style="width:14%">
+                        Unit Value
+                    </th>
+
+                    <th style="width:18%">
+                        Actual Use
+                    </th>
+
+                    <th style="width:16%">
+                        Market Value
+                    </th>
+
+                    <th style="width:12%">
+                        Assessment Level
+                    </th>
+
+                    <th style="width:14%">
+                        Assessed Value
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+
+                    <td>
+                        <input type="text" value="R-4">
+                    </td>
+
+                    <td>
+                        <input class="area" type="number" step="0.01" value="240.50">
+                    </td>
+
+                    <td>
+                        <input class="unit" type="number" step="0.01" value="2700">
+                    </td>
+
+                    <td>
+                        <input type="text" value="Residential">
+                    </td>
+
+                    <td>
+                        <input class="market" type="number" step="0.01" readonly>
+                    </td>
+
+                    <td>
+                        <input class="level" type="number" value="20">
+                    </td>
+
+                    <td>
+                        <input class="assessed" type="number" readonly>
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <td><input></td>
+                    <td><input class="area" type="number"></td>
+                    <td><input class="unit" type="number"></td>
+                    <td><input></td>
+                    <td><input class="market" readonly></td>
+                    <td><input class="level" type="number"></td>
+                    <td><input class="assessed" readonly></td>
+
+                </tr>
+
+                <tr>
+
+                    <td><input></td>
+                    <td><input class="area" type="number"></td>
+                    <td><input class="unit" type="number"></td>
+                    <td><input></td>
+                    <td><input class="market" readonly></td>
+                    <td><input class="level" type="number"></td>
+                    <td><input class="assessed" readonly></td>
+
+                </tr>
+
+                <tr>
+
+                    <td><input></td>
+                    <td><input class="area" type="number"></td>
+                    <td><input class="unit" type="number"></td>
+                    <td><input></td>
+                    <td><input class="market" readonly></td>
+                    <td><input class="level" type="number"></td>
+                    <td><input class="assessed" readonly></td>
+
+                </tr>
+
+                <tr>
+
+                    <td><input></td>
+                    <td><input class="area" type="number"></td>
+                    <td><input class="unit" type="number"></td>
+                    <td><input></td>
+                    <td><input class="market" readonly></td>
+                    <td><input class="level" type="number"></td>
+                    <td><input class="assessed" readonly></td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+        <!-- =============================== -->
+        <!-- ASSESSMENT SUMMARY              -->
+        <!-- =============================== -->
+
+        <div style="margin-top:15px;">
+
+            <table class="table">
+
+                <tr>
+
+                    <td style="width:60%;font-weight:bold;">
+                        TOTAL MARKET VALUE
+                    </td>
+
+                    <td style="width:40%;">
+                        <input id="totalMarketValue" readonly style="text-align:right;font-weight:bold;font-size:14px;">
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <td style="font-weight:bold;">
+                        TOTAL ASSESSED VALUE
+                    </td>
+
+                    <td>
+                        <input id="totalAssessedValue" readonly
+                            style="text-align:right;font-weight:bold;font-size:14px;">
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <td colspan="2">
+
+                        <div class="line">
+
+                            <label>
+                                AMOUNT IN WORDS
+                            </label>
+
+                            <input id="amountWords" readonly>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            </table>
+
+        </div>
+
+
+
+        <!-- =============================== -->
+        <!-- EFFECTIVITY                     -->
+        <!-- =============================== -->
+
+        <div class="section-title">
+
+            EFFECTIVITY OF ASSESSMENT
+
+        </div>
+
+        <div class="double">
+
+            <div class="line">
+
+                <label>Quarter</label>
+
+                <input id="quarter" value="3rd">
+
+            </div>
+
+            <div class="line">
+
+                <label>Year</label>
+
+                <input id="year" value="2025">
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =============================== -->
+        <!-- PROPERTY STATUS                 -->
+        <!-- =============================== -->
+
+        <div class="section-title">
+
+            PROPERTY STATUS
+
+        </div>
+
+        <div style="margin-top:10px;">
+
+            <label class="checkbox">
+
+                <input type="checkbox" name="status">
+
+                Taxable
+
+            </label>
+
+            <label class="checkbox">
+
+                <input type="checkbox" name="status">
+
+                Exempt
+
+            </label>
+
+            <label class="checkbox">
+
+                <input type="checkbox" name="status">
+
+                Fully Exempt
+
+            </label>
+
+            <label class="checkbox">
+
+                <input type="checkbox" name="status">
+
+                Partially Exempt
+
+            </label>
+
+        </div>
+
+
+
+        <!-- =============================== -->
+        <!-- PREVIOUS ASSESSMENT             -->
+        <!-- =============================== -->
+
+        <div class="section-title">
+
+            PREVIOUS ASSESSMENT
+
+        </div>
+
+        <table class="table">
+
+            <tr>
+
+                <th>Tax Declaration No.</th>
+
+                <th>Assessed Value</th>
+
+                <th>Effectivity</th>
+
+            </tr>
+
+            <tr>
+
+                <td>
+
+                    <input>
+
+                </td>
+
+                <td>
+
+                    <input>
+
+                </td>
+
+                <td>
+
+                    <input>
+
+                </td>
+
+            </tr>
+
+        </table>
+
+
+
+        <!-- =============================== -->
+        <!-- CURRENT ASSESSMENT              -->
+        <!-- =============================== -->
+
+        <div class="section-title">
+
+            CURRENT ASSESSMENT
+
+        </div>
+
+        <table class="table">
+
+            <tr>
+
+                <th>Tax Declaration No.</th>
+
+                <th>Assessed Value</th>
+
+                <th>Effectivity</th>
+
+            </tr>
+
+            <tr>
+
+                <td>
+
+                    <input>
+
+                </td>
+
+                <td>
+
+                    <input id="currentAssessmentValue" readonly>
+
+                </td>
+
+                <td>
+
+                    <input>
+
+                </td>
+
+            </tr>
+
+        </table>
+
+
+
+        <!-- =============================== -->
+        <!-- MEMORANDA                       -->
+        <!-- =============================== -->
+
+        <div class="section-title">
+
+            MEMORANDA
+
+        </div>
+
+        <textarea rows="7" placeholder="Remarks, annotations, liens, encumbrances, and other information..."></textarea>
+
+
+
+        <!-- =============================== -->
+        <!-- CERTIFICATION                   -->
+        <!-- =============================== -->
+
+        <div style="margin-top:25px;">
+
+            <p class="small" style="text-align:justify;line-height:20px;">
+
+                I hereby certify that the information appearing in this Tax Declaration
+                has been prepared in accordance with the records of this Office and
+                the provisions of the Local Government Code and existing rules
+                governing the assessment of real property.
+
+            </p>
+
+        </div>
+
+
+
+        <div class="signature">
+
+            <div class="sig">
+
+                <div class="sig-line"></div>
+
+                Municipal / City Assessor
+
+            </div>
+
+            <div class="sig">
+
+                <div class="sig-line"></div>
+
+                Reviewed By
+
+            </div>
+
+            <div class="sig">
+
+                <div class="sig-line"></div>
+
+                Approved By
+
+            </div>
+
+        </div>
+
+
+
+        <div style="margin-top:35px;">
+
+            <table class="table">
+
+                <tr>
+
+                    <th style="width:33%;">
+                        Date Prepared
+                    </th>
+
+                    <th style="width:33%;">
+                        Date Reviewed
+                    </th>
+
+                    <th style="width:34%;">
+                        Date Approved
+                    </th>
+
+                </tr>
+
+                <tr>
+
+                    <td>
+
+                        <input>
+
+                    </td>
+
+                    <td>
+
+                        <input>
+
+                    </td>
+
+                    <td>
+
+                        <input>
+
+                    </td>
+
+                </tr>
+
+            </table>
+
+        </div>
+
+        <!-- ========================================= -->
+        <!-- ACTION BUTTONS                            -->
+        <!-- ========================================= -->
+
+        <div style="margin-top:20px;text-align:right;">
+
+            <button type="button" id="addRow" style="padding:8px 18px;">
+                Add Row
+            </button>
+
+            <button type="button" id="removeRow" style="padding:8px 18px;">
+                Remove Row
+            </button>
+
+        </div>
+
+        <hr style="margin:25px 0;">
+
+        <div class="tiny center">
+
+            <strong>NOTE:</strong><br>
+
+            This electronic form is intended for encoding and printing purposes only.
+            The printed copy shall form part of the official Tax Declaration record.
+
+        </div>
+
+    </div>
+    <!-- END PAGE -->
+
+    <script>
+
+        /*************************************************
+         * FORMAT NUMBER
+         *************************************************/
+
+        function money(value) {
+
+            value = parseFloat(value) || 0;
+
+            return value.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+
+        }
+
+
+        /*************************************************
+         * NUMBER TO WORDS
+         *************************************************/
+
+        const ones = [
+            "",
+            "One",
+            "Two",
+            "Three",
+            "Four",
+            "Five",
+            "Six",
+            "Seven",
+            "Eight",
+            "Nine",
+            "Ten",
+            "Eleven",
+            "Twelve",
+            "Thirteen",
+            "Fourteen",
+            "Fifteen",
+            "Sixteen",
+            "Seventeen",
+            "Eighteen",
+            "Nineteen"
+        ];
+
+        const tens = [
+            "",
+            "",
+            "Twenty",
+            "Thirty",
+            "Forty",
+            "Fifty",
+            "Sixty",
+            "Seventy",
+            "Eighty",
+            "Ninety"
+        ];
+
+        function convertHundreds(num) {
+
+            let text = "";
+
+            if (num > 99) {
+
+                text += ones[Math.floor(num / 100)] + " Hundred ";
+
+                num %= 100;
+
+            }
+
+            if (num > 19) {
+
+                text += tens[Math.floor(num / 10)] + " ";
+
+                num %= 10;
+
+            }
+
+            if (num > 0) {
+
+                text += ones[num];
+
+            }
+
+            return text.trim();
+
+        }
+
+        function numberToWords(num) {
+
+            num = Math.round(num);
+
+            if (num === 0) return "Zero Pesos";
+
+            let result = "";
+
+            const million = Math.floor(num / 1000000);
+
+            if (million) {
+
+                result += convertHundreds(million) + " Million ";
+
+                num %= 1000000;
+
+            }
+
+            const thousand = Math.floor(num / 1000);
+
+            if (thousand) {
+
+                result += convertHundreds(thousand) + " Thousand ";
+
+                num %= 1000;
+
+            }
+
+            if (num) {
+
+                result += convertHundreds(num);
+
+            }
+
+            return result.trim() + " Pesos";
+
+        }
+
+        /*************************************************
+         * CALCULATE
+         *************************************************/
+
+        function calculate() {
+
+            let totalMarket = 0;
+
+            let totalAssessed = 0;
+
+            document.querySelectorAll("#assessmentTable tbody tr").forEach(row => {
+
+                let area = parseFloat(row.querySelector(".area").value) || 0;
+
+                let unit = parseFloat(row.querySelector(".unit").value) || 0;
+
+                let level = parseFloat(row.querySelector(".level").value) || 0;
+
+                let market = area * unit;
+
+                let assessed = market * (level / 100);
+
+                row.querySelector(".market").value = money(market);
+
+                row.querySelector(".assessed").value = money(assessed);
+
+                totalMarket += market;
+
+                totalAssessed += assessed;
+
+            });
+
+            document.getElementById("totalMarketValue").value = money(totalMarket);
+
+            document.getElementById("totalAssessedValue").value = money(totalAssessed);
+
+            document.getElementById("currentAssessmentValue").value = money(totalAssessed);
+
+            document.getElementById("amountWords").value = numberToWords(totalAssessed);
+
+        }
+
+        document.querySelectorAll("input").forEach(el => {
+
+            el.addEventListener("keyup", calculate);
+
+            el.addEventListener("change", calculate);
+
+        });
+
+        calculate();
+
+
+        /*************************************************
+         * ADD ROW
+         *************************************************/
+
+        document.getElementById("addRow").onclick = function () {
+
+            let tbody = document.querySelector("#assessmentTable tbody");
+
+            let row = tbody.rows[0].cloneNode(true);
+
+            row.querySelectorAll("input").forEach(i => {
+
+                if (
+                    i.classList.contains("market") ||
+                    i.classList.contains("assessed")
+                ) {
+
+                    i.value = "";
+
+                } else {
+
+                    i.value = "";
+
+                }
+
+            });
+
+            tbody.appendChild(row);
+
+            row.querySelectorAll("input").forEach(el => {
+
+                el.addEventListener("keyup", calculate);
+
+                el.addEventListener("change", calculate);
+
+            });
+
+        };
+
+
+        /*************************************************
+         * REMOVE ROW
+         *************************************************/
+
+        document.getElementById("removeRow").onclick = function () {
+
+            let tbody = document.querySelector("#assessmentTable tbody");
+
+            if (tbody.rows.length > 1) {
+
+                tbody.deleteRow(tbody.rows.length - 1);
+
+                calculate();
+
+            }
+
+        };
+
+
+        /*************************************************
+         * AUTO EXPAND TEXTAREA
+         *************************************************/
+
+        document.querySelectorAll("textarea").forEach(t => {
+
+            t.addEventListener("input", function () {
+
+                this.style.height = "auto";
+
+                this.style.height = this.scrollHeight + "px";
+
+            });
+
+        });
+
+    </script>
+
+</body>
+
+</html>

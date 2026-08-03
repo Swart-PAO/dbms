@@ -86,7 +86,7 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
                     <div class="card-body text-white d-flex align-items-center">
                         <i class="icofont-chart-flow fs-3"></i>
                         <div class="d-flex flex-column ms-3">
-                            <h6 class="mb-0"><?= $mun_desc ?></h6>
+                            <h6 class="mb-0"><?= $mun_name ?></h6>
                             <span class="text-white"><?= $totalMun ?></span>
                         </div>
                     </div>

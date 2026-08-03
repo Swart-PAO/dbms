@@ -23,7 +23,7 @@
         </div><!-- Row End -->
         <div class="row g-3 row-cols-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2 row-cols-xxl-2 row-deck py-1 pb-4">
             <?php
-            include 'db_connect.php';
+
             $sql = "SELECT * FROM `user`";
             $result = $conn->query($sql);
             while ($row = $result->fetch_assoc()) { ?>

@@ -72,7 +72,8 @@ if ($type === 'sql') {
 /* ===== CSV EXPORT ===== */
 if ($type === 'csv') {
 
-    require_once '../db_connect.php';
+    require_once __DIR__ . '/../config.php';
+    require_once ROOT_PATH . '/db/db_connect.php';
 
     $sql = "SELECT * FROM `$table` WHERE $where";
     $result = $conn->query($sql);

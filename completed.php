@@ -46,14 +46,14 @@
         </div> <!-- Row end  -->
 
         <div class="row align-items-stretch">
-            <div class="col-md-9 d-flex">
+            <div class="col-md-8 d-flex">
                 <div class="card mb-3 h-100 w-100">
                     <div class="card-body d-flex flex-column p-3">
                         <table id="recentTask" class="table table-hover align-middle mb-0" style="width:100%">
                             <thead>
                                 <tr class="text-center">
                                     <th>#</th>
-                                    <th>Previous PIN</th>
+                                    <th>PIN</th>
                                     <th>Name of Owner</th>
                                     <th>Location of Property</th>
                                     <th>Lot #</th>
@@ -65,15 +65,15 @@
                             </thead>
                             <tbody>
                                 <?php
-                                $sql = "SELECT * FROM property_info  WHERE `property_municipality` = $mun_code ORDER BY previous_pin ASC";
+                                $sql = "SELECT pi.*, ml.mun_name FROM property_info AS pi JOIN municipality_list AS ml ON pi.property_municipality = ml.mun_code WHERE `property_municipality` = $mun_code ORDER BY previous_pin ASC";
                                 $result = $conn->query($sql);
                                 $counter = 1;
                                 while ($row = $result->fetch_assoc()) { ?>
                                     <tr class="text-center">
                                         <td><?= $counter++ ?></td>
-                                        <td class="fw-bold text-secondary"><?= $row['previous_pin'] ?></td>
+                                        <td class="fw-bold text-secondary"><?= $row['PIN_no'] ?></td>
                                         <td><?= $row['owner_name'] ?></td>
-                                        <td><?= $row['property_brgy'] ?></td>
+                                        <td><?= $row['mun_name'] ?>, <?= $row['property_brgy'] ?></td>
                                         <td><?= $row['lot_no'] ?></td>
                                         <!-- <td><?= $row['transaction_code'] ?></td> -->
                                         <td class="text-center">
@@ -126,16 +126,92 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 d-flex">
+            <div class="col-md-4 d-flex">
                 <div class="card mb-3 h-100 w-100">
-                    <div class="card-body p-3">
+                    <div class="card-body d-flex flex-column p-3">
+                        <table id="recentTask" class="table table-hover align-middle mb-0" style="width:100%">
+                            <thead>
+                                <tr class="text-center">
+                                    <th>#</th>
+                                    <th>PIN</th>
+                                    <th>Name of Owner</th>
+                                    <th>Location of Property</th>
+                                    <!-- <th>Lot #</th> -->
+                                    <th>Building</th>
+                                    <!-- <th>Trancode</th> -->
+                                    <!-- <th>Date</th> -->
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $sql = "SELECT bd.*, ml.mun_name FROM building_desc AS bd JOIN municipality_list AS ml ON bd.municipality = ml.mun_code WHERE `municipality` = $mun_code ORDER BY previous_pin ASC";
+                                $result = $conn->query($sql);
+                                $counter = 1;
+                                while ($row = $result->fetch_assoc()) { ?>
+                                    <tr class="text-center">
+                                        <td><?= $counter++ ?></td>
+                                        <td class="fw-bold text-secondary"><?= $row['pin'] ?>-(<?= $row['bin'] ?>)</td>
+                                        <td><?= $row['owner_name'] ?></td>
+                                        <td><?= $row['mun_name'] ?>, <?= $row['baranggay'] ?></td>
+                                        <!-- <td><?= $row['lot_no'] ?></td> -->
+                                        <!-- <td><?= $row['transaction_code'] ?></td> -->
+                                        <!-- <td class="text-center">
+                                            <i class="icofont-home fs-2 text-success home-icon buildin_display"></i>
+                                        </td> -->
+
+                                        <style>
+                                            .home-icon:hover {
+                                                text-shadow: 0 0 10px #f6ff79, 0 0 10px #b0ff48;
+                                                transition: 0.2s ease;
+                                                cursor: pointer;
+                                            }
+                                        </style>
+                                        <!-- <td><?= date('m/d/Y', strtotime($row['recording_date'])) ?></td> -->
+                                        <td>
+                                            <div class="dropdown">
+                                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    Actions
+                                                </button>
+
+                                                <ul class="dropdown-menu">
+                                                    <li>
+                                                        <a class="dropdown-item" href="building/building_form.php?property_ID=<?= $row['building_id'] ?> &mode=new">
+                                                            <i class="icofont-edit text-success"></i> Edit
+                                                        </a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item" href="printable_property.php?property_ID=<?= $row['property_ID'] ?>">
+                                                            <i class="icofont-eye-alt text-info"></i> View
+                                                        </a>
+                                                    </li>
+
+                                                    <li>
+                                                        <button type="button"
+                                                            class="dropdown-item delete_property"
+                                                            data-id="<?= $row['property_ID']; ?>">
+                                                            <i class="icofont-ui-delete text-danger"></i> Delete
+                                                        </button>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php }
+
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- <div class="card-body p-3">
                         <div class="planned_task client_task">
                             <div class="dd" data-plugin="nestable">
-                                <ol class="dd-list d-none" id="building_list" style="list-style:none; margin-left: 0; padding-left:0">
-                                    <?php
+                                <ol class="dd-list d-none" id="building_list" style="list-style:none; margin-left: 0; padding-left:0"> -->
+                    <!-- <?php
 
-                                    for ($i = 0; $i < 3; $i++) { ?>
-                                        <li class="dd-item mb-4">
+                            for ($i = 0; $i < 3; $i++) { ?> -->
+                    <!-- <li class="dd-item mb-4">
                                             <div class="dd-handle">
                                                 <div class="task-info d-flex align-items-center justify-content-between">
                                                     <h6 class="light-info-bg py-1 px-2 rounded-1 d-inline-block fw-bold small-14 mb-0">040-11-0009-003-18(1001)</h6>
@@ -162,10 +238,10 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </li>
-                                    <?php } ?>
+                                        </li> -->
+                    <!-- <?php } ?> -->
 
-                                </ol>
+                    <!-- </ol>
                                 <script>
                                     $(document).ready(function() {
 
@@ -176,12 +252,12 @@
                                     });
                                 </script>
                             </div>
-                        </div>
-                        <!-- <i class="icofont-home" style="font-size: 6rem;"></i> -->
-                    </div>
+                        </div> -->
+                    <!-- <i class="icofont-home" style="font-size: 6rem;"></i> -->
                 </div>
             </div>
         </div>
-    </div><!-- Row End -->
+    </div>
+</div><!-- Row End -->
 
 </div>
