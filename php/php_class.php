@@ -2,16 +2,19 @@
 <?php
 // includes/property_functions.php
 
-require_once 'db_connect.php';
+// Any file
+require_once __DIR__ . '/../config.php';
+require_once ROOT_PATH . '/db/db_connect.php';
+
 
 function getBarangays($mun_code)
 {
     global $conn;
 
     $stmt = $conn->prepare(
-        "SELECT DISTINCT `NAME OF BARANGAY` 
-         FROM `barangay list`
-         WHERE `MUNICIPALITY CODE` = ?"
+        "SELECT DISTINCT `brgy_name` 
+         FROM `barangay_list`
+         WHERE `mun_code` = ?"
     );
     $stmt->bind_param("i", $mun_code);
     $stmt->execute();
@@ -101,8 +104,8 @@ function getPropertiesByBarangay($mun_code, $barangay, $land_type, $faas, $limit
 
     if ($faas !== null) {
         $query .= $faas
-            ? " AND `faas_ID` IS NOT NULL"
-            : " AND `faas_ID` IS NULL";
+            ? " AND `revised_property_ID` IS NOT NULL"
+            : " AND `revised_property_ID` IS NULL";
     }
 
     $query .= " ORDER BY PIN ASC";
@@ -126,7 +129,7 @@ function getPropertyStats($mun_code, $barangay)
 
     $sql = "SELECT COUNT(*) AS total_rows, COUNT(CASE WHEN `MUNICIPALITY CODE` = ? THEN 1 END) AS total_mun_rows, COUNT(CASE WHEN `MUNICIPALITY CODE` = ? 
     AND `LOCATION OF PROPERTY` = ? THEN 1 END) AS total_mun_brgy_rows, COUNT(CASE WHEN `MUNICIPALITY CODE` = ? AND `LOCATION OF PROPERTY` = ? 
-    AND `faas_ID` IS NOT NULL THEN 1 END) AS total_faas_rows FROM `property information`";
+    AND `revised_property_ID` IS NOT NULL THEN 1 END) AS total_faas_rows FROM `property information`";
 
     $stmt = $conn->prepare($sql);
 
@@ -164,7 +167,7 @@ function getMunicipalities()
 {
     global $conn;
 
-    $sql = "SELECT mun_code, mun_desc FROM municipality ORDER BY mun_desc ASC";
+    $sql = "SELECT mun_code, mun_name FROM municipality_list ORDER BY mun_name ASC";
     $result = $conn->query($sql);
 
     if (!$result) {
@@ -184,17 +187,17 @@ function getBarangayProgress($mun_code)
     global $conn;
 
     $sql = "SELECT 
-            b.`NAME OF BARANGAY` AS barangay,
-            COUNT(DISTINCT fp.FAAS_ID) AS faas_total,
-            COUNT(DISTINCT pi.property_ID) AS info_total
-        FROM `barangay list` b
-        LEFT JOIN faas_property fp 
-            ON fp.property_brgy = b.`NAME OF BARANGAY`
+            b.`brgy_name` AS barangay,
+            COUNT(DISTINCT fp.old_property_ID) AS faas_total,
+            COUNT(DISTINCT pi.revised_property_ID) AS info_total
+        FROM `barangay_list` b
+        LEFT JOIN property_info fp 
+            ON fp.property_brgy = b.`brgy_name`
         LEFT JOIN `property information` pi 
-            ON pi.`LOCATION OF PROPERTY` = b.`NAME OF BARANGAY`
-        WHERE b.`MUNICIPALITY CODE` = ?
-        GROUP BY b.`NAME OF BARANGAY`
-        ORDER BY b.`NAME OF BARANGAY`";
+            ON pi.`LOCATION OF PROPERTY` = b.`brgy_name`
+        WHERE b.`mun_code` = ?
+        GROUP BY b.`brgy_name`
+        ORDER BY b.`brgy_name`";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $mun_code);
@@ -208,7 +211,7 @@ function getRecentActivities($limit = 10)
     global $conn;
 
     $sql = "SELECT uh.*, u.name
-        FROM user_history uh
+        FROM property_history uh
         JOIN user u ON u.user_id = uh.user_id
         ORDER BY uh.created_at DESC
         LIMIT ?";
@@ -224,7 +227,7 @@ function totalTodayTransaction($user_ID)
 {
     global $conn;
 
-    $sql = "SELECT COUNT(*) AS total_today FROM faas_property WHERE DATE(recording_date) = CURDATE() AND recording_person_ID = ?;";
+    $sql = "SELECT COUNT(*) AS total_today FROM property_info WHERE DATE(recording_date) = CURDATE() AND recording_person_ID = ?;";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $user_ID);
     $stmt->execute();
@@ -245,7 +248,7 @@ function selectOptionData($data)
 
     if ($data === 'land_class') {
         $options = '<option value="">-- Select Classification --</option>';
-        $sql = "SELECT class_ID, classification FROM classification";
+        $sql = "SELECT agri_class_ID, classification FROM agricultural_class";
         $result = $conn->query($sql);
 
         if ($result->num_rows > 0) {
@@ -273,12 +276,12 @@ function selectOptionData($data)
     } else if ($data === 'non_agri_kind') {
 
         $options = '<option value="">-- Select Kind --</option>';
-        $sql_nao = "SELECT `PROPERTY_DESCRIPTION` FROM non_agri_classification";
+        $sql_nao = "SELECT `property_desc` FROM non_agri_class";
         $result_nao = $conn->query($sql_nao);
 
         if ($result_nao->num_rows > 0) {
             while ($row = $result_nao->fetch_assoc()) {
-                $options .= '<option value="' . $row['PROPERTY_DESCRIPTION'] . '">' . $row['PROPERTY_DESCRIPTION'] . '</option>';
+                $options .= '<option value="' . $row['property_desc'] . '">' . $row['property_desc'] . '</option>';
             }
         }
     }

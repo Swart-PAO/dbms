@@ -1,6 +1,7 @@
 <?php
 // insert_user.php
-include '../db_connect.php'; // make sure this has your mysqli connection
+require_once __DIR__ . '/../config.php';
+require_once ROOT_PATH . '/db/db_connect.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $name = $_POST['name'];

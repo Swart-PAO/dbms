@@ -75,7 +75,7 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
                     <div class="card-body text-white d-flex align-items-center">
                         <i class="icofont-chart-flow fs-3"></i>
                         <div class="d-flex flex-column ms-3">
-                            <h6 class="mb-0"><?= $mun_desc ?></h6>
+                            <h6 class="mb-0"><?= $mun_name ?></h6>
                             <span class="text-white"><?= $totalMun ?></span>
                         </div>
                     </div>
@@ -136,12 +136,12 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
                                         <td><?= $counter++ ?></td>
                                         <td><?= htmlspecialchars($row['PIN']) ?></td>
                                         <td><?= htmlspecialchars($row['NAME OF OWNER']) ?></td>
-                                        <td><?= htmlspecialchars($row['LOCATION OF PROPERTY'] . ' ' . $mun_desc) ?></td>
+                                        <td><?= htmlspecialchars($row['LOCATION OF PROPERTY'] . ' ' . $mun_name) ?></td>
                                         <td><?= htmlspecialchars($row['CADASTRAL LOT NUMBER']) ?></td>
                                         <td><?= htmlspecialchars($row['DATE OF TRANSACTION']) ?></td>
                                         <td><?= htmlspecialchars($row['TRANCODE']) ?></td>
                                         <td>
-                                            <a href="../building_faas/building_form.php?property_ID=<?= $row['property_ID'] ?>"
+                                            <a href="building/building_form.php?property_ID=<?= $row['property_ID'] ?>&mode=old"
                                                 class="btn btn-outline-secondary">
                                                 <i class="icofont-bubble-right text-success"></i>
                                             </a>
@@ -186,7 +186,7 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
                             </thead>
                             <tbody>
                                 <?php
-                                $sql = "SELECT * FROM building_desc WHERE DATE(recording_date) = CURDATE() AND recording_person_ID = ? ORDER BY recording_date DESC";
+                                $sql = "SELECT * FROM building_desc WHERE recording_person_ID = ? ORDER BY recording_date DESC";
                                 $stmt = $conn->prepare($sql);
                                 $stmt->bind_param("i", $_SESSION['user_ID']);
                                 $stmt->execute();
@@ -202,7 +202,7 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
                                         <td><?= date('m/d/Y', strtotime($row['recording_date'])) ?></td>
                                         <td>
                                             <div class="btn-group" role="group" aria-label="Basic outlined example">
-                                                <a href="../building_faas/building_form.php?building_ID=<?= $row['building_id'] ?>" class="btn btn-outline-secondary"><i class="icofont-edit text-success"></i></a>
+                                                <a href="building/building_form.php?property_ID=<?= $row['building_id'] ?> &mode=gr" class="btn btn-outline-secondary"><i class="icofont-edit text-success"></i></a>
                                                 <a href="printable_property.php?faas_id=<?= $row['building_id'] ?>" class="btn btn-outline-secondary"><i class="icofont-eye-alt text-info"></i></a>
 
                                             </div>

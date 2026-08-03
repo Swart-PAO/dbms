@@ -1,5 +1,5 @@
 <?php
-require 'db_connect.php';
+require_once 'db/db_connect.php';
 require_once 'php/php_class.php';
 
 session_start();
@@ -9,13 +9,13 @@ if (empty($_SESSION['user_ID']) && empty($_SESSION['mun_code']) && empty($_SESSI
 
 $mun_code = $_SESSION['mun_code'];
 $brgy_session = $_SESSION['brgy'];
-$mun_desc = $_SESSION['mun_desc'];
+$mun_name = $_SESSION['mun_name'];
 ?>
 
 <!doctype html>
 
 <?php
-include 'header_link.php';
+include 'link/header_link.php';
 ?>
 
 <body>
@@ -28,7 +28,7 @@ include 'header_link.php';
         <!-- main body area -->
         <div class="main px-lg-4 px-md-4">
 
-            <?php include 'topbar.php'; ?>
+            <?php include 'link/topbar.php'; ?>
 
             <?php
             $home = 'home';
@@ -86,13 +86,13 @@ include 'header_link.php';
         });
 
         $("#mun_code").change(function() {
-            var mun_code = $(this).val();
-            if (mun_code !== "") {
+            var property_municipality = $(this).val();
+            if (property_municipality !== "") {
                 $.ajax({
                     url: "php/get_barangay.php",
                     type: "POST",
                     data: {
-                        mun_code: mun_code
+                        mun_code: property_municipality
                     },
                     success: function(data) {
                         $("#brgy").html(data);

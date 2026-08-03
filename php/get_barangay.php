@@ -1,12 +1,13 @@
 <?php
-include '../db_connect.php';
+require_once __DIR__ . '/../config.php';
+require_once ROOT_PATH . '/db/db_connect.php';
 
 if (isset($_POST['mun_code']) && !empty($_POST['mun_code'])) {
     $mun_code = intval($_POST['mun_code']);
 
-    $sql = "SELECT DISTINCT `NAME OF BARANGAY` as barangay 
-            FROM `barangay list` 
-            WHERE `MUNICIPALITY CODE` = ?";
+    $sql = "SELECT DISTINCT `brgy_name` as barangay 
+            FROM `barangay_list` 
+            WHERE `mun_code` = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $mun_code);
     $stmt->execute();

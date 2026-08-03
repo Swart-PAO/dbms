@@ -1,6 +1,7 @@
 <?php
 session_start();
-include '../db_connect.php';
+require_once __DIR__ . '/../config.php';
+require_once ROOT_PATH . '/db/db_connect.php';
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     $_SESSION['error'] = "Invalid request.";
@@ -15,7 +16,7 @@ $password = trim($_POST['password']);
 $extra_session = [
     'mun_code' => $_POST['mun_code'] ?? '',
     'brgy' => $_POST['brgy'] ?? '',
-    'mun_desc' => $_POST['mun_desc'] ?? ''
+    'mun_name' => $_POST['mun_name'] ?? ''
 ];
 
 $sql = "SELECT * FROM user WHERE username = ? LIMIT 1";

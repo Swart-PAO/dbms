@@ -1,5 +1,6 @@
 <?php
-include '../db_connect.php'; // adjust path if needed
+require_once __DIR__ . '/../config.php';
+require_once ROOT_PATH . '/db/db_connect.php';
 
 $mun_code = $_POST['mun_code'] ?? '';
 

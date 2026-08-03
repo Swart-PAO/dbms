@@ -1,5 +1,6 @@
 <?php
-include "../../db_connect.php";
+require_once __DIR__ . '/../config.php';
+require_once ROOT_PATH . '/db/db_connect.php';
 
 $land_property_ID = $_POST['land_property_ID'] ?? '';
 

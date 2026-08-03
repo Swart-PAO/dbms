@@ -20,7 +20,7 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
                         <div class="d-flex align-items-center">
                             <div class="avatar lg  rounded-1 no-thumbnail bg-lightyellow color-defult"><i class="bi bi-journal-check fs-4"></i></div>
                             <div class="flex-fill ms-4">
-                                <div class="">Today's Task</div>
+                                <div class="">Land Records</div>
                                 <h5 class="mb-0 ">100</h5>
                             </div>
                             <a href="task.html" title="view-members" class="btn btn-link text-decoration-none  rounded-1"><i class="icofont-hand-drawn-right fs-2 "></i></a>
@@ -34,7 +34,7 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
                         <div class="d-flex align-items-center">
                             <div class="avatar lg  rounded-1 no-thumbnail bg-lightblue color-defult"><i class="bi bi-list-check fs-4"></i></div>
                             <div class="flex-fill ms-4">
-                                <div class="">Completed Task</div>
+                                <div class="">Building Records</div>
                                 <h5 class="mb-0 ">76</h5>
                             </div>
                             <a href="task.html" title="space-used" class="btn btn-link text-decoration-none  rounded-1"><i class="icofont-hand-drawn-right fs-2 "></i></a>
@@ -48,7 +48,7 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
                         <div class="d-flex align-items-center">
                             <div class="avatar lg  rounded-1 no-thumbnail bg-lightgreen color-defult"><i class="bi bi-clipboard-data fs-4"></i></div>
                             <div class="flex-fill ms-4">
-                                <div class="">Pending Task</div>
+                                <div class="">Machinery Records</div>
                                 <h5 class="mb-0 ">574</h5>
                             </div>
                             <a href="task.html" title="renewal-date" class="btn btn-link text-decoration-none  rounded-1"><i class="icofont-hand-drawn-right fs-2 "></i></a>
@@ -64,8 +64,19 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
                     <div class="card-body text-white d-flex align-items-center">
                         <i class="icofont-data fs-3"></i>
                         <div class="d-flex flex-column ms-3">
-                            <h6 class="mb-0">Previous (2022)</h6>
+                            <h6 class="mb-0">Property (2022)</h6>
                             <span class="text-white"><?= $totalPrev ?></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card bg-primary">
+                    <div class="card-body text-white d-flex align-items-center">
+                        <i class="icofont-tasks fs-3"></i>
+                        <div class="d-flex flex-column ms-3">
+                            <h6 class="mb-0">Property (2026)</h6>
+                            <span class="text-white"><?= $totalCompleted ?></span>
                         </div>
                     </div>
                 </div>
@@ -75,7 +86,7 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
                     <div class="card-body text-white d-flex align-items-center">
                         <i class="icofont-chart-flow fs-3"></i>
                         <div class="d-flex flex-column ms-3">
-                            <h6 class="mb-0"><?= $mun_desc ?></h6>
+                            <h6 class="mb-0"><?= $mun_name ?></h6>
                             <span class="text-white"><?= $totalMun ?></span>
                         </div>
                     </div>
@@ -92,23 +103,13 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
                     </div>
                 </div>
             </div>
-            <div class="col">
-                <div class="card bg-primary">
-                    <div class="card-body text-white d-flex align-items-center">
-                        <i class="icofont-tasks fs-3"></i>
-                        <div class="d-flex flex-column ms-3">
-                            <h6 class="mb-0">Revision (2026)</h6>
-                            <span class="text-white"><?= $totalCompleted ?></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
         </div>
         <div class="row g-3 mb-3 row-deck">
             <div class="col-md-8">
                 <div class="card mb-3">
                     <div class="card-header d-flex justify-content-between align-items-center bg-transparent border-bottom-0">
-                        <h6 class="m-0 fw-bold">Basic Column</h6>
+                        <h6 class="m-0 fw-bold">Field Apraisal and Assessment Records</h6>
                     </div>
                     <div class="card-body">
                         <div id="apex-basic-column"></div>
@@ -125,7 +126,7 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
                                         class="avatar lg bg-white rounded-circle text-center d-flex align-items-center justify-content-center"><i
                                             class="icofont-file-text fs-5"></i></span>
                                     <h1 class="mt-3 mb-0 fw-bold text-white"><?= $totalTodayTransaction ?> </h1>
-                                    <span class="text-white">Transactions</span>
+                                    <span class="text-white">Records</span>
                                 </div>
                                 <div class="col">
                                     <img class="img-fluid" src="assets/images/interview.svg"
@@ -147,7 +148,7 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
                             </thead>
                             <tbody>
                                 <?php
-                                $sql = "SELECT * FROM faas_property WHERE DATE(recording_date) = CURDATE() AND recording_person_ID = ? ORDER BY recording_date DESC";
+                                $sql = "SELECT * FROM property_info WHERE DATE(recording_date) = CURDATE() AND recording_person_ID = ? ORDER BY recording_date DESC";
                                 $stmt = $conn->prepare($sql);
                                 $stmt->bind_param("i", $_SESSION['user_ID']);
                                 $stmt->execute();
@@ -163,8 +164,8 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
                                         <td><?= date('m/d/Y', strtotime($row['recording_date'])) ?></td>
                                         <td>
                                             <div class="btn-group" role="group" aria-label="Basic outlined example">
-                                                <a href="faas_form.php?FAAS_ID=<?= $row['FAAS_ID'] ?>" class="btn btn-outline-secondary"><i class="icofont-edit text-success"></i></a>
-                                                <a href="printable_property.php?faas_id=<?= $row['FAAS_ID'] ?>" class="btn btn-outline-secondary"><i class="icofont-eye-alt text-info"></i></a>
+                                                <a href="faas_form.php?new_property_ID=<?= $row['FAAS_ID'] ?>" class="btn btn-outline-secondary"><i class="icofont-edit text-success"></i></a>
+                                                <a href="printable_property.php?property_ID=<?= $row['FAAS_ID'] ?>" class="btn btn-outline-secondary"><i class="icofont-eye-alt text-info"></i></a>
 
                                             </div>
                                         </td>
@@ -183,75 +184,111 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
 </div>
 
 <?php
-
-$sql = "SELECT mun_desc FROM municipality ORDER BY mun_desc ASC";
+// Get all municipalities
+$sql = "SELECT mun_code, mun_name FROM municipality_list ORDER BY mun_code ASC";
 $result = $conn->query($sql);
 
 $categories = [];
+$data2022 = [];
+$data2026 = [];
 
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $categories[] = $row['mun_desc'];
-    }
+while ($row = $result->fetch_assoc()) {
+    $categories[] = $row['mun_name'];
+
+    // Initialize all municipalities to 0
+    $data2022[$row['mun_code']] = 0;
+    $data2026[$row['mun_code']] = 0;
 }
+
+// 2022 data (old database)
+$sql = "
+    SELECT
+        `MUNICIPALITY CODE` AS mun_code,
+        COUNT(*) AS total_properties
+    FROM `property information`
+    GROUP BY `MUNICIPALITY CODE`
+";
+$result = $conn->query($sql);
+
+while ($row = $result->fetch_assoc()) {
+    $data2022[$row['mun_code']] = (int)$row['total_properties'];
+}
+
+// 2026 data (new database)
+$sql = "
+    SELECT
+        property_municipality AS mun_code,
+        COUNT(*) AS total_properties
+    FROM property_info
+    GROUP BY property_municipality
+";
+$result = $conn->query($sql);
+
+while ($row = $result->fetch_assoc()) {
+    $data2026[$row['mun_code']] = (int)$row['total_properties'];
+}
+
+// Convert associative arrays to indexed arrays
+$data2022 = array_values($data2022);
+$data2026 = array_values($data2026);
 ?>
 <script>
-    $(document).ready(function() {
-        var munCategories = <?= json_encode($categories); ?>;
-        var options = {
-            chart: {
-                height: 450,
-                type: 'bar',
-            },
-            colors: ['#007bff', 'var(--chart-color2)'],
-            plotOptions: {
-                bar: {
-                    horizontal: false,
-                    columnWidth: '55%',
-                    endingShape: 'rounded'
-                },
-            },
-            dataLabels: {
-                enabled: false
-            },
-            stroke: {
-                show: true,
-                width: 2,
-                colors: ['transparent']
-            },
-            series: [{
-                name: '2026',
-                data: [44, 55, 57, 56, 61, 58, 63, 60, 66, 44, 55, 57, 56, 61, 58, 63, 60, 66]
-            }, {
-                name: '2022',
-                data: [76, 85, 101, 98, 87, 105, 91, 114, 94, 76, 85, 101, 98, 87, 105, 91, 114, 94, ]
-            }],
-            xaxis: {
-                categories: munCategories,
-            },
-            yaxis: {
-                title: {
-                    text: 'No of Records'
-                }
-            },
-            fill: {
-                opacity: 1
+    var munCategories = <?= json_encode($categories); ?>;
+    var data2022 = <?= json_encode($data2022); ?>;
+    var data2026 = <?= json_encode($data2026); ?>;
 
-            },
-            tooltip: {
-                y: {
-                    formatter: function(val) {
-                        return val + " records"
-                    }
+    var options = {
+        chart: {
+            height: 450,
+            type: 'bar'
+        },
+        colors: ['#007bff', 'var(--chart-color2)'],
+        plotOptions: {
+            bar: {
+                horizontal: false,
+                columnWidth: '55%',
+                endingShape: 'rounded'
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            show: true,
+            width: 2,
+            colors: ['transparent']
+        },
+        series: [{
+            name: '2026',
+            data: data2026
+        }, {
+            name: '2022',
+            data: data2022
+        }],
+        xaxis: {
+            categories: munCategories
+        },
+        yaxis: {
+            title: {
+                text: 'No. of Records'
+            }
+        },
+        fill: {
+            opacity: 1
+        },
+        tooltip: {
+            y: {
+                formatter: function(val) {
+                    return val + " records";
                 }
             }
         }
+    };
 
-        var chart = new ApexCharts(
-            document.querySelector("#apex-basic-column"),
-            options
-        );
+    var chart = new ApexCharts(
+        document.querySelector("#apex-basic-column"),
+        options
+    );
 
-        chart.render();
-    });
+    chart.render();
 </script>
