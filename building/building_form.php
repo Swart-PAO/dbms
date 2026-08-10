@@ -3,6 +3,10 @@ require_once __DIR__ . '/../config.php';
 require_once ROOT_PATH . '/db/db_connect.php';
 require_once ROOT_PATH . '/php/php_class.php';
 require_once ROOT_PATH . '/link/header_link.php';
+session_start();
+if (empty($_SESSION['user_ID']) && empty($_SESSION['mun_code']) && empty($_SESSION['brgy'])) {
+    header("Location: error.html");
+}
 $municipalities = getMunicipalities();
 
 function isChecked($code, $saved_string)
@@ -159,12 +163,12 @@ function isChecked($code, $saved_string)
                         <input
                             id="input_property_ID"
                             name="input_property_ID"
-                            value="<?= $_GET['property_ID'] ?? '' ?>">
+                            value="<?= $_GET['building_id'] ?? '' ?>">
 
                         <input
                             id="mode"
                             name="mode"
-                            value="<?= $_GET['mode'] ?? '' ?>">
+                            value="<?= $_GET['mode'] ?? '' ?>" hidden>
                     </div>
                     <hr class="border-success">
                     <div class="row">
@@ -479,6 +483,8 @@ function isChecked($code, $saved_string)
         <!-- STRUCTURAL MATERIALS -->
         <div class="card shadow-lg border-success mb-3 form-step d-none" id="structural_material">
             <form method="POST">
+
+
                 <div class="text-white bg-success p-2 fw-bolder">
                     <i class="bi bi-list-check"></i> SRUCTURAL MATERIALS (CHECKLIST)
                 </div>
@@ -490,6 +496,10 @@ function isChecked($code, $saved_string)
                             <div class="text-success fw-bold py-2 fs-4">ROOF</div>
                             <div class="row mb-3">
                                 <div class="col-md">
+                                    <!-- <input
+                                        id="gr_building_id"
+                                        name="gr_building_id"
+                                        value="<?= $_GET['building_id'] ?? '' ?>"> -->
                                     <div class="form-check p-2 border rounded mb-3">
                                         <input class="form-check-input ms-0 me-2" type="checkbox" value="Reinforced Concrete" id="rcRoof" name="roof[]" />
                                         <label for="rc" class="form-check-label d-block">Reinforced Concrete</label>
@@ -749,10 +759,16 @@ function isChecked($code, $saved_string)
 
     </div>
 
-    <script src="building_form.js"></script>
+
     <script>
+        const sess_brgy = <?= json_encode($_SESSION['brgy'] ?? '') ?>;
+        const sess_mun_code = <?= json_encode($_SESSION['mun_code'] ?? '') ?>;
+
         const BASE_URL = <?= json_encode(BASE_URL) ?>;
     </script>
+
+
+    <script src="building_form.js"></script>
 
 
 </body>

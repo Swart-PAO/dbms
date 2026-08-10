@@ -1,6 +1,7 @@
 // $building_id = $('#building_id').val();
 $building_id = $("#input_property_ID").val();
-$mode = $("#input_property_ID").val();
+$mode = $("#mode").val();
+
 // getProperty($building_id);
 // alert("Data fetched successfully!");
 
@@ -17,6 +18,9 @@ if ($building_id && $mode) {
   $("#pin_prefix").text("040-" + mun_code + "-" + sess_brgy + "-");
 
   get_barangay_faas_form(mun_code, sess_brgy);
+} else {
+  alert("No property ID or mode provided. Redirecting to building page.");
+  location.href = BASE_URL + "/index.php?page=building";
 }
 
 function getBuildingInfo(building_id, mode) {
@@ -44,6 +48,7 @@ function getBuildingInfo(building_id, mode) {
       });
       // $("#municipality").val(data.municipality);
 
+      $("#gr_building_id").val(data.building_id);
       get_barangay_faas_form(data.municipality, data.baranggay);
       const municipality = String(data.municipality).padStart(2, "0");
       const baranggay = String(data.baranggay).padStart(4, "0");
@@ -145,11 +150,13 @@ $("#building_desc_save_btn").on("click", function (e) {
 
           // Redirect after 1.5 seconds
           setTimeout(() => {
-            $("#building_id").val(res.building_id); // Set the building_id for future updates
+            $("#input_property_ID").val(res.building_id); // Set the building_id for future updates
 
             // window.location.href = "building_form.php";
           }, 500);
         }, 1000);
+
+        to_structural_materials();
       } else {
         alert("❌ " + res.message + "\n" + (res.error ?? ""));
       }
@@ -173,7 +180,7 @@ $("#structural_materials_btn").on("click", function (e) {
 
   // 👉 get building_id from another form/input
   let building_id = $("#input_property_ID").val();
-  alert("Building ID: " + building_id);
+  // alert("Building ID: " + building_id);
   // OR: let building_id = $("#other_form input[name='building_id']").val();
 
   let formData = $(form).serializeArray();
@@ -211,7 +218,7 @@ $("#structural_materials_btn").on("click", function (e) {
 
           // Redirect after 1.5 seconds
           setTimeout(() => {
-            window.location.href = "building_form.php";
+            window.location.href = BASE_URL + "/index.php?page=land";
           }, 500);
         }, 1000);
       } else {

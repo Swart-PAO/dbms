@@ -17,6 +17,8 @@ class Action
 		'owner_address',
 		'owner_phone',
 		'owner_tin',
+		'transaction_code',
+		'revision_code',
 
 		'admin_name',
 		'admin_address',
@@ -129,6 +131,7 @@ class Action
 		$mode = $_POST['mode'] ?? null;
 		$building_id = $_POST['input_property_ID'] ?? null;
 
+
 		// collect data dynamically
 		$data = [];
 		foreach ($this->generalBuildingFields as $field) {
@@ -138,20 +141,30 @@ class Action
 		try {
 
 			$this->db->begin_transaction();
+			$data['transaction_code'] = 'GR';
 
 			if ($mode === 'old') {
 
+				$sql = "SELECT ID_2022 FROM building_desc WHERE ID_2022 = ? LIMIT 1";
+				$stmtCheck = $this->db->prepare($sql);
+				$stmtCheck->bind_param("i", $building_id);
+				$stmtCheck->execute();
+				$result = $stmtCheck->get_result();
+
+				if ($row = $result->fetch_assoc()) {
+					return $this->respond(['error' => 'Building already exists.']);
+				} else {
 
 
-				// 🔥 INSERT
-				$data['ID_2022'] = $building_id;
-				$data['version'] = $_SESSION['version'] ?? 1;
-				$data['recording_person_ID'] = $_SESSION['user_ID'] ?? null;
-				$data['recording_date'] = date('Y-m-d H:i:s');
-
-				$stmt = $this->prepareInsert("building_desc", $data);
-				$action = "insert";
-			} elseif ($mode === 'new') {
+					// 🔥 INSERT
+					$data['ID_2022'] = $building_id;
+					$data['version'] = $_SESSION['version'] ?? 1;
+					$data['recording_person_ID'] = $_SESSION['user_ID'] ?? null;
+					$data['recording_date'] = date('Y-m-d H:i:s');
+					$stmt = $this->prepareInsert("building_desc", $data);
+					$action = "insert";
+				}
+			} elseif ($mode === 'gr') {
 
 				// 🔥 UPDATE
 				unset($data['building_id']);
@@ -161,6 +174,17 @@ class Action
 
 				$stmt = $this->prepareUpdate("building_desc", $data, "building_id", $building_id);
 				$action = "update";
+			} else if ($mode === 'new') {
+
+				// 🔥 INSERT
+
+				$data['version'] = $_SESSION['version'] ?? 1;
+				$data['recording_person_ID'] = $_SESSION['user_ID'] ?? null;
+				$data['recording_date'] = date('Y-m-d H:i:s');
+				$stmt = $this->prepareInsert("building_desc", $data);
+				$action = "insert";
+			} else {
+				throw new Exception("Invalid mode: $mode");
 			}
 
 			if (!$stmt->execute()) {
@@ -602,8 +626,7 @@ class Action
 				throw new Exception("Missing building ID");
 			}
 
-			$stmt = $this->db->prepare("
-            SELECT * FROM structural_material 
+			$stmt = $this->db->prepare("SELECT * FROM structural_material 
             WHERE building_id = ? LIMIT 1
         ");
 			$stmt->bind_param("i", $building_id);

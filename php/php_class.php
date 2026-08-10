@@ -163,6 +163,40 @@ function getPropertyStats($mun_code, $barangay)
     ];
 }
 
+function getTotalLandTypes($mun_code, $barangay)
+{
+    global $conn;
+
+    // Count land records (property_info)
+    $sqlLand = "SELECT COUNT(*) AS total_land
+                FROM property_info
+                WHERE property_municipality = ?
+                  AND property_brgy = ?";
+
+    $stmt = $conn->prepare($sqlLand);
+    $stmt->bind_param("ss", $mun_code, $barangay);
+    $stmt->execute();
+    $land = $stmt->get_result()->fetch_assoc()['total_land'];
+    $stmt->close();
+
+    // Count building records (building_desc)
+    $sqlBuilding = "SELECT COUNT(*) AS total_building
+                    FROM building_desc
+                    WHERE municipality = ?
+                      AND baranggay = ?";
+
+    $stmt = $conn->prepare($sqlBuilding);
+    $stmt->bind_param("ss", $mun_code, $barangay);
+    $stmt->execute();
+    $building = $stmt->get_result()->fetch_assoc()['total_building'];
+    $stmt->close();
+
+    return [
+        'land'     => (int)$land,
+        'building' => (int)$building
+    ];
+}
+
 function getMunicipalities()
 {
     global $conn;

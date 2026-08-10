@@ -141,7 +141,7 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
                                         <td><?= htmlspecialchars($row['DATE OF TRANSACTION']) ?></td>
                                         <td><?= htmlspecialchars($row['TRANCODE']) ?></td>
                                         <td>
-                                            <a href="building/building_form.php?property_ID=<?= $row['property_ID'] ?>&mode=old"
+                                            <a href="building/building_form.php?building_id=<?= $row['property_ID'] ?>&mode=old"
                                                 class="btn btn-outline-secondary">
                                                 <i class="icofont-bubble-right text-success"></i>
                                             </a>
@@ -202,7 +202,7 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
                                         <td><?= date('m/d/Y', strtotime($row['recording_date'])) ?></td>
                                         <td>
                                             <div class="btn-group" role="group" aria-label="Basic outlined example">
-                                                <a href="building/building_form.php?property_ID=<?= $row['building_id'] ?> &mode=gr" class="btn btn-outline-secondary"><i class="icofont-edit text-success"></i></a>
+                                                <a href="building/building_form.php?building_id=<?= $row['building_id'] ?> &mode=gr" class="btn btn-outline-secondary"><i class="icofont-edit text-success"></i></a>
                                                 <a href="printable_property.php?faas_id=<?= $row['building_id'] ?>" class="btn btn-outline-secondary"><i class="icofont-eye-alt text-info"></i></a>
 
                                             </div>

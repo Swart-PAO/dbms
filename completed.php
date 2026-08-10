@@ -49,7 +49,7 @@
             <div class="col-md-8 d-flex">
                 <div class="card mb-3 h-100 w-100">
                     <div class="card-body d-flex flex-column p-3">
-                        <table id="recentTask" class="table table-hover align-middle mb-0" style="width:100%">
+                        <table id="landCompleted" class="table table-hover align-middle mb-0" style="width:100%">
                             <thead>
                                 <tr class="text-center">
                                     <th>#</th>
@@ -57,9 +57,8 @@
                                     <th>Name of Owner</th>
                                     <th>Location of Property</th>
                                     <th>Lot #</th>
-                                    <th>Building</th>
-                                    <!-- <th>Trancode</th> -->
-                                    <!-- <th>Date</th> -->
+                                    <th>History</th>
+                                    <th>Generate</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -75,9 +74,11 @@
                                         <td><?= $row['owner_name'] ?></td>
                                         <td><?= $row['mun_name'] ?>, <?= $row['property_brgy'] ?></td>
                                         <td><?= $row['lot_no'] ?></td>
-                                        <!-- <td><?= $row['transaction_code'] ?></td> -->
                                         <td class="text-center">
-                                            <i class="icofont-home fs-2 text-success home-icon buildin_display"></i>
+                                            <i class="icofont-history fs-2 text-success home-icon property-history"
+                                                data-record-id="<?= $row['property_ID']; ?>"
+                                                style="cursor:pointer;"
+                                                title="View Property History"></i>
                                         </td>
 
                                         <style>
@@ -87,8 +88,34 @@
                                                 cursor: pointer;
                                             }
                                         </style>
-                                        <!-- <td><?= date('m/d/Y', strtotime($row['recording_date'])) ?></td> -->
                                         <td>
+                                            <div class="dropdown">
+                                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    Generate
+                                                </button>
+
+                                                <ul class="dropdown-menu">
+                                                    <li>
+                                                        <a class="dropdown-item" href="printable_property.php?property_ID=<?= $row['property_ID'] ?>">
+                                                            <i class="icofont-file-document text-secondary"></i> FAAS
+                                                        </a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item" href="doc/tax_declaration.php?property_ID=<?= $row['property_ID'] ?>">
+                                                            <i class="icofont-law-document text-info"></i> Tax Declaration
+                                                        </a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a class="dropdown-item" href="land/faas_form.php?mode=gr&property_ID=<?= $row['property_ID'] ?>">
+                                                            <i class="icofont-edit text-success"></i> Edit
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                        <!-- <td>
                                             <div class="dropdown">
                                                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                     Actions
@@ -96,7 +123,7 @@
 
                                                 <ul class="dropdown-menu">
                                                     <li>
-                                                        <a class="dropdown-item" href="faas_form.php?property_ID=<?= $row['property_ID'] ?>">
+                                                        <a class="dropdown-item" href="land/faas_form.php?mode=gr&property_ID=<?= $row['property_ID'] ?>">
                                                             <i class="icofont-edit text-success"></i> Edit
                                                         </a>
                                                     </li>
@@ -116,7 +143,7 @@
                                                     </li>
                                                 </ul>
                                             </div>
-                                        </td>
+                                        </td> -->
                                     </tr>
                                 <?php }
 
@@ -124,22 +151,48 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <div class="modal fade" id="historyModal" tabindex="-1">
+                        <div class="modal-dialog modal-xl">
+                            <div class="modal-content">
+
+                                <div class="modal-header bg-success text-white">
+                                    <h5 class="modal-title">
+                                        <i class="icofont-history"></i>
+                                        Property History
+                                    </h5>
+                                    <button type="button" class="btn-close btn-close-white"
+                                        data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body">
+
+                                    <div id="historyContent">
+                                        <div class="text-center p-4">
+                                            <div class="spinner-border text-success"></div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-md-4 d-flex">
                 <div class="card mb-3 h-100 w-100">
                     <div class="card-body d-flex flex-column p-3">
-                        <table id="recentTask" class="table table-hover align-middle mb-0" style="width:100%">
+                        <table id="buildingCompleted" class="table table-hover align-middle mb-0" style="width:100%">
                             <thead>
                                 <tr class="text-center">
                                     <th>#</th>
                                     <th>PIN</th>
                                     <th>Name of Owner</th>
                                     <th>Location of Property</th>
-                                    <!-- <th>Lot #</th> -->
+
                                     <th>Building</th>
-                                    <!-- <th>Trancode</th> -->
-                                    <!-- <th>Date</th> -->
+
                                     <th></th>
                                 </tr>
                             </thead>
@@ -154,11 +207,6 @@
                                         <td class="fw-bold text-secondary"><?= $row['pin'] ?>-(<?= $row['bin'] ?>)</td>
                                         <td><?= $row['owner_name'] ?></td>
                                         <td><?= $row['mun_name'] ?>, <?= $row['baranggay'] ?></td>
-                                        <!-- <td><?= $row['lot_no'] ?></td> -->
-                                        <!-- <td><?= $row['transaction_code'] ?></td> -->
-                                        <!-- <td class="text-center">
-                                            <i class="icofont-home fs-2 text-success home-icon buildin_display"></i>
-                                        </td> -->
 
                                         <style>
                                             .home-icon:hover {
@@ -167,7 +215,7 @@
                                                 cursor: pointer;
                                             }
                                         </style>
-                                        <!-- <td><?= date('m/d/Y', strtotime($row['recording_date'])) ?></td> -->
+
                                         <td>
                                             <div class="dropdown">
                                                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -176,24 +224,24 @@
 
                                                 <ul class="dropdown-menu">
                                                     <li>
-                                                        <a class="dropdown-item" href="building/building_form.php?property_ID=<?= $row['building_id'] ?> &mode=new">
+                                                        <a class="dropdown-item" href="building/building_form.php?building_id=<?= $row['building_id'] ?>&mode=gr">
                                                             <i class="icofont-edit text-success"></i> Edit
                                                         </a>
                                                     </li>
 
                                                     <li>
-                                                        <a class="dropdown-item" href="printable_property.php?property_ID=<?= $row['property_ID'] ?>">
+                                                        <a class="dropdown-item" href="building/faas_building.php?building_id=<?= $row['building_id'] ?>">
                                                             <i class="icofont-eye-alt text-info"></i> View
                                                         </a>
                                                     </li>
 
-                                                    <li>
+                                                    <!-- <li>
                                                         <button type="button"
                                                             class="dropdown-item delete_property"
-                                                            data-id="<?= $row['property_ID']; ?>">
+                                                            data-id="<?= $row['building_ID']; ?>">
                                                             <i class="icofont-ui-delete text-danger"></i> Delete
                                                         </button>
-                                                    </li>
+                                                    </li> -->
                                                 </ul>
                                             </div>
                                         </td>
@@ -256,8 +304,37 @@
                     <!-- <i class="icofont-home" style="font-size: 6rem;"></i> -->
                 </div>
             </div>
+
+
         </div>
     </div>
 </div><!-- Row End -->
 
 </div>
+
+<script>
+    $(document).on("click", ".property-history", function() {
+
+        let record_id = $(this).data("record-id");
+
+        $("#historyModal").modal("show");
+
+        $("#historyContent").html(`
+        <div class="text-center p-4">
+            <div class="spinner-border text-success"></div>
+        </div>
+    `);
+
+        $.ajax({
+            url: "php/get_property_history.php",
+            type: "POST",
+            data: {
+                record_id: record_id
+            },
+            success: function(response) {
+                $("#historyContent").html(response);
+            }
+        });
+
+    });
+</script>
