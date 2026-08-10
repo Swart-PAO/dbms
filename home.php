@@ -1,7 +1,10 @@
 <?php
 
 $stats = getPropertyStats($mun_code, $brgy_session);
+$totalLandTypes = getTotalLandTypes($mun_code, $brgy_session);
 $noTodayTransaction = totalTodayTransaction($_SESSION['user_ID']);
+$totalLand      = $totalLandTypes['land'] ?? 0;
+$totalBuilding       = $totalLandTypes['building']  ?? 0;
 
 $totalPrev      = $stats['total_rows'] ?? 0;
 $totalMun       = $stats['total_mun_rows']  ?? 0;
@@ -21,7 +24,7 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
                             <div class="avatar lg  rounded-1 no-thumbnail bg-lightyellow color-defult"><i class="bi bi-journal-check fs-4"></i></div>
                             <div class="flex-fill ms-4">
                                 <div class="">Land Records</div>
-                                <h5 class="mb-0 ">100</h5>
+                                <h5 class="mb-0 "><?= $totalLand ?></h5>
                             </div>
                             <a href="task.html" title="view-members" class="btn btn-link text-decoration-none  rounded-1"><i class="icofont-hand-drawn-right fs-2 "></i></a>
                         </div>
@@ -35,7 +38,7 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
                             <div class="avatar lg  rounded-1 no-thumbnail bg-lightblue color-defult"><i class="bi bi-list-check fs-4"></i></div>
                             <div class="flex-fill ms-4">
                                 <div class="">Building Records</div>
-                                <h5 class="mb-0 ">76</h5>
+                                <h5 class="mb-0 "><?= $totalBuilding ?></h5>
                             </div>
                             <a href="task.html" title="space-used" class="btn btn-link text-decoration-none  rounded-1"><i class="icofont-hand-drawn-right fs-2 "></i></a>
                         </div>
@@ -49,7 +52,7 @@ $totalTodayTransaction = $noTodayTransaction['total_today'] ?? 0;
                             <div class="avatar lg  rounded-1 no-thumbnail bg-lightgreen color-defult"><i class="bi bi-clipboard-data fs-4"></i></div>
                             <div class="flex-fill ms-4">
                                 <div class="">Machinery Records</div>
-                                <h5 class="mb-0 ">574</h5>
+                                <h5 class="mb-0 ">0</h5>
                             </div>
                             <a href="task.html" title="renewal-date" class="btn btn-link text-decoration-none  rounded-1"><i class="icofont-hand-drawn-right fs-2 "></i></a>
                         </div>

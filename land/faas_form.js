@@ -16,7 +16,7 @@ $(document).ready(function () {
     get_barangay_faas_form(mun_code, sess_brgy);
   } else {
     alert("No property ID or mode provided. Redirecting to land page.");
-    //   location.href = BASE_URL + "/index.php?page=land";
+    location.href = BASE_URL + "/index.php?page=land";
   }
 
   function getProperty(property_ID, mode) {
