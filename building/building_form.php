@@ -763,6 +763,7 @@ function isChecked($code, $saved_string)
     <script>
         const sess_brgy = <?= json_encode($_SESSION['brgy'] ?? '') ?>;
         const sess_mun_code = <?= json_encode($_SESSION['mun_code'] ?? '') ?>;
+        const sess_brgy_code = <?= json_encode($_SESSION['brgy_code'] ?? '') ?>;
 
         const BASE_URL = <?= json_encode(BASE_URL) ?>;
     </script>

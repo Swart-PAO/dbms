@@ -8,6 +8,7 @@ if (empty($_SESSION['user_ID']) && empty($_SESSION['mun_code']) && empty($_SESSI
 }
 
 $mun_code = $_SESSION['mun_code'];
+$brgy_code = $_SESSION['brgy_code'];
 $brgy_session = $_SESSION['brgy'];
 $mun_name = $_SESSION['mun_name'];
 ?>

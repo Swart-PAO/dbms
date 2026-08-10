@@ -16,7 +16,8 @@ $password = trim($_POST['password']);
 $extra_session = [
     'mun_code' => $_POST['mun_code'] ?? '',
     'brgy' => $_POST['brgy'] ?? '',
-    'mun_name' => $_POST['mun_name'] ?? ''
+    'mun_name' => $_POST['mun_name'] ?? '',
+    'brgy_code' => $_POST['brgy_code'] ?? ''
 ];
 
 $sql = "SELECT * FROM user WHERE username = ? LIMIT 1";

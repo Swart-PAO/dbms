@@ -304,12 +304,7 @@ class Action
 
 
 
-
-
-
-
-		if ($mode == 'new') {
-
+		if ($mode === 'gr') {
 			$stmt = $this->db->prepare("SELECT * FROM `building_desc` WHERE `building_id` = ? LIMIT 1");
 			$stmt->bind_param("i", $building_id);
 			$stmt->execute();
@@ -321,28 +316,28 @@ class Action
 			if ($row = $result->fetch_assoc()) {
 				$response = $row;
 
-				$stmtforlandreference = $this->db->prepare("SELECT owner_name, title_type, survey, ARP_no, lot_no, BLK  FROM `faas_property` WHERE `PIN_no` = ? AND `property_municipality` = ? AND property_brgy = ?");
-				$stmtforlandreference->bind_param("sss", $row['pin'], $row['municipality'], $row['baranggay']);
-				$stmtforlandreference->execute();
-				$resultforlandreference = $stmtforlandreference->get_result();
-				if ($rowforlandreference = $resultforlandreference->fetch_assoc()) {
+				// $stmtforlandreference = $this->db->prepare("SELECT owner_name, title_type, survey, ARP_no, lot_no, BLK  FROM `faas_property` WHERE `PIN_no` = ? AND `property_municipality` = ? AND property_brgy = ?");
+				// $stmtforlandreference->bind_param("sss", $row['pin'], $row['municipality'], $row['baranggay']);
+				// $stmtforlandreference->execute();
+				// $resultforlandreference = $stmtforlandreference->get_result();
+				// if ($rowforlandreference = $resultforlandreference->fetch_assoc()) {
 
-					$response['ref_owner_name'] = $rowforlandreference['owner_name'] ?? '';
-					$response['ref_title_type'] = $rowforlandreference['title_type'] ?? '';
-					$response['ref_survey_no'] = $rowforlandreference['survey'] ?? '';
-					$response['ref_arp_no'] = $rowforlandreference['ARP_no'] ?? '';
-					$response['ref_lot_no'] = $rowforlandreference['lot_no'] ?? '';
-					$response['ref_block_no'] = $rowforlandreference['BLK'] ?? '';
-				} else {
+				// 	$response['ref_owner_name'] = $rowforlandreference['owner_name'] ?? '';
+				// 	$response['ref_title_type'] = $rowforlandreference['title_type'] ?? '';
+				// 	$response['ref_survey_no'] = $rowforlandreference['survey'] ?? '';
+				// 	$response['ref_arp_no'] = $rowforlandreference['ARP_no'] ?? '';
+				// 	$response['ref_lot_no'] = $rowforlandreference['lot_no'] ?? '';
+				// 	$response['ref_block_no'] = $rowforlandreference['BLK'] ?? '';
+				// } else {
 
-					$response['land_reference_error'] = 'No land reference found';
-				}
+				// 	$response['land_reference_error'] = 'No land reference found';
+				// }
 				// $allFields = array_merge($this->propertyFields, $this->propertyFieldsMV);
 				return $this->respond($response);
 			} else {
 				return $this->respond(['error1' => 'No record found']);
 			}
-		} elseif ($mode = 'old') {
+		} elseif ($mode === 'old') {
 
 
 

@@ -2,16 +2,21 @@ $(document).ready(function () {
   const property_ID = $("#input_property_ID").val();
   const mode = $("#mode").val();
 
+  const municipality = String(sess_mun_code).padStart(2, "0");
+  const barangay = String(sess_brgy_code).padStart(4, "0");
+
+  $("#pin_prefix").text("040-" + municipality + "-" + barangay + "-");
+
   if (property_ID && mode) {
     getProperty(property_ID, mode);
   } else if (mode === "new") {
     $("#property_municipality").val(sess_mun_code);
-    const mun_code = String(sess_mun_code).padStart(2, "0");
+    // const mun_code = String(sess_mun_code).padStart(2, "0");
     $("#revision_code").val("New");
     // alert(mun_code);
     // const barangay = String(data.brgy_code).padStart(4, "0");
 
-    $("#pin_prefix").text("040-" + mun_code + "-" + sess_brgy + "-");
+    // $("#pin_prefix").text("040-" + mun_code + "-" + sess_brgy_code + "-");
 
     get_barangay_faas_form(mun_code, sess_brgy);
   } else {
@@ -81,17 +86,6 @@ $(document).ready(function () {
           $("#mun_code").prop("disabled", true);
           $("#search_pin").val(data.previous_pin);
           $("#mun_code").val(data.property_municipality);
-
-          const municipality = String(data.property_municipality).padStart(
-            2,
-            "0",
-          );
-          const barangay = String(data.brgy_code).padStart(4, "0");
-
-          $("#pin_prefix").text("040-" + municipality + "-" + barangay + "-");
-          fields.forEach((field) => {
-            $("#" + field).val($.trim(data[field] ?? ""));
-          });
 
           $("#previous_owner").val($.trim(data.owner_name));
 

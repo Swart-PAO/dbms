@@ -117,6 +117,10 @@ if ($result->num_rows > 0) {
                                             </select>
                                         </div>
                                     </div>
+                                    <input
+
+                                        name="brgy_code"
+                                        id="brgy_code">
 
                                     <div class="col-12 text-center mt-4">
                                         <button type="submit" class="btn btn-lg btn-block btn-light lift text-uppercase">SIGN IN</button>
@@ -160,6 +164,17 @@ if ($result->num_rows > 0) {
             } else {
                 $("#brgy").html('<option value="">-- Select Barangay --</option>');
             }
+        });
+
+        $('#brgy').on('change', function() {
+
+            const selectedOption = $(this).find(':selected');
+
+            const brgyName = selectedOption.val();
+            const brgyCode = selectedOption.data('brgy-code');
+
+            $('#brgy_code').val(brgyCode || '');
+
         });
     });
 </script>

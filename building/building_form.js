@@ -2,6 +2,11 @@
 $building_id = $("#input_property_ID").val();
 $mode = $("#mode").val();
 
+const municipality = String(sess_mun_code).padStart(2, "0");
+const barangay = String(sess_brgy_code).padStart(4, "0");
+
+$("#pin_prefix").text("040-" + municipality + "-" + barangay + "-");
+
 // getProperty($building_id);
 // alert("Data fetched successfully!");
 
@@ -50,10 +55,6 @@ function getBuildingInfo(building_id, mode) {
 
       $("#gr_building_id").val(data.building_id);
       get_barangay_faas_form(data.municipality, data.baranggay);
-      const municipality = String(data.municipality).padStart(2, "0");
-      const baranggay = String(data.baranggay).padStart(4, "0");
-
-      $("#pin_prefix").text("040-" + municipality + "-" + baranggay);
 
       // alert($("#input_new_property_ID").val());
     },

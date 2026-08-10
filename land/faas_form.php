@@ -758,6 +758,7 @@ $municipalities = getMunicipalities(); ?>
 <script>
     const sess_brgy = <?= json_encode($_SESSION['brgy']) ?>;
     const sess_mun_code = <?= json_encode($_SESSION['mun_code']) ?>;
+    const sess_brgy_code = <?= json_encode($_SESSION['brgy_code']) ?>;
 
     const BASE_URL = <?= json_encode(BASE_URL) ?>;
     const agri_class_options = <?= json_encode(selectOptionData('land_class')) ?>;
