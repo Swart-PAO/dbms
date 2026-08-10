@@ -163,7 +163,7 @@ function isChecked($code, $saved_string)
                         <input
                             id="input_property_ID"
                             name="input_property_ID"
-                            value="<?= $_GET['building_id'] ?? '' ?>">
+                            value="<?= $_GET['building_id'] ?? '' ?>" hidden>
 
                         <input
                             id="mode"

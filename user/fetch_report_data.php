@@ -1,5 +1,7 @@
 <?php
-include 'db_connect.php';
+require_once __DIR__ . '/../config.php';
+require_once ROOT_PATH . '/db/db_connect.php';
+
 
 $sql = "SELECT * FROM `user` ORDER BY name ASC";
 $result = $conn->query($sql);
@@ -91,7 +93,7 @@ if ($result && $result->num_rows > 0) {
 
                         </div>
                     </div>
-                    <a href="user-transaction-records.php?user_id=<?php echo $row['user_ID']; ?>" class="btn btn-primary w-100">View Transactions</a>
+                    <a href="user/user-transaction-records.php?user_id=<?php echo $row['user_ID']; ?>" class="btn btn-primary w-100">View Transactions</a>
                 </div>
             </div>
         </div>
