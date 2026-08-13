@@ -56,12 +56,12 @@
                  </a>
              </li>
 
-             <li>
+             <!-- <li>
                  <a class="m-link <?= ($currentPage === 'history') ? 'active' : '' ?>" href="index.php?page=history">
                      <i class="icofont-history fs-5"></i>
                      <span>History</span>
                  </a>
-             </li>
+             </li> -->
 
              <li>
                  <a class="m-link <?= ($currentPage === 'reports') ? 'active' : '' ?>" href="index.php?page=reports">
@@ -70,9 +70,15 @@
                  </a>
              </li>
              <li>
-                 <a class="m-link <?= ($currentPage === 'municipal') ? 'active' : '' ?>" href="index.php?page=municipal">
-                     <i class="icofont-database fs-5"></i>
-                     <span>Municipal</span>
+                 <a class="m-link <?= ($currentPage === 'revision') ? 'active' : '' ?>" href="index.php?page=revision">
+                     <i class="icofont-file-alt fs-5"></i>
+                     <span>Revision 2026</span>
+                 </a>
+             </li>
+             <li>
+                 <a class="m-link <?= ($currentPage === 'previous') ? 'active' : '' ?>" href="index.php?page=previous">
+                     <i class="icofont-data fs-5"></i>
+                     <span>Previous 2022</span>
                  </a>
              </li>
 

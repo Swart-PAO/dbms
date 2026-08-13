@@ -120,7 +120,7 @@ if ($result->num_rows > 0) {
                                     <input
 
                                         name="brgy_code"
-                                        id="brgy_code">
+                                        id="brgy_code" hidden>
 
                                     <div class="col-12 text-center mt-4">
                                         <button type="submit" class="btn btn-lg btn-block btn-light lift text-uppercase">SIGN IN</button>

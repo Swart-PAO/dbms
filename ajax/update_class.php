@@ -12,7 +12,8 @@ class Action
 	public function __construct()
 	{
 		ob_start();
-		include '../db_connect.php';
+		require_once __DIR__ . '/../config.php';
+		require_once ROOT_PATH . '/db/db_connect.php';
 		$this->db = $conn;
 	}
 

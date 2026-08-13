@@ -18,6 +18,18 @@ $(function () {
         // responsive: true,
         columnDefs: [{ targets: [-1, -3], className: "dt-body-right" }],
       });
+    $("#revision-land-table")
+      // .addClass("nowrap")
+      .dataTable({
+        // responsive: true,
+        columnDefs: [{ targets: [-1, -3], className: "dt-body-right" }],
+      });
+    $("#revision-building-table")
+      // .addClass("nowrap")
+      .dataTable({
+        // responsive: true,
+        columnDefs: [{ targets: [-1, -3], className: "dt-body-right" }],
+      });
     $("#landCompleted")
       // .addClass("nowrap")
       .dataTable({

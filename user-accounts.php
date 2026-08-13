@@ -63,8 +63,7 @@
                     </div>
                 </div>
             <?php }
-
-            $conn->close(); ?>
+            ?>
         </div>
 
     </div>
@@ -152,7 +151,13 @@
                             <select class="form-select" name="team">
                                 <option value="Pajarito">Pajarito</option>
                                 <option value="Canalin">Canalin</option>
-                                <option value="Parenno">Parenno</option>
+                                <option value="Parenno">Parenno Renz</option>
+                                <option value="Parenno">Parenno Teray</option>
+                                <option value="Parenno">Virayo</option>
+                                <option value="Parenno">Ardon</option>
+                                <option value="Parenno">Patanindagat</option>
+                                <option value="Parenno">Dumaog</option>
+                                <option value="Parenno">Fadrigo</option>
                             </select>
                         </div>
                     </div>
@@ -161,8 +166,8 @@
                     <h6 class="fw-bold mb-2">Assigned Municipalities</h6>
                     <div class="row row-cols-2 row-cols-md-3 row-cols-lg-3 g-2">
                         <?php
-                        include 'db_connect.php';
-                        $sql = "SELECT mun_code, mun_desc FROM municipality ORDER BY mun_desc ASC";
+
+                        $sql = "SELECT mun_code, mun_name FROM municipality_list ORDER BY mun_name ASC";
                         $result = $conn->query($sql);
                         if ($result->num_rows > 0) {
                             while ($row = $result->fetch_assoc()) { ?>
@@ -172,7 +177,7 @@
                                             type="checkbox"
                                             name="municipalities[]"
                                             value="<?php echo $row['mun_code']; ?>">
-                                        <label class="form-check-label"><?php echo $row['mun_desc']; ?></label>
+                                        <label class="form-check-label"><?php echo $row['mun_name']; ?></label>
                                     </div>
                                 </div>
                         <?php }
@@ -191,7 +196,7 @@
     </div>
 </div>
 <?php
-include 'footer_script.php';
+// include 'footer_script.php';
 ?>
 <script>
     $(document).ready(function() {
@@ -231,12 +236,13 @@ include 'footer_script.php';
             }
         });
         $("#add-staff-form").on("submit", function(e) {
+
             e.preventDefault();
 
             var formData = new FormData(this); // handles text + files together
 
             $.ajax({
-                url: "ajax.php?action=insert_user",
+                url: "land/ajax.php?action=insert_user",
                 type: "POST",
                 data: formData,
                 contentType: false, // prevent jQuery from overriding
@@ -257,6 +263,7 @@ include 'footer_script.php';
 
         $(document).on("click", ".btn-update-user", function() {
             userID = $(this).data("id");
+
             getUserInfo(userID);
             $('#add-user-modal').modal('show');
             $("#modal-title").text("Edit Staff");

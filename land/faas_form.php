@@ -288,7 +288,7 @@ $municipalities = getMunicipalities(); ?>
                                                     <div class="row mb-1">
                                                         <div class="col-md-6 d-flex align-items-center">
                                                             <label class="form-label fw-bold">Municipality</label>
-                                                            <select name="property_municipality" id="property_municipality" class="form-select">
+                                                            <select name="property_municipality" id="property_municipality" class="form-select" required>
                                                                 <option value="">-- Select Municipality --</option>
 
                                                                 <?php foreach ($municipalities as $mun): ?>

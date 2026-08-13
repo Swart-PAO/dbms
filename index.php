@@ -11,6 +11,7 @@ $mun_code = $_SESSION['mun_code'];
 $brgy_code = $_SESSION['brgy_code'];
 $brgy_session = $_SESSION['brgy'];
 $mun_name = $_SESSION['mun_name'];
+$user_ID = $_SESSION['user_ID'];
 ?>
 
 <!doctype html>

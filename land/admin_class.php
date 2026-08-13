@@ -328,12 +328,24 @@ class Action
 
 	{
 
-		$faas_id = $_GET['faas_id'] ?? null;
 		$property_ID = $_GET['property_ID'] ?? null;
 		$mode = $_GET['mode'] ?? null;
 
-		if (!$property_ID || !$mode) {
-			return $this->respond(['error' => 'Contact the developer.']);
+		$property_ID = filter_input(
+			INPUT_GET,
+			'property_ID',
+			FILTER_VALIDATE_INT
+		);
+		if (!isset($_SESSION['user_ID'])) {
+			return $this->respond(['error' => 'Unauthorized. Please log in.']);
+		}
+
+		if (!in_array($mode, ['gr', 'old'], true)) {
+			return $this->respond(['error' => 'Invalid mode.']);
+		}
+
+		if ($property_ID === false || $property_ID <= 0) {
+			return $this->respond(['error' => 'Invalid property ID.']);
 		}
 
 		if ($mode === 'gr') {
@@ -377,16 +389,14 @@ class Action
 
 				return $this->respond($data);
 			} else {
-				return $this->respond(['error' => 'No record found']);
+				return $this->respond(['error' => 'No record found. Please Contact the Administrator.']);
 			}
 		} elseif ($mode === 'old') {
-
-
 
 			// SECOND QUERY
 			$stmt = $this->db->prepare("SELECT pi.*, brgy.brgy_code  FROM `property information` AS pi LEFT JOIN barangay_list AS brgy
         ON pi.`LOCATION OF PROPERTY` = brgy.brgy_name
-        AND pi.`MUNICIPALITY CODE` = brgy.mun_code WHERE `property_ID` = ? LIMIT 1");
+        AND pi.`MUNICIPALITY CODE` = brgy.mun_code WHERE pi.`property_ID` = ? LIMIT 1");
 			$stmt->bind_param("i", $property_ID);
 			$stmt->execute();
 			$result = $stmt->get_result();
@@ -429,7 +439,7 @@ class Action
 				]);
 			} else {
 
-				return $this->respond(['error' => 'No record found']);
+				return $this->respond(['error' => 'No record found. Please Contact the Administrator.']);
 			}
 		}
 	}

@@ -1,19 +1,25 @@
 $(document).ready(function () {
-  const property_ID = $("#input_property_ID").val();
+  const property_ID = $.trim($("#input_property_ID").val());
   const mode = $("#mode").val();
 
-  if (property_ID && mode) {
-    getProperty(property_ID, mode);
-  } else if (mode === "new") {
-    $("#property_municipality").val(sess_mun_code);
-    const mun_code = String(sess_mun_code).padStart(2, "0");
+  const allowedModes = ["gr", "old", "new"];
+
+  if (!allowedModes.includes(mode)) {
+    alert("Invalid property mode.");
+    return;
+  }
+
+  const municipality = String(sess_mun_code).padStart(2, "0");
+  const barangay = String(sess_brgy_code).padStart(4, "0");
+
+  $("#pin_prefix").text("040-" + municipality + "-" + barangay + "-");
+
+  if (mode === "new") {
     $("#revision_code").val("New");
-    // alert(mun_code);
-    // const barangay = String(data.brgy_code).padStart(4, "0");
-
-    $("#pin_prefix").text("040-" + mun_code + "-" + sess_brgy + "-");
-
+    $("#property_municipality").val(sess_mun_code);
     get_barangay_faas_form(mun_code, sess_brgy);
+  } else if (property_ID && mode) {
+    getProperty(property_ID, mode);
   } else {
     alert("No property ID or mode provided. Redirecting to land page.");
     location.href = BASE_URL + "/index.php?page=land";
@@ -82,13 +88,6 @@ $(document).ready(function () {
           $("#search_pin").val(data.previous_pin);
           $("#mun_code").val(data.property_municipality);
 
-          const municipality = String(data.property_municipality).padStart(
-            2,
-            "0",
-          );
-          const barangay = String(data.brgy_code).padStart(4, "0");
-
-          $("#pin_prefix").text("040-" + municipality + "-" + barangay + "-");
           fields.forEach((field) => {
             $("#" + field).val($.trim(data[field] ?? ""));
           });
@@ -120,7 +119,28 @@ $(document).ready(function () {
           $("#value_adjustment").val(data.total_adjustment);
           // alert($("#input_new_property_ID").val());
         },
+        error: function (xhr, status, error) {
+          console.error("get_property_revised failed:", {
+            status: xhr.status,
+            statusText: xhr.statusText,
+            error: error,
+            response: xhr.responseText,
+          });
+
+          if (xhr.status === 401) {
+            alert("Your session has expired. Please log in again.");
+          } else if (xhr.status === 403) {
+            alert("You are not authorized to access this property.");
+          } else if (xhr.status === 404) {
+            alert("Property not found.");
+          } else {
+            alert("Unable to retrieve property.");
+          }
+        },
       });
+    } else {
+      alert("No property ID or mode provided. Redirecting to land page.");
+      location.href = BASE_URL + "/index.php?page=land";
     }
   }
 

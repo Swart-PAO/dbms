@@ -53,27 +53,31 @@
                             <thead>
                                 <tr class="text-center">
                                     <th>#</th>
-                                    <th>PIN</th>
+                                    <th>PreviousPIN</th>
                                     <th>Name of Owner</th>
                                     <th>Location of Property</th>
                                     <th>Lot #</th>
+                                    <th>Recording Date</th>
+                                    <th>Revision Code</th>
                                     <th>History</th>
                                     <th>Generate</th>
-                                    <th></th>
+
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php
-                                $sql = "SELECT pi.*, ml.mun_name FROM property_info AS pi JOIN municipality_list AS ml ON pi.property_municipality = ml.mun_code WHERE `property_municipality` = $mun_code ORDER BY previous_pin ASC";
-                                $result = $conn->query($sql);
+                                $results = getPropertiesByBarangayRevision($mun_code, $brgy_session, NULL, NULL);
                                 $counter = 1;
-                                while ($row = $result->fetch_assoc()) { ?>
-                                    <tr class="text-center">
+                                while ($row = $results->fetch_assoc()):
+                                ?>
+                                    <tr>
                                         <td><?= $counter++ ?></td>
-                                        <td class="fw-bold text-secondary"><?= $row['PIN_no'] ?></td>
-                                        <td><?= $row['owner_name'] ?></td>
-                                        <td><?= $row['mun_name'] ?>, <?= $row['property_brgy'] ?></td>
-                                        <td><?= $row['lot_no'] ?></td>
+                                        <td><?= htmlspecialchars($row['previous_pin']) ?></td>
+                                        <td><?= htmlspecialchars($row['owner_name']) ?></td>
+                                        <td><?= htmlspecialchars($row['property_brgy'] . ' ' . $row['property_municipality']) ?></td>
+                                        <td><?= htmlspecialchars($row['lot_no']) ?></td>
+                                        <td><?= htmlspecialchars($row['recording_date']) ?></td>
+                                        <td><?= htmlspecialchars($row['revision_code']) ?></td>
                                         <td class="text-center">
                                             <i class="icofont-history fs-2 text-success home-icon property-history"
                                                 data-record-id="<?= $row['property_ID']; ?>"
@@ -115,40 +119,10 @@
                                                 </ul>
                                             </div>
                                         </td>
-                                        <!-- <td>
-                                            <div class="dropdown">
-                                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    Actions
-                                                </button>
-
-                                                <ul class="dropdown-menu">
-                                                    <li>
-                                                        <a class="dropdown-item" href="land/faas_form.php?mode=gr&property_ID=<?= $row['property_ID'] ?>">
-                                                            <i class="icofont-edit text-success"></i> Edit
-                                                        </a>
-                                                    </li>
-
-                                                    <li>
-                                                        <a class="dropdown-item" href="printable_property.php?property_ID=<?= $row['property_ID'] ?>">
-                                                            <i class="icofont-eye-alt text-info"></i> View
-                                                        </a>
-                                                    </li>
-
-                                                    <li>
-                                                        <button type="button"
-                                                            class="dropdown-item delete_property"
-                                                            data-id="<?= $row['property_ID']; ?>">
-                                                            <i class="icofont-ui-delete text-danger"></i> Delete
-                                                        </button>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </td> -->
                                     </tr>
-                                <?php }
-
-                                ?>
+                                <?php endwhile; ?>
                             </tbody>
+
                         </table>
                     </div>
 

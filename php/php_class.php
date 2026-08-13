@@ -123,6 +123,78 @@ function getPropertiesByBarangay($mun_code, $barangay, $land_type, $faas, $limit
 }
 
 
+function getPropertiesByBarangayRevision($mun_code, $barangay, $limit, $user_ID)
+{
+
+    global $conn;
+
+    $query = "SELECT
+            property_ID,
+            previous_pin,
+            `owner_name`,
+            `property_brgy`,
+            `property_municipality`,
+            `lot_no`,
+            `recording_date`,
+            `revision_code`
+        FROM `property_info`
+        WHERE `property_brgy` = ?
+        AND `property_municipality` = ?
+    ";
+
+
+    $types = "si";
+    $params = [$barangay, $mun_code];
+
+    if ($user_ID) {
+        $query .= " AND `recording_person_ID` = ?";
+        $types .= "i";
+        $params[] = $user_ID;
+    }
+
+
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param($types, ...$params);
+    $stmt->execute();
+
+    return $stmt->get_result();
+}
+
+function getBuildingByBarangayRevision($mun_code, $barangay, $limit, $user_ID)
+{
+
+    global $conn;
+
+    $query = "
+        SELECT
+            building_ID,
+            previous_pin,
+            `owner_name`,
+            `baranggay`,
+            `municipality`,
+            `recording_date`,
+            `revision_code`
+        FROM `building_desc`
+        WHERE `baranggay` = ?
+        AND `municipality` = ?
+    ";
+
+    $types = "si";
+    $params = [$barangay, $mun_code];
+    if ($user_ID) {
+        $query .= " AND `recording_person_ID` = ?";
+        $types .= "i";
+        $params[] = $user_ID;
+    }
+
+
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param($types, ...$params);
+    $stmt->execute();
+
+    return $stmt->get_result();
+}
+
 function getPropertyStats($mun_code, $barangay)
 {
     global $conn;
