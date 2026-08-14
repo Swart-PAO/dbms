@@ -486,7 +486,7 @@ class Action
 		// Handle file upload
 		$picture = "";
 		if (!empty($_FILES["picture"]["name"])) {
-			$targetDir = "php/uploads/";
+			$targetDir = "../php/uploads/";
 			if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
 
 			$fileName = time() . "_" . basename($_FILES["picture"]["name"]);
