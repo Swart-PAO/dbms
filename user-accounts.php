@@ -24,7 +24,7 @@
         <div class="row g-3 row-cols-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2 row-cols-xxl-2 row-deck py-1 pb-4">
             <?php
 
-            $sql = "SELECT * FROM `user`";
+            $sql = "SELECT * FROM `user` ORDER BY date_created DESC";
             $result = $conn->query($sql);
             while ($row = $result->fetch_assoc()) { ?>
                 <div class="col">
@@ -151,13 +151,13 @@
                             <select class="form-select" name="team">
                                 <option value="Pajarito">Pajarito</option>
                                 <option value="Canalin">Canalin</option>
-                                <option value="Parenno">Parenno Renz</option>
-                                <option value="Parenno">Parenno Teray</option>
-                                <option value="Parenno">Virayo</option>
-                                <option value="Parenno">Ardon</option>
-                                <option value="Parenno">Patanindagat</option>
-                                <option value="Parenno">Dumaog</option>
-                                <option value="Parenno">Fadrigo</option>
+                                <option value="Parenno Renz">Parenno Renz</option>
+                                <option value="Parenno Teray">Parenno Teray</option>
+                                <option value="Virayo">Virayo</option>
+                                <option value="Ardon">Ardon</option>
+                                <option value="Patanindagat">Patanindagat</option>
+                                <option value="Dumaog">Dumaog</option>
+                                <option value="Fadrigo">Fadrigo</option>
                             </select>
                         </div>
                     </div>
