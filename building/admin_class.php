@@ -126,10 +126,19 @@ class Action
 
 	function save_building_desc()
 	{
+		if (!isset($_SESSION['user_ID'])) {
+			return $this->respond(['error' => 'Unauthorized. Please log in.']);
+		}
 		// $description = $_POST['description'] ?? '';
 
 		$mode = $_POST['mode'] ?? null;
-		$building_id = $_POST['input_property_ID'] ?? null;
+		// $building_id = $_POST['input_property_ID'] ?? null;
+
+		$building_id = filter_input(
+			INPUT_POST,
+			'input_property_ID',
+			FILTER_VALIDATE_INT
+		);
 
 
 		// collect data dynamically
@@ -152,7 +161,12 @@ class Action
 				$result = $stmtCheck->get_result();
 
 				if ($row = $result->fetch_assoc()) {
-					return $this->respond(['error' => 'Building already exists.']);
+					$this->db->rollback();
+
+					return $this->respond([
+						'success' => false,
+						'message' => 'Building already exists.'
+					]);
 				} else {
 
 
@@ -467,11 +481,14 @@ class Action
 		try {
 
 			$building_id = $_POST['building_id'] ?? null;
+
 			if (!$building_id) {
 				throw new Exception("Missing building ID");
 			}
 
-			// helper: convert array to string
+			// -------------------------
+			// HELPER: ARRAY TO STRING
+			// -------------------------
 			function arrToStr($arr)
 			{
 				return !empty($arr) ? implode(', ', $arr) : null;
@@ -491,6 +508,7 @@ class Action
 				$walls = [];
 
 				foreach ($data as $val) {
+
 					if (stripos($val, 'Walls') !== false) {
 						$walls[] = $val;
 					} else {
@@ -499,8 +517,13 @@ class Action
 				}
 
 				return [
-					'flooring' => !empty($flooring) ? implode(', ', $flooring) : null,
-					'walls'    => !empty($walls) ? implode(', ', $walls) : null
+					'flooring' => !empty($flooring)
+						? implode(', ', $flooring)
+						: null,
+
+					'walls' => !empty($walls)
+						? implode(', ', $walls)
+						: null
 				];
 			}
 
@@ -513,11 +536,26 @@ class Action
 			$f4 = parseFloor($_POST['floor4'] ?? []);
 
 			// -------------------------
+			// OTHERS PER FLOOR
+			// -------------------------
+			$floor1_others = trim($_POST['floor1_others'] ?? '');
+			$floor2_others = trim($_POST['floor2_others'] ?? '');
+			$floor3_others = trim($_POST['floor3_others'] ?? '');
+			$floor4_others = trim($_POST['floor4_others'] ?? '');
+
+			// -------------------------
 			// CHECK IF EXISTS
 			// -------------------------
-			$check = $this->db->prepare("SELECT building_id FROM structural_material WHERE building_id = ? LIMIT 1");
+			$check = $this->db->prepare("
+            SELECT building_id
+            FROM structural_material
+            WHERE building_id = ?
+            LIMIT 1
+        ");
+
 			$check->bind_param("i", $building_id);
 			$check->execute();
+
 			$result = $check->get_result();
 
 			// -------------------------
@@ -527,6 +565,7 @@ class Action
 
 				$stmt = $this->db->prepare("
                 UPDATE structural_material SET
+
                     roof = ?,
 
                     first_floor_flooring = ?,
@@ -537,13 +576,23 @@ class Action
                     first_floor_wall = ?,
                     second_floor_wall = ?,
                     third_floor_wall = ?,
-                    fourth_floor_wall = ?
+                    fourth_floor_wall = ?,
+
+                    floor1_others = ?,
+                    floor2_others = ?,
+                    floor3_others = ?,
+                    floor4_others = ?
 
                 WHERE building_id = ?
             ");
 
+				if (!$stmt) {
+					throw new Exception($this->db->error);
+				}
+
 				$stmt->bind_param(
-					"sssssssssi",
+					"sssssssssssssi",
+
 					$roof,
 
 					$f1['flooring'],
@@ -556,14 +605,21 @@ class Action
 					$f3['walls'],
 					$f4['walls'],
 
+					$floor1_others,
+					$floor2_others,
+					$floor3_others,
+					$floor4_others,
+
 					$building_id
 				);
 			} else {
+
 				// -------------------------
 				// INSERT IF NOT EXISTS
 				// -------------------------
 				$stmt = $this->db->prepare("
                 INSERT INTO structural_material (
+
                     building_id,
                     roof,
 
@@ -575,12 +631,38 @@ class Action
                     first_floor_wall,
                     second_floor_wall,
                     third_floor_wall,
-                    fourth_floor_wall
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    fourth_floor_wall,
+
+                    floor1_others,
+                    floor2_others,
+                    floor3_others,
+                    floor4_others
+
+                ) VALUES (
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?
+                )
             ");
 
+				if (!$stmt) {
+					throw new Exception($this->db->error);
+				}
+
 				$stmt->bind_param(
-					"isssssssss",
+					"isssssssssssss",
+
 					$building_id,
 					$roof,
 
@@ -592,10 +674,18 @@ class Action
 					$f1['walls'],
 					$f2['walls'],
 					$f3['walls'],
-					$f4['walls']
+					$f4['walls'],
+
+					$floor1_others,
+					$floor2_others,
+					$floor3_others,
+					$floor4_others
 				);
 			}
 
+			// -------------------------
+			// EXECUTE
+			// -------------------------
 			if (!$stmt->execute()) {
 				throw new Exception($stmt->error);
 			}
@@ -605,6 +695,7 @@ class Action
 				"message" => "Structural materials saved successfully!"
 			]);
 		} catch (Exception $e) {
+
 			echo json_encode([
 				"success" => false,
 				"message" => "Failed to save",

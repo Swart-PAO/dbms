@@ -707,6 +707,19 @@ function isChecked($code, $saved_string)
                                                     </div>
                                                 <?php endforeach; ?>
                                             </div>
+                                            <!-- OTHERS -->
+                                            <div class="mt-3">
+                                                <label for="others<?= $i ?>" class="fw-bold mb-2 text-success">
+                                                    OTHERS
+                                                </label>
+
+                                                <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    id="others<?= $i ?>"
+                                                    name="floor<?= $i ?>_others"
+                                                    placeholder="Specify other material...">
+                                            </div>
                                         </div>
 
                                     </div>

@@ -73,12 +73,15 @@ function loadStructural(building_id) {
       building_id: building_id,
     },
     dataType: "json",
+
     success: function (res) {
       if (!res.success || !res.data) return;
 
       let d = res.data;
 
-      // helper
+      // -------------------
+      // HELPER
+      // -------------------
       function checkValues(values, name) {
         if (!values) return;
 
@@ -102,11 +105,23 @@ function loadStructural(building_id) {
       checkValues(d.third_floor_flooring, "floor3");
       checkValues(d.fourth_floor_flooring, "floor4");
 
+      // -------------------
+      // WALLS
+      // -------------------
       checkValues(d.first_floor_wall, "floor1");
       checkValues(d.second_floor_wall, "floor2");
       checkValues(d.third_floor_wall, "floor3");
       checkValues(d.fourth_floor_wall, "floor4");
+
+      // -------------------
+      // OTHERS
+      // -------------------
+      $("#others1").val(d.floor1_others || "");
+      $("#others2").val(d.floor2_others || "");
+      $("#others3").val(d.floor3_others || "");
+      $("#others4").val(d.floor4_others || "");
     },
+
     error: function (xhr) {
       console.error(xhr.responseText);
     },

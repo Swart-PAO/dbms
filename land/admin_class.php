@@ -190,6 +190,9 @@ class Action
 
 	function save_property()
 	{
+		if (!isset($_SESSION['user_ID'])) {
+			return $this->respond(['error' => 'Unauthorized. Please log in.']);
+		}
 		$description = $_POST['description'] ?? '';
 
 		$property_ID = $_POST['input_property_ID'] ?? '';
@@ -305,6 +308,9 @@ class Action
 
 	function update_property_status($property_ID, $record_id)
 	{
+		if (!isset($_SESSION['user_ID'])) {
+			return $this->respond(['error' => 'Unauthorized. Please log in.']);
+		}
 		$sql = "UPDATE `property information`
             SET `revised_property_ID` = ?
             WHERE `property_ID` = ?";
@@ -349,8 +355,7 @@ class Action
 		}
 
 		if ($mode === 'gr') {
-			$stmt = $this->db->prepare("SELECT p.*,
-        brgy.brgy_code,
+			$stmt = $this->db->prepare("SELECT p.*, brgy.brgy_code,
         pvs.total_land_area,
         pvs.total_land_mv,
         pvs.total_non_agri_area,
@@ -373,8 +378,7 @@ class Action
     LEFT JOIN property_valuation_summary AS pvs
         ON p.property_ID = pvs.property_ID
     WHERE p.property_ID = ?
-    LIMIT 1
-");
+    LIMIT 1");
 			$stmt->bind_param("i", $property_ID);
 			$stmt->execute();
 			$result = $stmt->get_result();
@@ -447,6 +451,9 @@ class Action
 	// Function to insert into property_history
 	function insert_property_history($action, $target_table, $record_id, $description, $db_update)
 	{
+		if (!isset($_SESSION['user_ID'])) {
+			return $this->respond(['error' => 'Unauthorized. Please log in.']);
+		}
 		$ip_address = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
 
 		$data = [
@@ -468,6 +475,9 @@ class Action
 
 	function insert_user()
 	{
+		if (!isset($_SESSION['user_ID'])) {
+			return $this->respond(['error' => 'Unauthorized. Please log in.']);
+		}
 		$name = $_POST['name'];
 		$team = $_POST['team'];
 		$department = $_POST['department'];
@@ -546,6 +556,9 @@ class Action
 
 	function delete_property()
 	{
+		if (!isset($_SESSION['user_ID'])) {
+			return $this->respond(['error' => 'Unauthorized. Please log in.']);
+		}
 		$id = $_POST['id'] ?? null;
 
 		if (!$id) {
@@ -605,6 +618,9 @@ class Action
 
 	function save_land()
 	{
+		if (!isset($_SESSION['user_ID'])) {
+			return $this->respond(['error' => 'Unauthorized. Please log in.']);
+		}
 		try {
 			$this->db->begin_transaction();
 
