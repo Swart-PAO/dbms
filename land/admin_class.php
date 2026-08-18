@@ -193,14 +193,16 @@ class Action
 		if (!isset($_SESSION['user_ID'])) {
 			return $this->respond(['error' => 'Unauthorized. Please log in.']);
 		}
+
 		$description = $_POST['description'] ?? '';
 
 		$property_ID = $_POST['input_property_ID'] ?? '';
 		$mode = $_POST['mode'] ?? '';
 
-		if (!$property_ID) {
-			throw new Exception("Missing property ID.");
-		}
+
+		// if (!$property_ID) {
+		// 	throw new Exception("Missing property ID.");
+		// }
 
 		$data = [];
 		foreach ($this->propertyFields as $field) {
@@ -262,6 +264,16 @@ class Action
 
 
 				// $data_saved = "✅ Property updated successfully!";
+			} elseif ($mode === "new") {
+
+
+				$data['recording_person_ID'] = $_SESSION['user_ID'] ?? null;
+				$data['recording_date'] = date('Y-m-d H:i:s');
+				$data['version'] = $_SESSION['version'] ?? null;
+
+				$stmt = $this->prepareInsert("property_info", $data);
+				$action = "new";
+				$db_update = '';
 			} else {
 				throw new Exception("Invalid property_ID or mode");
 			}

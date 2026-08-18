@@ -17,7 +17,8 @@ $(document).ready(function () {
   if (mode === "new") {
     $("#revision_code").val("New");
     $("#property_municipality").val(sess_mun_code);
-    get_barangay_faas_form(mun_code, sess_brgy);
+
+    get_barangay_faas_form(sess_mun_code, sess_brgy);
   } else if (property_ID && mode) {
     getProperty(property_ID, mode);
   } else {
