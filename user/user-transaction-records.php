@@ -277,7 +277,7 @@
             pieData: <?= json_encode($pieData) ?>
         };
     </script>
-    <script src="./assets/index.js"></script>
+    <script src="../assets/index.js"></script>
 
 </body>
 

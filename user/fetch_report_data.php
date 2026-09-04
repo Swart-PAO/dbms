@@ -3,22 +3,50 @@ require_once __DIR__ . '/../config.php';
 require_once ROOT_PATH . '/db/db_connect.php';
 
 
-$sql = "SELECT * FROM `user` ORDER BY name ASC";
+$sql = "SELECT * FROM `user` ORDER BY date_created ASC";
 $result = $conn->query($sql);
 
 if ($result && $result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
         $current_uid = $row['user_ID'];
 
-        $totalSql = "SELECT COUNT(*) AS total FROM property_info WHERE recording_person_id = '$current_uid'";
+        // PROPERTY INFO
+        $totalSql = "SELECT COUNT(*) AS total 
+             FROM property_info 
+             WHERE recording_person_id = '$current_uid'";
+
         $totalRes = $conn->query($totalSql);
         $totalData = $totalRes->fetch_assoc();
 
-        $todaySql = "SELECT COUNT(*) AS today FROM property_info 
-                    WHERE recording_person_id = '$current_uid' 
-                    AND DATE(recording_date) = CURDATE()";
+        $todaySql = "SELECT COUNT(*) AS today 
+             FROM property_info 
+             WHERE recording_person_id = '$current_uid'
+             AND DATE(recording_date) = CURDATE()";
+
         $todayRes = $conn->query($todaySql);
         $todayData = $todayRes->fetch_assoc();
+
+
+        // BUILDING INFO
+        $buildingTotalSql = "SELECT COUNT(*) AS total 
+                     FROM building_desc 
+                     WHERE recording_person_id = '$current_uid'";
+
+        $buildingTotalRes = $conn->query($buildingTotalSql);
+        $buildingTotalData = $buildingTotalRes->fetch_assoc();
+
+        $buildingTodaySql = "SELECT COUNT(*) AS today 
+                     FROM building_desc 
+                     WHERE recording_person_id = '$current_uid'
+                     AND DATE(recording_date) = CURDATE()";
+
+        $buildingTodayRes = $conn->query($buildingTodaySql);
+        $buildingTodayData = $buildingTodayRes->fetch_assoc();
+
+
+        // COMBINED TOTALS
+        $total = $totalData['total'] + $buildingTotalData['total'];
+        $today = $todayData['today'] + $buildingTodayData['today'];
 
         $recentSql = "SELECT property_info.property_brgy, municipality_list.mun_name AS municipality_name FROM property_info JOIN municipality_list ON property_info.property_municipality = municipality_list.mun_ID WHERE property_info.recording_person_id = '$current_uid' AND DATE(property_info.recording_date) = CURDATE() ORDER BY property_info.recording_date DESC LIMIT 1";
 
@@ -78,14 +106,14 @@ if ($result && $result->num_rows > 0) {
                                 <div class="col-6 border-end">
                                     <div class="text-muted small">Total</div>
                                     <div class="fw-bold text-success fs-5">
-                                        <?= number_format($totalData['total']) ?>
+                                        <?= number_format($total) ?>
                                     </div>
                                 </div>
 
                                 <div class="col-6">
                                     <div class="text-muted small">Today</div>
                                     <div class="fw-bold text-primary fs-5">
-                                        <?= number_format($todayData['today']) ?>
+                                        <?= number_format($today) ?>
                                     </div>
                                 </div>
 
