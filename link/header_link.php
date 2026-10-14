@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/plugin/datatables/dataTables.bootstrap5.min.css">
     <!-- project css file  -->
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/my-task.style.min.css">
+
 </head>
 
 <script src="<?= BASE_URL ?>/assets/bundles/libscripts.bundle.js"></script>

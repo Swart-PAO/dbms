@@ -49,11 +49,24 @@
                  </a>
              </li>
 
-             <li>
-                 <a class="m-link <?= ($currentPage === 'completed') ? 'active' : '' ?>" href="index.php?page=completed">
-                     <i class="icofont-document-folder fs-5"></i>
-                     <span>Completed</span>
-                 </a>
+             <li class="collapsed">
+                 <a class="m-link <?= ($currentPage === 'completed' || $currentPage === 'completed_v2') ? 'active' : '' ?>" data-bs-toggle="collapse" data-bs-target="#version-Components" href="#">
+                     <i class="icofont-document-folder fs-5"></i> <span>Completed</span> <span class="arrow icofont-dotted-down ms-auto text-end fs-5"></span></a>
+                 <ul class="sub-menu collapse  <?= ($currentPage === 'completed' || $currentPage === 'completed_v2') ? 'show' : '' ?>" id="version-Components">
+                     <li>
+                         <a class="m-link <?= ($currentPage === 'completed') ? 'active' : '' ?>" href="index.php?page=completed">
+
+                             <span>Version 1</span>
+                         </a>
+                     </li>
+                     <li>
+                         <a class="m-link <?= ($currentPage === 'completed_v2') ? 'active' : '' ?>" href="index.php?page=completed_v2">
+
+                             <span>Version 2</span>
+                         </a>
+                     </li>
+
+                 </ul>
              </li>
 
              <!-- <li>
@@ -86,6 +99,12 @@
                  <a class="m-link <?= ($currentPage === 'database') ? 'active' : '' ?>" href="index.php?page=database">
                      <i class="icofont-database fs-5"></i>
                      <span>Database</span>
+                 </a>
+             </li>
+             <li>
+                 <a class="m-link <?= ($currentPage === 'SMV') ? 'active' : '' ?>" href="index.php?page=SMV">
+                     <i class="icofont-building-alt fs-5"></i>
+                     <span>SMV</span>
                  </a>
              </li>
 

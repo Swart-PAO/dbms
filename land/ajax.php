@@ -4,12 +4,10 @@ date_default_timezone_set("Asia/Manila");
 
 $action = $_GET['action'];
 include 'admin_class.php';
+include 'admin_class_market_value.php';
+
 $crud = new Action();
-if ($action == 'get_property_previous') {
-    $get_property_previous = $crud->get_property_previous();
-    if ($get_property_previous)
-        echo $get_property_previous;
-}
+$crudMarketValue = new ActionMarketValue();
 
 if ($action == 'save_property') {
     $save_property = $crud->save_property();
@@ -42,6 +40,12 @@ if ($action == 'save_land') {
     $save_land = $crud->save_land();
     if ($save_land)
         echo $save_land;
+}
+
+if ($action == 'save_non_agri') {
+    $save_non_agri = $crudMarketValue->save_non_agri();
+    if ($save_non_agri)
+        echo $save_non_agri;
 }
 
 ob_end_flush();

@@ -1,6 +1,6 @@
 <?php
 session_start();
-$_SESSION['version'] = 1;
+$_SESSION['version'] = 2;
 
 ini_set('display_errors', 1);
 
@@ -44,6 +44,7 @@ class Action
 		"eastern",
 		"southern",
 		"western",
+		"memoranda",
 		"previous_pin",
 		"previous_ARP_no",
 		"previous_td_no",
@@ -137,56 +138,6 @@ class Action
 		return $data;
 	}
 
-	// function get_property_previous()
-	// {
-	// 	if (!isset($_GET['search_pin']) || empty($_GET['search_pin'])) {
-	// 		$this->respond(['error' => 'PIN number not provided']);
-	// 	}
-
-	// 	$pin_no   = $_GET['search_pin'];
-	// 	$mun_code = $_GET['mun_code'];
-
-	// 	$stmt = $this->db->prepare("SELECT * FROM `property information` WHERE `PIN` = ? AND `MUNICIPALITY CODE` = ? AND `revised_property_ID`=0 LIMIT 1");
-	// 	$stmt->bind_param("si", $pin_no, $mun_code);
-	// 	$stmt->execute();
-	// 	$result = $stmt->get_result();
-
-	// 	if ($row = $result->fetch_assoc()) {
-	// 		echo json_encode([
-	// 			'BLK'     => $row['BLOCK NUMBER'] ?? '',
-	// 			'survey'  => $row['SURVEY NUMBER'] ?? '',
-	// 			'title_type'      => $row['OCT/TCT/CLOA NUMBER'] ?? '',
-	// 			'lot_no'      => $row['CADASTRAL LOT NUMBER'] ?? '',
-	// 			'owner_name'     => $row['NAME OF OWNER'] ?? '',
-	// 			'owner_address'  => $row['ADDRESS OF OWNER'] ?? '',
-	// 			'owner_tin'      => $row['TIN OWNER'] ?? '',
-	// 			'owner_no'       => $row['TELNO OWNER'] ?? '',
-	// 			'admin_name'     => $row['NAME OF ADMINISTRATOR'] ?? '',
-	// 			'admin_address'  => $row['ADDRESS OF ADMINISTRATOR'] ?? '',
-	// 			'admin_no'       => $row['TELNO ADMIN'] ?? '',
-	// 			'street_no'       => $row['NUMBER STREET'] ?? '',
-	// 			'property_brgy'       => $row['LOCATION OF PROPERTY'] ?? '',
-	// 			'property_municipality' => $row['LOCATION OF PROPERTY'] ?? '',
-	// 			'northern'       => $row['NORTHERN BOUNDARIES'] ?? '',
-	// 			'eastern'       => $row['EASTERN BOUNDARIES'] ?? '',
-	// 			'southern'       => $row['SOUTHERN BOUNDARIES'] ?? '',
-	// 			'western'       => $row['WESTERN BOUNDARIES'] ?? '',
-	// 			'admin_tin'      => $row['TIN ADMIN'] ?? '',
-	// 			'previous_pin'   => $row['PIN'] ?? '',
-	// 			'previous_td_no' => $row['TAX DECLARATION NUMBER'] ?? '',
-	// 			'previous_effectivity' => $row['DATE OF EFFECTIVITY'] ?? '',
-	// 			'previous_assessed_value' => $row['TAXABLE ASSESSED VALUE'] ?? '',
-	// 			'north' => $row['NORTH'] ?? '',
-	// 			'east' => $row['EAST'] ?? '',
-	// 			'south' => $row['SOUTH'] ?? '',
-	// 			'west' => $row['WEST'] ?? '',
-	// 			'previous_ARP_no'      => $row['TAX DECLARATION NUMBER'] ?? '',
-	// 			'property_ID'      => $row['property_ID'] ?? '',
-	// 		]);
-	// 	} else {
-	// 		$this->respond(['error' => 'No record found for this PIN No.']);
-	// 	}
-	// }
 
 	function save_property()
 	{
@@ -200,6 +151,7 @@ class Action
 		$mode = $_POST['mode'] ?? '';
 
 
+
 		// if (!$property_ID) {
 		// 	throw new Exception("Missing property ID.");
 		// }
@@ -208,15 +160,14 @@ class Action
 		foreach ($this->propertyFields as $field) {
 			$data[$field] = $_POST[$field] ?? null;
 		}
+		$data['version'] = $_SESSION['version'];
 
 		try {
 
 			$this->db->begin_transaction();
 			if ($mode === "old") {
 
-
 				$data['old_property_ID'] = $property_ID;
-				$data['version'] = $_SESSION['version'] ?? null;
 				$data['recording_person_ID'] = $_SESSION['user_ID'] ?? null;
 				$data['recording_date'] = date('Y-m-d H:i:s');
 
@@ -269,7 +220,6 @@ class Action
 
 				$data['recording_person_ID'] = $_SESSION['user_ID'] ?? null;
 				$data['recording_date'] = date('Y-m-d H:i:s');
-				$data['version'] = $_SESSION['version'] ?? null;
 
 				$stmt = $this->prepareInsert("property_info", $data);
 				$action = "new";
@@ -287,6 +237,7 @@ class Action
 				$record_id = $property_ID; // For updates, the record_id is the existing property_ID
 			} elseif ($action === "insert" && $mode === "old") {
 				$this->update_property_status($property_ID, $record_id);
+				$mode = "gr";
 			}
 
 
@@ -302,6 +253,7 @@ class Action
 				"success"   => true,
 				"action"    => $action,
 				"record_id" => $record_id,
+				"mode" => $mode,
 				"message"   => ($action === "insert")
 					? "Property added successfully!"
 					: "Property updated successfully!"
@@ -343,7 +295,6 @@ class Action
 	}
 
 	function get_property_revised()
-
 	{
 
 		$property_ID = $_GET['property_ID'] ?? null;
@@ -383,14 +334,7 @@ class Action
         pvs.percent_third,
         pvs.percent_total,
         pvs.total_adjustment
-    FROM property_info AS p
-    LEFT JOIN barangay_list AS brgy
-        ON p.`property_brgy` = brgy.brgy_name
-        AND p.`property_municipality` = brgy.mun_code
-    LEFT JOIN property_valuation_summary AS pvs
-        ON p.property_ID = pvs.property_ID
-    WHERE p.property_ID = ?
-    LIMIT 1");
+    	FROM property_info AS p LEFT JOIN barangay_list AS brgy ON p.`property_brgy` = brgy.brgy_name AND p.`property_municipality` = brgy.mun_code LEFT JOIN property_valuation_summary AS pvs ON p.property_ID = pvs.property_ID WHERE p.property_ID = ? LIMIT 1");
 			$stmt->bind_param("i", $property_ID);
 			$stmt->execute();
 			$result = $stmt->get_result();
@@ -627,38 +571,105 @@ class Action
 		}
 	}
 
-
 	function save_land()
 	{
 		if (!isset($_SESSION['user_ID'])) {
-			return $this->respond(['error' => 'Unauthorized. Please log in.']);
+			return $this->respond([
+				'success' => false,
+				'message' => 'Unauthorized. Please log in.'
+			]);
 		}
+
 		try {
+
+			// =====================================================
+			// START TRANSACTION
+			// =====================================================
+
 			$this->db->begin_transaction();
 
-			$property_ID     = $_POST['property_ID'] ?? '';
-			$total_land_area = $_POST['total_land_area'] ?? 0;
-			$total_land_mv   = $_POST['total_land_mv'] ?? 0;
+
+			// =====================================================
+			// BASIC DATA
+			// =====================================================
+
+			$property_ID = $_POST['property_ID'] ?? '';
+
+			$total_land_area =
+				$_POST['total_land_area'] ?? 0;
+
+			$total_land_mv =
+				$_POST['total_land_mv'] ?? 0;
+
 
 			if (!$property_ID) {
 				throw new Exception("Missing property_ID");
 			}
 
-			$agri_class   = $_POST['agri_class'] ?? [];
-			$sub_classes  = $_POST['sub_class'] ?? [];
-			$areas        = $_POST['area_land'] ?? [];
-			$unit_values  = $_POST['unit_value_land'] ?? [];
-			$bmvs         = $_POST['market_value_land'] ?? [];
 
-			/*
-        |--------------------------------------------------------------------------
-        | Get existing records (for history)
-        |--------------------------------------------------------------------------
-        */
+			// =====================================================
+			// AGRICULTURAL DATA
+			// =====================================================
+
+			$agri_class =
+				$_POST['agri_class'] ?? [];
+
+			$sub_classes =
+				$_POST['sub_class'] ?? [];
+
+			$areas =
+				$_POST['area_land'] ?? [];
+
+			$unit_values =
+				$_POST['unit_value_land'] ?? [];
+
+			$bmvs =
+				$_POST['market_value_land'] ?? [];
+
+
+			// =====================================================
+			// MARKET VALUE DATA
+			// =====================================================
+
+			$mvbmv =
+				$_POST['mvbmv'] ?? 0;
+
+			$factor_first =
+				$_POST['factor_first'] ?? '';
+
+			$percent_first =
+				$_POST['percentage_first'] ?? 0;
+
+			$factor_second =
+				$_POST['factor_second'] ?? '';
+
+			$percent_second =
+				$_POST['percentage_second'] ?? 0;
+
+			$factor_third =
+				$_POST['factor_third'] ?? '';
+
+			$percent_third =
+				$_POST['percentage_third'] ?? 0;
+
+			$percent_total =
+				$_POST['percent_total'] ?? 0;
+
+			$value_adjustment =
+				$_POST['value_adjustment'] ?? 0;
+
+			$market_value =
+				$_POST['market_value'] ?? 0;
+
+
+			// =====================================================
+			// GET EXISTING AGRICULTURAL RECORDS
+			// FOR HISTORY
+			// =====================================================
+
 			$oldRows = [];
 
-			$stmtOld = $this->db->prepare("
-            SELECT
+			$stmtOld = $this->db->prepare("SELECT
                 class,
                 sub_class,
                 area_land,
@@ -669,7 +680,11 @@ class Action
             ORDER BY agri_ID
         ");
 
-			$stmtOld->bind_param("i", $property_ID);
+			$stmtOld->bind_param(
+				"i",
+				$property_ID
+			);
+
 			$stmtOld->execute();
 
 			$result = $stmtOld->get_result();
@@ -680,31 +695,50 @@ class Action
 
 			$stmtOld->close();
 
-			$count  = count($oldRows);
-			$action = ($count > 0) ? "update" : "insert";
-			$mode   = ($count > 0) ? "Updated" : "Inserted";
 
-			/*
-        |--------------------------------------------------------------------------
-        | Delete old rows if updating
-        |--------------------------------------------------------------------------
-        */
+			$count = count($oldRows);
+
+			$action =
+				($count > 0)
+				? "update"
+				: "insert";
+
+			$mode =
+				($count > 0)
+				? "Updated"
+				: "Inserted";
+
+
+			// =====================================================
+			// DELETE OLD AGRICULTURAL ROWS
+			// =====================================================
+
 			if ($count > 0) {
+
 				$delete = $this->db->prepare("
                 DELETE FROM agricultural_info
                 WHERE property_ID = ?
             ");
 
-				$delete->bind_param("i", $property_ID);
-				$delete->execute();
+				$delete->bind_param(
+					"i",
+					$property_ID
+				);
+
+				if (!$delete->execute()) {
+					throw new Exception(
+						$delete->error
+					);
+				}
+
 				$delete->close();
 			}
 
-			/*
-        |--------------------------------------------------------------------------
-        | Insert new rows
-        |--------------------------------------------------------------------------
-        */
+
+			// =====================================================
+			// INSERT AGRICULTURAL ROWS
+			// =====================================================
+
 			$stmt = $this->db->prepare("
             INSERT INTO agricultural_info
             (
@@ -718,118 +752,534 @@ class Action
             VALUES (?, ?, ?, ?, ?, ?)
         ");
 
-			$inserted = 0;
-			$newRows  = [];
 
-			for ($i = 0; $i < count($agri_class); $i++) {
+			$inserted = 0;
+
+			$newRows = [];
+
+
+			for (
+				$i = 0;
+				$i < count($agri_class);
+				$i++
+			) {
+
+				$class =
+					$agri_class[$i] ?? '';
+
+				$sub_class =
+					$sub_classes[$i] ?? '';
+
+				$area =
+					(float) ($areas[$i] ?? 0);
+
+				$unit_value =
+					(float) ($unit_values[$i] ?? 0);
+
+				$bmv =
+					(float) ($bmvs[$i] ?? 0);
+
 
 				$stmt->bind_param(
 					"issddd",
 					$property_ID,
-					$agri_class[$i],
-					$sub_classes[$i],
-					$areas[$i],
-					$unit_values[$i],
-					$bmvs[$i]
+					$class,
+					$sub_class,
+					$area,
+					$unit_value,
+					$bmv
 				);
 
+
 				if (!$stmt->execute()) {
-					throw new Exception($stmt->error);
+					throw new Exception(
+						$stmt->error
+					);
 				}
+
 
 				$inserted++;
 
+
 				$newRows[] = [
-					'class'             => $agri_class[$i],
-					'sub_class'         => $sub_classes[$i],
-					'area_land'         => $areas[$i],
-					'unit_value_land'   => $unit_values[$i],
-					'market_value_land' => $bmvs[$i]
+					'class' =>
+					$class,
+
+					'sub_class' =>
+					$sub_class,
+
+					'area_land' =>
+					$area,
+
+					'unit_value_land' =>
+					$unit_value,
+
+					'market_value_land' =>
+					$bmv
 				];
 			}
 
+
 			$stmt->close();
 
-			/*
-        |--------------------------------------------------------------------------
-        | Update valuation summary
-        |--------------------------------------------------------------------------
-        */
-			$summary = $this->db->prepare("
-            INSERT INTO property_valuation_summary
+
+			// =====================================================
+			// SAVE VALUATION SUMMARY
+			// =====================================================
+
+			$summary = $this->db->prepare("INSERT INTO property_valuation_summary
             (
                 property_ID,
                 total_land_area,
-                total_land_mv
+                total_land_mv,
+
+                factor_first,
+                percent_first,
+
+                factor_second,
+                percent_second,
+
+                factor_third,
+                percent_third,
+
+                percent_total,
+                total_adjustment,
+                total_market_value
             )
-            VALUES (?, ?, ?)
+
+            VALUES (
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?
+            )
+
             ON DUPLICATE KEY UPDATE
-                total_land_area = VALUES(total_land_area),
-                total_land_mv   = VALUES(total_land_mv)
+
+                total_land_area =
+                    VALUES(total_land_area),
+
+                total_land_mv =
+                    VALUES(total_land_mv),
+
+                factor_first =
+                    VALUES(factor_first),
+
+                percent_first =
+                    VALUES(percent_first),
+
+                factor_second =
+                    VALUES(factor_second),
+
+                percent_second =
+                    VALUES(percent_second),
+
+                factor_third =
+                    VALUES(factor_third),
+
+                percent_third =
+                    VALUES(percent_third),
+
+                percent_total =
+                    VALUES(percent_total),
+
+                total_adjustment =
+                    VALUES(total_adjustment),
+
+                total_market_value =
+                    VALUES(total_market_value)
         ");
 
+
+			/*
+         * IMPORTANT:
+         *
+         * i = integer
+         * d = decimal/double
+         * s = string
+         *
+         * property_ID       = i
+         * total_land_area   = d
+         * total_land_mv     = d
+         * factor_first      = s
+         * percent_first     = d
+         * factor_second     = s
+         * percent_second    = d
+         * factor_third      = s
+         * percent_third     = d
+         * percent_total     = d
+         * total_adjustment  = d
+         * total_market_value= d
+         */
+
 			$summary->bind_param(
-				"idd",
+				"iddsdsdsdddd",
 				$property_ID,
 				$total_land_area,
-				$total_land_mv
+				$total_land_mv,
+				$factor_first,
+				$percent_first,
+				$factor_second,
+				$percent_second,
+				$factor_third,
+				$percent_third,
+				$percent_total,
+				$value_adjustment,
+				$market_value
 			);
 
+
 			if (!$summary->execute()) {
-				throw new Exception($summary->error);
+				throw new Exception(
+					$summary->error
+				);
 			}
+
 
 			$summary->close();
 
-			/*
-        |--------------------------------------------------------------------------
-        | Create history JSON
-        |--------------------------------------------------------------------------
-        */
-			$db_update = json_encode([
-				'old' => $oldRows,
-				'new' => $newRows,
-				'summary' => [
-					'total_land_area' => $total_land_area,
-					'total_land_mv'   => $total_land_mv
-				]
-			], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 
-			/*
-        |--------------------------------------------------------------------------
-        | Save Property History
-        |--------------------------------------------------------------------------
-        */
+			// =====================================================
+			// CREATE HISTORY JSON
+			// =====================================================
+
+			$db_update = json_encode(
+				[
+					'old' => $oldRows,
+
+					'new' => $newRows,
+
+					'summary' => [
+
+						'total_land_area' =>
+						$total_land_area,
+
+						'total_land_mv' =>
+						$total_land_mv,
+
+						'mvbmv' =>
+						$mvbmv,
+
+						'factor_first' =>
+						$factor_first,
+
+						'percent_first' =>
+						$percent_first,
+
+						'factor_second' =>
+						$factor_second,
+
+						'percent_second' =>
+						$percent_second,
+
+						'factor_third' =>
+						$factor_third,
+
+						'percent_third' =>
+						$percent_third,
+
+						'percent_total' =>
+						$percent_total,
+
+						'total_adjustment' =>
+						$value_adjustment,
+
+						'total_market_value' =>
+						$market_value
+					]
+
+				],
+				JSON_PRETTY_PRINT |
+					JSON_UNESCAPED_UNICODE
+			);
+
+
+			// =====================================================
+			// SAVE PROPERTY HISTORY
+			// =====================================================
+
 			$this->insert_property_history(
 				$action,
-
 				$property_ID,
 				"agricultural_info",
 				'',
 				$db_update
 			);
 
-			/*
-        |--------------------------------------------------------------------------
-        | Commit
-        |--------------------------------------------------------------------------
-        */
+
+			// =====================================================
+			// COMMIT EVERYTHING
+			// =====================================================
+
+			$this->db->commit();
+
+
+			echo json_encode([
+				"success" => true,
+
+				"action" =>
+				$action,
+
+				"inserted" =>
+				$inserted,
+
+				"message" =>
+				"$mode $inserted land record(s) and market value successfully."
+			]);
+		} catch (Throwable $e) {
+
+			// =====================================================
+			// ROLLBACK EVERYTHING
+			// =====================================================
+
+			if ($this->db->errno === 0 || true) {
+				$this->db->rollback();
+			}
+
+
+			echo json_encode([
+				"success" => false,
+
+				"message" =>
+				$e->getMessage()
+			]);
+		}
+	}
+	function save_non_agri()
+	{
+
+		if (!isset($_SESSION['user_ID'])) {
+			return $this->respond([
+				'success' => false,
+				'message' => 'Unauthorized. Please log in.'
+			]);
+		}
+		try {
+
+			$this->db->begin_transaction();
+
+			$property_ID = $_POST['property_ID'] ?? '';
+			$total_non_agri_area = $_POST['total_non_agri_area'] ?? 0;
+			$total_non_agri_mv   = $_POST['total_non_agri_mv'] ?? 0;
+
+			if (!$property_ID) {
+				throw new Exception("Missing property_ID");
+			}
+
+			// Main arrays
+			$kind                = $_POST['kind'] ?? [];
+			$area_resid          = $_POST['area_resid'] ?? [];
+			$unit_value_resid    = $_POST['unit_value_resid'] ?? [];
+			$adjustment_factor   = $_POST['adjustment_factor'] ?? [];
+			$market_value_resid  = $_POST['market_value_resid'] ?? [];
+			$corner_influence    = $_POST['corner_influence'] ?? [];
+
+			// Strip arrays
+			$first_strip_area    = $_POST['first_strip_area'] ?? [];
+			$second_strip_area   = $_POST['second_strip_area'] ?? [];
+			$third_strip_area    = $_POST['third_strip_area'] ?? [];
+
+			$first_strip_mv      = $_POST['first_strip_mv'] ?? [];
+			$second_strip_mv     = $_POST['second_strip_mv'] ?? [];
+			$third_strip_mv      = $_POST['third_strip_mv'] ?? [];
+
+
+			// 1. CHECK IF PROPERTY ALREADY EXISTS
+
+			$check = $this->db->prepare("SELECT COUNT(*)
+            FROM non_agricultural_info
+            WHERE property_ID = ?
+        ");
+
+			$check->bind_param("i", $property_ID);
+			$check->execute();
+			$check->bind_result($count);
+			$check->fetch();
+			$check->close();
+
+
+			// 2. DELETE OLD ROWS
+
+			if ($count > 0) {
+
+				$delete = $this->db->prepare("
+                DELETE FROM non_agricultural_info
+                WHERE property_ID = ?
+            ");
+
+				$delete->bind_param("i", $property_ID);
+				$delete->execute();
+				$delete->close();
+
+				$mode = "Updated";
+				$action = "Update";
+			} else {
+
+				$mode = "Inserted";
+				$action = "Insert";
+			}
+
+
+			// 3. INSERT NON-AGRICULTURAL RECORDS
+
+			$stmt = $this->db->prepare("INSERT INTO non_agricultural_info
+            (
+                property_ID,
+                kind,
+                area_resid,
+                unit_value_resid,
+                adjustment_factor,
+                market_value_resid,
+                corner_influence,
+                first_strip_area,
+                second_strip_area,
+                third_strip_area,
+                first_strip_mv,
+                second_strip_mv,
+                third_strip_mv
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ");
+
+			$inserted = 0;
+
+			for ($i = 0; $i < count($kind); $i++) {
+
+				/*
+             * Main row values
+             */
+
+				$current_kind = $kind[$i] ?? '';
+
+				$current_area = $area_resid[$i] ?? 0;
+
+				$current_unit_value = $unit_value_resid[$i] ?? 0;
+
+				$current_adjustment = $adjustment_factor[$i] ?? '';
+
+				$current_market_value = $market_value_resid[$i] ?? 0;
+
+				$current_corner = $corner_influence[$i] ?? 0;
+
+
+				/*
+             * Strip values
+             *
+             * If the user did NOT click "+ Strip",
+             * these arrays don't contain a value.
+             *
+             * Therefore default them to 0.
+             */
+
+				$current_first_strip_area =
+					$first_strip_area[$i] ?? 0;
+
+				$current_second_strip_area =
+					$second_strip_area[$i] ?? 0;
+
+				$current_third_strip_area =
+					$third_strip_area[$i] ?? 0;
+
+
+				$current_first_strip_mv =
+					$first_strip_mv[$i] ?? 0;
+
+				$current_second_strip_mv =
+					$second_strip_mv[$i] ?? 0;
+
+				$current_third_strip_mv =
+					$third_strip_mv[$i] ?? 0;
+
+
+				/*
+             * INSERT
+             */
+
+				$stmt->bind_param(
+					"isddsdidddddd",
+					$property_ID,
+					$current_kind,
+					$current_area,
+					$current_unit_value,
+					$current_adjustment,
+					$current_market_value,
+					$current_corner,
+					$current_first_strip_area,
+					$current_second_strip_area,
+					$current_third_strip_area,
+					$current_first_strip_mv,
+					$current_second_strip_mv,
+					$current_third_strip_mv
+				);
+
+				$stmt->execute();
+
+				$inserted++;
+			}
+
+			$stmt->close();
+
+
+			// 4. INSERT OR UPDATE VALUATION SUMMARY
+
+			$summary = $this->db->prepare("INSERT INTO property_valuation_summary
+            (
+                property_ID,
+                total_non_agri_mv,
+                total_non_agri_area
+            )
+            VALUES (?, ?, ?)
+            ON DUPLICATE KEY UPDATE
+                total_non_agri_mv = VALUES(total_non_agri_mv),
+                total_non_agri_area = VALUES(total_non_agri_area)
+        ");
+
+			$summary->bind_param(
+				"idd",
+				$property_ID,
+				$total_non_agri_mv,
+				$total_non_agri_area
+			);
+
+			$summary->execute();
+			$summary->close();
+
+
+			// 5. COMMIT
+
 			$this->db->commit();
 
 			echo json_encode([
-				"success"  => true,
-				"action"   => $action,
-				"inserted" => $inserted,
-				"message"  => "$mode $inserted land record(s)."
+				"success" => true,
+
+				"action" =>
+				$action,
+
+				"inserted" =>
+				$inserted,
+
+				"message" =>
+				"$mode $inserted residential record(s) and market value successfully."
 			]);
+
+			// echo "$mode $inserted residential record(s). "
+			// 	. "Total Area: $total_non_agri_area | "
+			// 	. "Total MV: $total_non_agri_mv";
 		} catch (Throwable $e) {
 
 			$this->db->rollback();
 
-			echo json_encode([
-				"success" => false,
-				"message" => $e->getMessage()
-			]);
+			http_response_code(500);
+
+			echo "Database Error: " . $e->getMessage();
 		}
 	}
 }

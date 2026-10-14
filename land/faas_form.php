@@ -66,7 +66,7 @@ $municipalities = getMunicipalities(); ?>
                                         <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#Property-Tab" role="tab">Property Information</a></li>
                                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#Land-Tab" role="tab">Agricultural</a></li>
                                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#Non-Land-Tab" role="tab">Non-Agricultural</a></li>
-                                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#Maket-Value-Tab" role="tab">Market Value</a></li>
+                                        <!-- <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#Maket-Value-Tab" role="tab">Market Value</a></li> -->
                                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#Assessment-Tab" role="tab">Assessment</a></li>
                                     </ul>
                                 </div>
@@ -378,8 +378,15 @@ $municipalities = getMunicipalities(); ?>
                                         <div class="card-body collapse show" id="rec-seded-section">
 
                                             <h5> Previous Tax Dec </h5>
-
                                             <div class="row g-5">
+                                                <div class="col-md-10">
+                                                    <label class="form-label">Memoranda:</label>
+                                                    <textarea class="form-control" name="memoranda" id="memoranda" rows="5" placeholder="Enter memoranda here..."></textarea>
+                                                </div>
+                                            </div>
+
+                                            <div class="row g-5 mt-1">
+
                                                 <!-- Left Column -->
                                                 <div class="col-md-6 border-end">
 
@@ -436,8 +443,8 @@ $municipalities = getMunicipalities(); ?>
 
                                     <div class="row mt-4">
                                         <div class="col-md-8 offset-md-2">
-                                            <label class="form-label">Remarks:</label>
-                                            <textarea class="form-control" name="description" id="description" rows="3" placeholder="Enter remarks here..."></textarea>
+                                            <label class="form-label">Notes:</label>
+                                            <textarea class="form-control" name="description" id="description" rows="3" placeholder="Enter notes here for updating..."></textarea>
                                         </div>
                                     </div>
 
@@ -459,8 +466,12 @@ $municipalities = getMunicipalities(); ?>
                                         <h5> Agricultural </h5>
                                         <div class="row g-5">
                                             <div class="container">
+
                                                 <form id="agricultural-form">
+
+
                                                     <table class="table table-bordered" id="agricultural-table">
+
                                                         <thead class="table-light">
                                                             <tr>
                                                                 <th>Classification</th>
@@ -473,21 +484,274 @@ $municipalities = getMunicipalities(); ?>
                                                         </thead>
 
                                                         <tbody>
-
+                                                            <!-- Dynamic agricultural rows -->
                                                         </tbody>
 
                                                         <tfoot class="table-secondary fw-bold">
                                                             <tr>
-                                                                <td colspan="2" class="text-end">TOTAL:</td>
-                                                                <td id="total-area">0</td>
+                                                                <td colspan="2" class="text-end">
+                                                                    TOTAL:
+                                                                </td>
+
+                                                                <td id="total-area">
+                                                                    0
+                                                                </td>
+
                                                                 <td></td>
-                                                                <td id="total-bmv-agri">0</td>
-                                                                <td> <button id="add-row-agri" type="button" class="btn btn-sm btn-warning">Add</button></td>
+
+                                                                <td id="total-bmv-agri">
+                                                                    0
+                                                                </td>
+
+                                                                <td>
+                                                                    <button
+                                                                        id="add-row-agri"
+                                                                        type="button"
+                                                                        class="btn btn-sm btn-warning">
+                                                                        Add
+                                                                    </button>
+                                                                </td>
                                                             </tr>
                                                         </tfoot>
+
                                                     </table>
-                                                    <button id="save-land" type="submit" class="btn btn-success">Save to Database</button>
+
+                                                    <h5 class="mt-4">Market Value</h5>
+
+                                                    <div class="row g-5">
+
+                                                        <!-- LEFT COLUMN -->
+                                                        <div class="col-md-6">
+
+                                                            <!-- FIRST FACTOR -->
+                                                            <div class="row mb-2">
+
+                                                                <div class="col-md-4">
+                                                                    <label for="mvbmv" class="form-label">
+                                                                        Base MV
+                                                                    </label>
+
+                                                                    <input
+                                                                        type="number"
+                                                                        step="0.01"
+                                                                        class="form-control"
+                                                                        id="mvbmv"
+                                                                        name="mvbmv"
+                                                                        readonly>
+                                                                </div>
+
+                                                                <div class="col-md-4">
+                                                                    <label for="factor_first" class="form-label">
+                                                                        Factors
+                                                                    </label>
+
+                                                                    <div class="small text-muted mt-1">
+                                                                        Type of Road
+                                                                    </div>
+                                                                    <select
+                                                                        id="factor_first"
+                                                                        name="factor_first"
+                                                                        class="form-control">
+
+                                                                        <option value="">
+                                                                            -- Select Factor --
+                                                                        </option>
+
+                                                                    </select>
+                                                                </div>
+
+                                                                <div class="col-md-4">
+                                                                    <label class="form-label">
+                                                                        Percentage
+                                                                    </label>
+                                                                    <div class="small text-muted mt-1">
+                                                                        Deduction (%)
+                                                                    </div>
+                                                                    <select
+                                                                        id="percentage_first"
+                                                                        name="percentage_first"
+                                                                        class="form-control">
+
+                                                                        <option value="">
+                                                                            -- Select Percentage --
+                                                                        </option>
+
+                                                                    </select>
+                                                                </div>
+
+                                                            </div>
+
+
+                                                            <!-- SECOND FACTOR -->
+                                                            <div class="row mt-4">
+
+                                                                <div class="col-md-4"></div>
+
+                                                                <div class="col-md-4">
+                                                                    <div class="small text-muted mt-1">
+                                                                        Distance in Weather Road
+                                                                    </div>
+
+                                                                    <select
+                                                                        id="factor_second"
+                                                                        name="factor_second"
+                                                                        class="form-control">
+
+                                                                        <option value="">
+                                                                            -- Select Factor --
+                                                                        </option>
+
+                                                                    </select>
+
+                                                                </div>
+
+                                                                <div class="col-md-4">
+
+                                                                    <div class="small text-muted mt-1">
+                                                                        Deduction (%)
+                                                                    </div>
+                                                                    <select
+                                                                        id="percentage_second"
+                                                                        name="percentage_second"
+                                                                        class="form-control">
+
+                                                                        <option value="">
+                                                                            -- Select Percentage --
+                                                                        </option>
+
+                                                                    </select>
+
+                                                                </div>
+
+                                                            </div>
+
+
+                                                            <!-- THIRD FACTOR -->
+                                                            <div class="row mt-4">
+
+                                                                <div class="col-md-4"></div>
+
+                                                                <div class="col-md-4">
+                                                                    <div class="small text-muted mt-1">
+                                                                        Distance to Local Trading Center
+                                                                    </div>
+
+                                                                    <select
+                                                                        id="factor_third"
+                                                                        name="factor_third"
+                                                                        class="form-control">
+
+                                                                        <option value="">
+                                                                            -- Select Factor --
+                                                                        </option>
+
+                                                                    </select>
+
+                                                                </div>
+
+                                                                <div class="col-md-4">
+                                                                    <div class="small text-muted mt-1">
+                                                                        Deduction (%)
+                                                                    </div>
+
+                                                                    <select
+                                                                        id="percentage_third"
+                                                                        name="percentage_third"
+                                                                        class="form-control">
+
+                                                                        <option value="">
+                                                                            -- Select Percentage --
+                                                                        </option>
+
+                                                                    </select>
+
+                                                                </div>
+
+                                                            </div>
+
+                                                        </div>
+
+
+                                                        <!-- RIGHT COLUMN -->
+                                                        <div class="col-md-6">
+
+                                                            <div class="row">
+
+                                                                <div class="col-md-4">
+                                                                    <label class="form-label">
+                                                                        Total
+                                                                    </label>
+
+                                                                    <input
+                                                                        type="number"
+                                                                        step="0.01"
+                                                                        class="form-control"
+                                                                        name="percent_total"
+                                                                        id="percent_total"
+                                                                        readonly>
+                                                                </div>
+
+                                                                <div class="col-md-4">
+
+                                                                    <label
+                                                                        for="value_adjustment"
+                                                                        class="form-label">
+
+                                                                        Value Adjustment
+
+                                                                    </label>
+
+                                                                    <input
+                                                                        type="number"
+                                                                        step="0.01"
+                                                                        class="form-control"
+                                                                        name="value_adjustment"
+                                                                        id="value_adjustment"
+                                                                        readonly>
+
+                                                                </div>
+
+                                                                <div class="col-md-4">
+
+                                                                    <label
+                                                                        for="market_value"
+                                                                        class="form-label">
+
+                                                                        Market Value
+
+                                                                    </label>
+
+                                                                    <input
+                                                                        type="number"
+                                                                        step="0.01"
+                                                                        class="form-control"
+                                                                        name="market_value"
+                                                                        id="market_value"
+                                                                        readonly>
+
+                                                                </div>
+
+                                                            </div>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div class="text-center mt-4">
+
+                                                        <button
+                                                            id="save-land"
+                                                            type="submit"
+                                                            class="btn btn-success">
+
+                                                            Save to Database
+
+                                                        </button>
+
+                                                    </div>
+
                                                 </form>
+
                                             </div>
 
 
@@ -512,12 +776,16 @@ $municipalities = getMunicipalities(); ?>
                                                     <table class="table table-bordered" id="non_agricultural-table">
                                                         <thead class="table-light">
                                                             <tr>
-                                                                <th>Kind</th>
-                                                                <th>Area (Meter)</th>
-                                                                <th>Unit Value</th>
-                                                                <th>Adjustment Factor</th>
-                                                                <th>Base Market Value</th>
-                                                                <th>Action</th>
+                                                                <th style="width: 10%;">Kind</th>
+                                                                <th style="width: 5%;">Adjustment Factor</th>
+                                                                <th style="width: 15%;">Unit Value</th>
+                                                                <th style="width: 5%;">Corner Influence</th>
+                                                                <th style="width: 10%;">Area(Strip)</th>
+                                                                <th style="width: 5%;">Percent(Strip)</th>
+                                                                <th style="width: 15%;">Strip Market Value</th>
+                                                                <th style="width: 10%;">Area</th>
+                                                                <th style="width: 15%;">Base Market Value</th>
+                                                                <th style="width: 10%;">Action</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -525,11 +793,13 @@ $municipalities = getMunicipalities(); ?>
                                                         </tbody>
                                                         <tfoot class="table-secondary fw-bold">
                                                             <tr>
-                                                                <td colspan="2" class="text-end">TOTAL:</td>
+                                                                <td colspan="4" class="text-end">TOTAL:</td>
                                                                 <td id="total-area-non_agricultural">0</td>
                                                                 <td></td>
+                                                                <td></td>
+                                                                <td></td>
                                                                 <td id="total-bmv-non_agricultural">0</td>
-                                                                <td> <button id="add-row-non_agricultural" type="button" class="btn btn-sm btn-warning">Add</button></td>
+                                                                <td> <button id="add-row-non_agricultural" type="button" class="btn btn-sm btn-info">Add Non-Agricultural</button></td>
                                                             </tr>
                                                         </tfoot>
                                                     </table>
@@ -546,122 +816,20 @@ $municipalities = getMunicipalities(); ?>
                             </div>
 
                             <!-- Land Market Value Section -->
-                            <div class="tab-pane fade" id="Maket-Value-Tab">
+                            <!-- <div class="tab-pane fade" id="Maket-Value-Tab">
                                 <div class="card border-success mb-4">
                                     <div class="card-header bg-light fw-bold" data-bs-toggle="collapse" data-bs-target="#market-value-section" style="cursor:pointer;">
                                         Market Value
                                     </div>
                                     <div class="card-body collapse show" id="market-value-section">
 
-                                        <form id="market-value-form">
-                                            <h5> Market Value </h5>
-                                            <div class="row g-5">
 
-
-                                                <!-- Left Column -->
-
-                                                <div class="col-md-6">
-                                                    <div class="row mb-2">
-
-                                                        <div class="col-md-4">
-                                                            <label for="bmv" class="form-label">Base MV</label>
-                                                            <input type="bmv" class="form-control" id="mvbmv" name="mvbmv" required readonly>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <label for="lastname" class="form-label">Factors</label>
-                                                            <select id="factor_first" name="factor_first" class="form-control" required>
-                                                                <option value="">-- Select Factor --</option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <label class="form-label">Percentage</label>
-                                                            <select id="percentage_first" name="percentage_first" class="form-control" required>
-                                                                <option value="">-- Select Percentage --</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row mt-4">
-
-                                                        <div class="col-md-4 ">
-                                                        </div>
-                                                        <div class="col-md-4">
-
-                                                            <select id="factor_second" name="factor_second" class="form-control" required>
-                                                                <option value="">-- Select Factor --</option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="col-md-4">
-
-                                                            <select id="percentage_second" name="percentage_second" class="form-control" required>
-                                                                <option value="">-- Select Percentage --</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row mt-4">
-
-                                                        <div class="col-md-4 ">
-
-                                                        </div>
-                                                        <div class="col-md-4">
-
-                                                            <input type="text" class="form-control" name="factor_third" id="factor_third">
-                                                        </div>
-                                                        <div class="col-md-4">
-
-                                                            <select id="percentage_third" name="percentage_third" class="form-control" required>
-                                                                <option value="">-- Select Percentage --</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-                                                <div class="col-md-6">
-                                                </div>
-                                            </div>
-
-                                            <div class="row g-5">
-                                                <div class="col-md-6">
-
-                                                    <div class="row mt-4">
-
-                                                        <div class="col-md-4 ">
-
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <label class="form-label float-end">Total</label>
-                                                        </div>
-                                                        <div class="col-md-4">
-
-                                                            <input type="number" class="form-control" name="percent_total" id="percent_total">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <!-- Right Column -->
-                                                <div class="col-md-4">
-                                                    <div class="row mb-2">
-
-                                                        <div class="col-md-6">
-                                                            <label for="value_adjustment" class="form-label">Value Adjusment</label>
-                                                            <input type="text" class="form-control" name="value_adjustment" id="value_adjustment" required readonly>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <label for="market_value" class="form-label">Market Value</label>
-                                                            <input type="text" class="form-control" name="market_value" id="market_value" required readonly>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="text-center">
-                                                <button id="save-market-value" type="submit" class="btn btn-success">Save</button>
-                                            </div>
-                                        </form>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
 
                             <div class="tab-pane fade" id="Assessment-Tab">
-                                <div class="card border-success mb-4">
+                                <!-- <div class="card border-success mb-4">
                                     <div class="card-header bg-light fw-bold" data-bs-toggle="collapse" data-bs-target="#assessment-section" style="cursor:pointer;">
                                         Property Assessment
                                     </div>
@@ -703,8 +871,62 @@ $municipalities = getMunicipalities(); ?>
                                             </div>
 
 
+
                                         </div>
                                     </div>
+
+
+                                </div> -->
+
+                                <div class="card border-success mb-4">
+                                    <!-- <div class="card-header bg-light fw-bold">
+                                        Property Assessment Update
+                                    </div> -->
+                                    <div class="card-body collapse show" id="assessment-section">
+
+                                        <h5> Property Assessment Update</h5>
+                                        <div class="row g-5 mb-3">
+                                            <div class="container">
+                                                <form id="assessment-form-update">
+                                                    <table class="table table-bordered" id="assessment-table-update">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                <th>Kind</th>
+                                                                <th>Actual Use</th>
+                                                                <th>Taxable</th>
+                                                                <th>Market Value</th>
+                                                                <th>Assessment Level (%)</th>
+                                                                <th>Assessed Value</th>
+
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+
+                                                        </tbody>
+                                                        <tfoot class="table-secondary fw-bold">
+                                                            <tr>
+                                                                <td colspan="3" class="text-end">TOTAL:</td>
+                                                                <td id="total-bmv-assessment">0</td>
+
+                                                                <td></td>
+                                                                <td id="total-assessed-value">0</td>
+
+                                                            </tr>
+                                                        </tfoot>
+                                                    </table>
+
+                                                    <button id="save-assessment-update" type="submit" class="btn btn-success">Save</button>
+
+                                                </form>
+
+                                            </div>
+
+
+
+                                        </div>
+                                    </div>
+
+
                                 </div>
                             </div>
 
@@ -753,7 +975,9 @@ $municipalities = getMunicipalities(); ?>
 </html>
 
 <script src="faas_form.js"></script>
-<script src="dynamic_row.js"></script>
+<script src="agri_market_value.js"></script>
+<script src="non_agri_market_value.js"></script>
+<script src="assessment.js"></script>
 
 <script>
     const sess_brgy = <?= json_encode($_SESSION['brgy']) ?>;

@@ -1,6 +1,7 @@
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    include "../../db_connect.php";
+    require_once __DIR__ . '/../config.php';
+    require_once ROOT_PATH . '/db/db_connect.php';
     $property_ID = $_POST['property_ID'] ?? '';
 
     if (!$property_ID) {

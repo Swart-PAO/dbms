@@ -122,7 +122,7 @@
                                     </thead>
                                     <tbody>
                                         <?php
-                                        $results = getPropertiesByBarangayRevision($mun_code, $brgy_session, NULL, NULL);
+                                        $results = getPropertiesByBarangayRevision($mun_code, $brgy_session, NULL, NULL, NULL, NULL);
                                         $counter = 1;
                                         while ($row = $results->fetch_assoc()):
                                         ?>

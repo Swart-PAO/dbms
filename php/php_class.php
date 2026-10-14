@@ -123,7 +123,7 @@ function getPropertiesByBarangay($mun_code, $barangay, $land_type, $faas, $limit
 }
 
 
-function getPropertiesByBarangayRevision($mun_code, $barangay, $limit, $user_ID)
+function getPropertiesByBarangayRevision($mun_code, $barangay, $limit, $user_ID, $version)
 {
 
     global $conn;
@@ -140,11 +140,12 @@ function getPropertiesByBarangayRevision($mun_code, $barangay, $limit, $user_ID)
         FROM `property_info`
         WHERE `property_brgy` = ?
         AND `property_municipality` = ?
+    AND `version` = ?
     ";
 
 
-    $types = "si";
-    $params = [$barangay, $mun_code];
+    $types = "sii";
+    $params = [$barangay, $mun_code, $version];
 
     if ($user_ID) {
         $query .= " AND `recording_person_ID` = ?";

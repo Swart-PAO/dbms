@@ -33,4 +33,10 @@ if ($action == 'get_building_info') {
     if ($get_building_info)
         echo $get_building_info;
 }
+
+if ($action == 'save_appraisal') {
+    $save_appraisal = $crud->save_appraisal();
+    if ($save_appraisal)
+        echo $save_appraisal;
+}
 ob_end_flush();

@@ -94,18 +94,48 @@ function isChecked($code, $saved_string)
     <div class="container bg-white">
         <!-- For Search Building Pin UI -->
         <form class="" method="POST">
-            <div class="d-flex justify-content-between align_items-center text-white my-3 fs-5 fw-bold bg-success p-2 rounded">
-                <div class="flex-grow-1 text-start">REAL PROPERTY FIELD APPRAISAL & ASSESSMENT SHEET-BUILDING & OTHER STRUCTURE</div>
-                <div class="input-group w-25">
-                    <span class="input-group-text">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                        </svg>
-                    </span>
+            <div class="card-header bg-success text-white my-3 p-2 rounded">
+                <div class="row align-items-center g-2">
 
-                    <input type="text" class="form-control border-start-0 ps-0" id="search_id" placeholder="Search by Building ID" value="<?php echo $b_id ?? '' ?>">
+                    <!-- Home Button -->
+                    <div class="col-auto">
+                        <a href="<?= BASE_URL ?>/index.php" class="btn btn-light btn-sm">
+                            <i class="icofont-home fs-5"></i> Home
+                        </a>
+                    </div>
 
-                    <button class="btn btn-success" type="button" id="fetchBtn">Search</button>
+                    <!-- Centered Title -->
+                    <div class="col text-center fw-bold fs-5">
+                        REAL PROPERTY FIELD APPRAISAL &amp; ASSESSMENT SHEET -
+                        BUILDING &amp; OTHER STRUCTURE
+                    </div>
+
+                    <!-- Search Bar -->
+                    <div class="col-auto">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    width="16" height="16"
+                                    fill="currentColor"
+                                    class="bi bi-search"
+                                    viewBox="0 0 16 16">
+                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                                </svg>
+                            </span>
+
+                            <input
+                                type="text"
+                                class="form-control border-start-0 ps-0"
+                                id="search_id"
+                                placeholder="Search by Building ID"
+                                value="<?php echo $b_id ?? '' ?>">
+
+                            <button class="btn btn-light" type="button" id="fetchBtn">
+                                Search
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </form>
@@ -119,6 +149,14 @@ function isChecked($code, $saved_string)
             <div class="stepper-item" id="step-dot-structural_material" onclick="to_structural_materials()">
                 <div class="step-counter">2</div>
                 <div class="step-name d-none d-md-block">Structural Materials</div>
+            </div>
+            <div class="stepper-item" id="step-dot-property_appraisal" onclick="to_property_appraisal()">
+                <div class="step-counter">3</div>
+                <div class="step-name d-none d-md-block">Property Appraisal</div>
+            </div>
+            <div class="stepper-item" id="step-dot-property_assessment" onclick="to_property_assessment()">
+                <div class="step-counter">4</div>
+                <div class="step-name d-none d-md-block">Property Assessment</div>
             </div>
 
         </div>
@@ -738,7 +776,550 @@ function isChecked($code, $saved_string)
             </form>
         </div>
 
+        <!-- PROPERTY APPRAISAL -->
+        <div class="card shadow-lg border-success mb-3 form-step d-none" id="property_appraisal">
+            <form method="POST">
+                <div class="text-white bg-success p-2 fw-bolder">
+                    <i class="bi bi-house-exclamation"></i> PROPERTY APPRAISAL
+                </div>
 
+                <div class="p-4">
+
+                    <!-- UNIT COST / SUB TOTAL UNIT / BUILDING CORE -->
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+
+                            <div class="mb-3">
+                                <label for="unit_cost" class="form-label">
+                                    Unit Construction Cost (sq.m.): P
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-control border-success"
+                                    name="unit_cost"
+                                    id="unit_cost" />
+                            </div>
+
+                            <div class="mb-0">
+                                <label for="sub_total_unit" class="form-label">
+                                    Sub-Total:
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-control border-success"
+                                    name="sub_total_unit"
+                                    id="sub_total_unit" />
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-6 d-flex flex-column">
+
+                            <label for="building_core" class="form-label">
+                                Building Core
+                            </label>
+
+                            <textarea
+                                class="form-control border-success flex-grow-1"
+                                id="building_core"
+                                name="building_core"
+                                style="height: 100px;"></textarea>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- DEPRECIATION -->
+                    <div class="row mt-3 mb-3">
+
+                        <div class="col-12">
+
+                            <div class="card border-success p-3 bg-light shadow-sm">
+
+                                <div class="row g-3">
+
+                                    <div class="col-md-6">
+
+                                        <label for="depreciation_rate" class="form-label">
+                                            Depreciation Rate
+                                        </label>
+
+                                        <div class="input-group">
+
+                                            <input
+                                                type="text"
+                                                class="form-control border-success"
+                                                name="depreciation_rate"
+                                                id="depreciation_rate" />
+
+                                            <span class="input-group-text bg-success text-white border-success">
+                                                %
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="col-md-6">
+
+                                        <label for="depreciation_cost" class="form-label">
+                                            Depreciation Cost:
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            class="form-control border-success"
+                                            name="depreciation_cost"
+                                            id="depreciation_cost" />
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ADDITIONAL ITEMS -->
+                    <div class="row">
+
+                        <div class="card bg-success text-white p-3">
+
+                            <div class="row g-3">
+
+                                <div class="col-md-6 d-flex flex-column">
+
+                                    <label for="additional_items_cost" class="form-label">
+                                        Cost of Additional Items
+                                    </label>
+
+                                    <textarea
+                                        name="additional_items_cost"
+                                        id="additional_items_cost"
+                                        class="form-control border-success flex-grow-1"></textarea>
+
+                                </div>
+
+
+                                <div class="col-md-6">
+
+                                    <!-- SUB TOTAL ADDITIONAL ITEMS -->
+                                    <div class="mb-3">
+
+                                        <label for="sub_total_additional_items" class="form-label">
+                                            Sub-Total: P
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            class="form-control border-success"
+                                            name="sub_total_additional_items"
+                                            id="sub_total_additional_items" />
+
+                                    </div>
+
+
+                                    <!-- TOTAL COST -->
+                                    <div class="mb-0">
+
+                                        <label for="total_cost" class="form-label">
+                                            Total Construction Cost: P
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            class="form-control border-success"
+                                            name="total_cost"
+                                            id="total_cost" />
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- TOTAL DEPRECIATION / MARKET VALUE -->
+                            <div class="row mt-3">
+
+                                <div class="col-12">
+
+                                    <div class="card border-success p-3 bg-light shadow-sm">
+
+                                        <div class="row g-3">
+
+                                            <!-- TOTAL DEPRECIATION -->
+                                            <div class="col-md-6">
+
+                                                <label for="total_depreciation" class="form-label text-success">
+                                                    Total Depreciation
+                                                </label>
+
+                                                <div class="input-group">
+
+                                                    <input
+                                                        type="text"
+                                                        class="form-control border-success"
+                                                        name="total_depreciation"
+                                                        id="total_depreciation" />
+
+                                                    <span class="input-group-text bg-success text-white border-success">
+                                                        %
+                                                    </span>
+
+                                                </div>
+
+                                            </div>
+
+
+                                            <!-- MARKET VALUE -->
+                                            <div class="col-md-6">
+
+                                                <label for="market_value" class="form-label text-success">
+                                                    Market Value
+                                                </label>
+
+                                                <input
+                                                    type="text"
+                                                    class="form-control border-success"
+                                                    name="market_value"
+                                                    id="market_value" />
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- NAVIGATION -->
+                <div class="d-flex justify-content-between align-items-center p-2">
+
+                    <a
+                        href="javascript:void(0)"
+                        class="nav-link text-success fst-italic"
+                        onclick="to_structural_materials()">
+                        &lt;&lt;&lt;---- Previous
+                    </a>
+
+                    <button
+                        class="btn btn-success fst-italic fw-bold"
+
+                        id="appraisal_save_btn">
+                        Save and Proceed
+                        <i class="bi bi-arrow-right-square-fill"></i>
+                    </button>
+
+                </div>
+            </form>
+
+        </div>
+
+        <!-- PROPERTY ASSESSMENT -->
+        <div class="card shadow-lg border-success mb-3 form-step d-none" id="property_assessment">
+
+            <div class="text-white bg-success p-2 fw-bolder">
+                <i class="bi bi-house-exclamation"></i>
+                PROPERTY ASSESSMENT
+            </div>
+
+            <div class="p-4">
+                <form method="POST" id="assessment_form">
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle mb-0" style="min-width: 600px;">
+
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 25%;">Actual Use</th>
+                                    <th>Market Value</th>
+                                    <th>Assessment Level</th>
+                                    <th>Taxable</th>
+                                    <th>Assessed Value</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="assessment_table_body">
+
+                                <!-- ASSESSMENT ROW -->
+                                <tr class="assessment-row">
+
+                                    <!-- ACTUAL USE -->
+                                    <td>
+                                        <input
+                                            type="text"
+                                            class="form-control form-control-sm border-success"
+                                            name="actual_use[]"
+                                            id="actual_use">
+                                    </td>
+
+                                    <td>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">₱</span>
+
+                                            <input
+                                                type="text"
+                                                class="form-control text-end border-success"
+                                                name="market_value[]"
+                                                id="market_value">
+                                        </div>
+                                    </td>
+
+                                    <!-- ASSESSMENT LEVEL -->
+                                    <td>
+                                        <div class="input-group input-group-sm">
+
+                                            <input
+                                                type="text"
+                                                class="form-control text-end border-success"
+                                                name="assessment_level[]"
+                                                id="assessment_level">
+
+                                            <span class="input-group-text">%</span>
+
+                                        </div>
+                                    </td>
+
+                                    <td>
+
+                                        <select
+                                            class="form-select form-select-sm border-success"
+                                            name="taxable[]"
+                                            id="taxable">
+                                            <option value="">Select Tax Status</option>
+                                            <option value="TAXABLE">TAXABLE</option>
+                                            <option value="EXEMPT">EXEMPT</option>
+                                        </select>
+                                    </td>
+
+                                    <!-- ASSESSED VALUE -->
+                                    <td>
+                                        <div class="input-group input-group-sm">
+
+                                            <span class="input-group-text">₱</span>
+
+                                            <input
+                                                type="text"
+                                                class="form-control text-end border-success"
+                                                name="assessed_value[]"
+                                                id="assessed_value">
+
+                                        </div>
+                                    </td>
+
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-danger" onclick="this.closest('tr').remove()">Remove</button>
+                                    </td>
+
+                                </tr>
+
+
+                                <!-- TOTAL ROW -->
+                                <tr class="table-secondary">
+
+                                    <td>
+                                        <div class="d-flex align-items-center">
+
+
+                                            <span class="fw-bold">Total</span>
+
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <div class="input-group input-group-sm ">
+
+                                            <span class="input-group-text bg-transparent">₱</span>
+
+                                            <input
+                                                type="text"
+                                                class="form-control text-end fw-bold border-success"
+                                                id="total_market_val"
+                                                name="total_market_val"
+                                                readonly>
+
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <div class="input-group input-group-sm">
+
+                                            <input
+                                                type="text"
+                                                class="form-control text-end fw-bold border-success"
+                                                id="total_assessment_level"
+                                                name="total_assessment_level"
+                                                readonly>
+
+                                            <span class="input-group-text bg-transparent">%</span>
+
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <div class="input-group input-group-sm">
+
+                                            <span class="input-group-text bg-transparent"></span>
+
+                                        </div>
+                                    </td>
+
+
+
+                                    <td>
+                                        <div class="input-group input-group-sm">
+
+                                            <span class="input-group-text bg-transparent">₱</span>
+
+                                            <input
+                                                type="text"
+                                                class="form-control text-end fw-bold border-success"
+                                                id="total_assessed_value"
+                                                name="total_assessed_value"
+                                                readonly>
+
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <button
+                                            type="button"
+                                            class="btn btn-success"
+                                            onclick="addRow()">
+                                            Add Row
+                                        </button>
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+                    </div>
+
+
+                    <!-- TAX STATUS -->
+                    <div class="p-3 border-top bg-light">
+
+                        <div class="row g-3 align-items-center">
+
+
+
+                            <!-- EFFECTIVITY -->
+                            <div class="col-md">
+
+                                <div class="d-flex align-items-center gap-2">
+
+                                    <label
+                                        for="effective_assessment"
+                                        class="text-secondary fw-bold small text-nowrap mb-0">
+                                        Effectivity of Assessment
+                                    </label>
+
+
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- QTR / YEAR -->
+                            <div class="col-md-auto">
+
+                                <div class="input-group input-group-sm">
+
+                                    <span class="input-group-text bg-white text-secondary small">
+                                        Qtr
+                                    </span>
+
+                                    <input
+                                        type="text"
+                                        name="qtr"
+                                        id="qtr"
+                                        class="form-control text-center border-success"
+                                        style="max-width: 100px;">
+
+                                    <span class="input-group-text bg-white text-secondary small">
+                                        Yr
+                                    </span>
+
+                                    <select
+                                        name="yr"
+                                        id="yr"
+                                        class="form-select text-center border-success"
+                                        style="max-width: 100px;">
+                                        <option value="">Select Year</option>
+                                        <?php
+                                        // $currentYear = date('Y');
+                                        for ($year = 2030; $year >= 2000; $year--) {
+                                            echo "<option value=\"$year\">$year</option>";
+                                        }
+                                        ?>
+
+                                    </select>
+
+                                    <!-- <input
+                                    type="text"
+                                    name="yr"
+                                    id="yr"
+                                    class="form-control text-center border-success"
+                                    style="max-width: 65px;"> -->
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+
+                    <!-- NAVIGATION -->
+                    <div class="d-flex justify-content-between align-items-center p-2">
+
+                        <a
+                            href="javascript:void(0)"
+                            class="nav-link text-success fst-italic"
+                            onclick="to_property_appraisal()">
+                            &lt;&lt;&lt;---- Previous
+                        </a>
+
+                        <button
+                            class="btn btn-success fst-italic fw-bold"
+
+                            id="assessment_save_btn">
+                            Save
+                            <i class="bi bi-arrow-right-square-fill"></i>
+                        </button>
+
+
+                    </div>
+                </form>
+            </div>
+
+        </div>
 
         <div class="modal fade" id="form_success_saved" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-md">

@@ -19,5 +19,7 @@ $data = [];
 while ($row = $result->fetch_assoc()) {
     $data[] = $row;
 }
+// $stmt = $conn->prepare("SELECT market_value FROM agricultural_info WHERE property_ID = ?");
+// $stmt = $conn->prepare("SELECT market_value_resid FROM non_agricultural_info WHERE property_ID = ?");
 
 echo json_encode($data);

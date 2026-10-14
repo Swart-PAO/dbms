@@ -1,6 +1,6 @@
 <?php
 session_start();
-$_SESSION['version'] = 1;
+$_SESSION['version'] = 2;
 
 ini_set('display_errors', 1);
 
@@ -146,6 +146,7 @@ class Action
 		foreach ($this->generalBuildingFields as $field) {
 			$data[$field] = $_POST[$field] ?? null;
 		}
+		$data['version'] = $_SESSION['version'];
 
 		try {
 
@@ -172,7 +173,7 @@ class Action
 
 					// 🔥 INSERT
 					$data['ID_2022'] = $building_id;
-					$data['version'] = $_SESSION['version'] ?? 1;
+
 					$data['recording_person_ID'] = $_SESSION['user_ID'] ?? null;
 					$data['recording_date'] = date('Y-m-d H:i:s');
 					$stmt = $this->prepareInsert("building_desc", $data);
@@ -728,6 +729,228 @@ class Action
 			echo json_encode([
 				"success" => false,
 				"error" => $e->getMessage()
+			]);
+		}
+	}
+
+
+	function save_appraisal()
+	{
+		if (!isset($_SESSION['user_ID'])) {
+			return $this->respond([
+				'success' => false,
+				'error'   => 'Unauthorized. Please log in.'
+			]);
+		}
+
+		$mode = $_POST['mode'] ?? null;
+
+		// Building ID
+		$building_id = filter_input(
+			INPUT_POST,
+			'building_id',
+			FILTER_VALIDATE_INT
+		);
+
+		if (!$building_id) {
+			return $this->respond([
+				'success' => false,
+				'message' => 'Invalid building ID.'
+			]);
+		}
+
+		// ==========================================
+		// GET APPRAISAL DATA
+		// ==========================================
+
+		$unit_cost = $_POST['unit_cost'] ?? null;
+		$sub_total_unit = $_POST['sub_total_unit'] ?? null;
+		$building_core = $_POST['building_core'] ?? null;
+		$depreciation_rate = $_POST['depreciation_rate'] ?? null;
+		$depreciation_cost = $_POST['depreciation_cost'] ?? null;
+		$additional_items_cost = $_POST['additional_items_cost'] ?? null;
+		$sub_total_additional_items = $_POST['sub_total_additional_items'] ?? null;
+		$total_cost = $_POST['total_cost'] ?? null;
+		$total_depreciation = $_POST['total_depreciation'] ?? null;
+		$market_value = $_POST['market_value'] ?? null;
+
+		// ==========================================
+		// CLEAN NUMERIC VALUES
+		// ==========================================
+
+		$unit_cost = ($unit_cost !== '' && $unit_cost !== null)
+			? (float) str_replace(',', '', $unit_cost)
+			: null;
+
+		$sub_total_unit = ($sub_total_unit !== '' && $sub_total_unit !== null)
+			? (float) str_replace(',', '', $sub_total_unit)
+			: null;
+
+		$building_core = ($building_core !== '' && $building_core !== null)
+			? (float) str_replace(',', '', $building_core)
+			: null;
+
+		$depreciation_rate = ($depreciation_rate !== '' && $depreciation_rate !== null)
+			? (int) $depreciation_rate
+			: null;
+
+		$depreciation_cost = ($depreciation_cost !== '' && $depreciation_cost !== null)
+			? (float) str_replace(',', '', $depreciation_cost)
+			: null;
+
+		$additional_items_cost = ($additional_items_cost !== '' && $additional_items_cost !== null)
+			? (float) str_replace(',', '', $additional_items_cost)
+			: null;
+
+		$sub_total_additional_items = ($sub_total_additional_items !== '' && $sub_total_additional_items !== null)
+			? (float) str_replace(',', '', $sub_total_additional_items)
+			: null;
+
+		$total_cost = ($total_cost !== '' && $total_cost !== null)
+			? (float) str_replace(',', '', $total_cost)
+			: null;
+
+		$total_depreciation = ($total_depreciation !== '' && $total_depreciation !== null)
+			? (int) $total_depreciation
+			: null;
+
+		$market_value = ($market_value !== '' && $market_value !== null)
+			? (float) str_replace(',', '', $market_value)
+			: null;
+
+
+		// ==========================================
+		// TRANSACTION
+		// ==========================================
+
+		try {
+
+			$this->db->begin_transaction();
+
+			// ==========================================
+			// CHECK BUILDING EXISTS
+			// ==========================================
+
+			$check = $this->db->prepare("
+            SELECT building_id
+            FROM building_desc
+            WHERE building_id = ?
+            LIMIT 1
+        ");
+
+			if (!$check) {
+				throw new Exception(
+					"Prepare failed: " . $this->db->error
+				);
+			}
+
+			$check->bind_param("i", $building_id);
+
+			if (!$check->execute()) {
+				throw new Exception(
+					"Execute failed: " . $check->error
+				);
+			}
+
+			$result = $check->get_result();
+
+			if ($result->num_rows === 0) {
+				$check->close();
+
+				throw new Exception(
+					"Building record not found."
+				);
+			}
+
+			$check->close();
+
+
+			// ==========================================
+			// UPDATE BUILDING APPRAISAL
+			// ==========================================
+
+			$sql = "
+            UPDATE building_desc
+            SET
+                unit_cost = ?,
+                sub_total_unit = ?,
+                depreciation_rate = ?,
+                building_core = ?,
+                depreciation_cost = ?,
+                additional_items_cost = ?,
+                sub_total_additional_items = ?,
+                total_cost = ?,
+                total_depreciation = ?,
+                market_value = ?
+            WHERE building_id = ?
+        ";
+
+			$stmt = $this->db->prepare($sql);
+
+			if (!$stmt) {
+				throw new Exception(
+					"Prepare failed: " . $this->db->error
+				);
+			}
+
+			/*
+         * Types:
+         *
+         * d = DECIMAL
+         * i = INTEGER
+         *
+         * 10 values + building_id
+         */
+
+			$stmt->bind_param(
+				"ddidddddiii",
+				$unit_cost,
+				$sub_total_unit,
+				$depreciation_rate,
+				$building_core,
+				$depreciation_cost,
+				$additional_items_cost,
+				$sub_total_additional_items,
+				$total_cost,
+				$total_depreciation,
+				$market_value,
+				$building_id
+			);
+
+			if (!$stmt->execute()) {
+				throw new Exception(
+					"Update failed: " . $stmt->error
+				);
+			}
+
+			$stmt->close();
+
+
+			// ==========================================
+			// COMMIT
+			// ==========================================
+
+			$this->db->commit();
+
+
+			return $this->respond([
+				'success'    => true,
+				'message'    => 'Building appraisal saved successfully.',
+				'building_id' => $building_id,
+				'mode'       => $mode
+			]);
+		} catch (Exception $e) {
+
+			// ==========================================
+			// ROLLBACK
+			// ==========================================
+
+			$this->db->rollback();
+
+			return $this->respond([
+				'success' => false,
+				'message' => 'Error saving building appraisal.',
+				'error'   => $e->getMessage()
 			]);
 		}
 	}

@@ -314,7 +314,7 @@
         </table>
 
         <div class="section-title">Property Assessment</div>
-        <table class="grid small">
+        <table class="grid small" id="assessment-table">
             <thead>
                 <tr>
                     <th>Actual Use</th>
@@ -324,18 +324,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td></td>
-                    <td>₱</td>
-                    <td></td>
-                    <td>₱</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>₱</td>
-                    <td></td>
-                    <td>₱</td>
-                </tr>
+
             </tbody>
             <tfoot>
                 <tr class="totals">
@@ -347,7 +336,13 @@
             </tfoot>
         </table>
 
-        <p class="small">Taxable <input type="checkbox"> &nbsp; Exempt <input type="checkbox"> &nbsp; Effectivity of Assessment/Reassessment: ________ Qtr. ________</p>
+        <p class="small">
+            Taxable <input type="checkbox" id="print-taxable">
+            &nbsp;
+            Exempt <input type="checkbox" id="print-exempt">
+            &nbsp;
+            Effectivity of Assessment/Reassessment: ________ Qtr. ________
+        </p>
 
         <table class="grid small">
             <tr>
@@ -468,6 +463,7 @@
 
                 loadLandRows(data.property_ID);
                 loadResidential(data.property_ID);
+                loadAssessment(data.property_ID);
                 $('#factor_first').text($.trim(data.factor_first));
                 $('#percent_first').text($.trim(data.percent_first));
                 $('#factor_second').text($.trim(data.factor_second));
@@ -477,6 +473,7 @@
                 $('#total_adjustment').text('₱ ' + $.trim(data.total_adjustment));
                 $('#total_market_value').text('₱ ' + $.trim(data.total_market_value));
                 $('#bmvmv').text('₱ ' + $.trim(data.total_land_mv));
+                $('#total_land_area').text($.trim(data.total_land_area));
                 $('#total_land_mv').text(formatPeso($.trim(data.total_land_mv)));
                 $('#total_resid_mv').text(formatPeso($.trim(data.total_residential_mv)));
                 $('#pin_no').text($.trim(data.PIN_no));
@@ -537,7 +534,7 @@
 
         function loadLandRows(land_property_ID) {
             $.ajax({
-                url: "php/fetch/fetch_land.php",
+                url: "php/fetch_land.php",
                 type: "POST",
                 data: {
                     land_property_ID: land_property_ID
@@ -584,7 +581,7 @@
 
         function loadResidential(land_property_ID) {
             $.ajax({
-                url: "php/fetch/fetch_resid.php",
+                url: "php/fetch_resid.php",
                 type: "POST",
                 data: {
                     land_property_ID: land_property_ID
@@ -604,6 +601,176 @@
                     let remaining = 3 - data.length;
                     for (let i = 0; i < remaining; i++) {
                         tbody.append(createEmptyRow());
+                    }
+                }
+            });
+        }
+
+        function createAssessment(row) {
+            return `<tr>
+            <td>${row.actual_use || ""}</td>
+            <td>${row.market_value_assessed !== null && row.market_value_assessed !== undefined
+                ? formatPeso(row.market_value_assessed)
+                : ""}</td>
+            <td>${row.assessed_level || ""}</td>
+            <td class="right">
+                ${row.assessed_value !== null && row.assessed_value !== undefined
+                    ? formatPeso(row.assessed_value)
+                    : ""}
+            </td></tr>`;
+        }
+
+
+        function emptyAssessment() {
+            return `<tr><tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td class="right">&nbsp;</td>
+        </tr>`;
+        }
+
+
+        function loadAssessment(land_property_ID) {
+
+
+
+            $.ajax({
+                url: "php/fetch_assessment_update.php",
+                type: "POST",
+                data: {
+                    land_property_ID: land_property_ID
+                },
+                dataType: "json",
+
+                success: function(data) {
+
+                    console.log("Printable Assessment Data:", data);
+
+                    const tbody = $("#assessment-table tbody");
+                    tbody.empty();
+
+                    if (!data.success) {
+                        console.error(
+                            data.message || "Failed to load assessment data."
+                        );
+
+                        // Keep minimum rows even when no data
+                        for (let i = 0; i < 3; i++) {
+                            tbody.append(emptyAssessment());
+                        }
+
+                        return;
+                    }
+
+                    let assessmentRows = [];
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | AGRICULTURAL
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if (
+                        data.agricultural &&
+                        data.agricultural.market_value !== null
+                    ) {
+
+                        assessmentRows.push({
+                            actual_use: data.agricultural.actual_use ?? "",
+                            taxable: data.agricultural.taxable ?? "",
+                            market_value_assessed: data.agricultural.market_value ?? "",
+                            assessed_level: data.agricultural.assessment_level ?? "",
+                            assessed_value: data.agricultural.assessed_value ?? ""
+                        });
+                    }
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | NON-AGRICULTURAL
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if (Array.isArray(data.non_agricultural)) {
+
+                        data.non_agricultural.forEach(function(item) {
+
+                            assessmentRows.push({
+                                actual_use: item.actual_use ?? "",
+                                taxable: item.taxable ?? "",
+                                market_value_assessed: item.market_value ?? "",
+                                assessed_level: item.assessment_level ?? "",
+                                assessed_value: item.assessed_value ?? ""
+                            });
+
+                        });
+                    }
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | DISPLAY ASSESSMENT ROWS
+                    |--------------------------------------------------------------------------
+                    */
+
+                    assessmentRows.forEach(function(row) {
+                        tbody.append(createAssessment(row));
+                    });
+
+                    // Reset checkboxes
+                    $("#print-taxable").prop("checked", false);
+                    $("#print-exempt").prop("checked", false);
+
+                    // Check all assessment rows
+                    let hasTaxable = false;
+                    let hasExempt = false;
+
+                    assessmentRows.forEach(function(row) {
+
+                        const taxableStatus = String(row.taxable || "")
+                            .trim()
+                            .toUpperCase();
+
+                        if (taxableStatus === "TAXABLE") {
+                            hasTaxable = true;
+                        }
+
+                        if (taxableStatus === "EXEMPT") {
+                            hasExempt = true;
+                        }
+                    });
+
+                    // Set checkboxes
+                    $("#print-taxable").prop("checked", hasTaxable);
+                    $("#print-exempt").prop("checked", hasExempt);
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | ENSURE MINIMUM 3 ROWS
+                    |--------------------------------------------------------------------------
+                    */
+
+                    let remaining = 3 - assessmentRows.length;
+
+                    for (let i = 0; i < remaining; i++) {
+                        tbody.append(emptyAssessment());
+                    }
+
+                },
+
+                error: function(xhr, status, error) {
+
+                    console.error("Printable Assessment AJAX Error:");
+                    console.error("Status:", status);
+                    console.error("Error:", error);
+                    console.error("Response:", xhr.responseText);
+
+                    const tbody = $("#assessment-table tbody");
+                    tbody.empty();
+
+                    for (let i = 0; i < 3; i++) {
+                        tbody.append(emptyAssessment());
                     }
                 }
             });

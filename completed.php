@@ -45,242 +45,441 @@
             </div>
         </div> <!-- Row end  -->
 
-        <div class="row align-items-stretch">
-            <div class="col-md-8 d-flex">
-                <div class="card mb-3 h-100 w-100">
-                    <div class="card-body d-flex flex-column p-3">
-                        <table id="landCompleted" class="table table-hover align-middle mb-0" style="width:100%">
-                            <thead>
-                                <tr class="text-center">
-                                    <th>#</th>
-                                    <th>PreviousPIN</th>
-                                    <th>Name of Owner</th>
-                                    <th>Location of Property</th>
-                                    <th>Lot #</th>
-                                    <th>Recording Date</th>
-                                    <th>Revision Code</th>
-                                    <th>History</th>
-                                    <th>Generate</th>
 
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php
-                                $results = getPropertiesByBarangayRevision($mun_code, $brgy_session, NULL, NULL);
-                                $counter = 1;
-                                while ($row = $results->fetch_assoc()):
-                                ?>
-                                    <tr>
-                                        <td><?= $counter++ ?></td>
-                                        <td><?= htmlspecialchars($row['previous_pin']) ?></td>
-                                        <td><?= htmlspecialchars($row['owner_name']) ?></td>
-                                        <td><?= htmlspecialchars($row['property_brgy'] . ' ' . $row['property_municipality']) ?></td>
-                                        <td><?= htmlspecialchars($row['lot_no']) ?></td>
-                                        <td><?= htmlspecialchars($row['recording_date']) ?></td>
-                                        <td><?= htmlspecialchars($row['revision_code']) ?></td>
-                                        <td class="text-center">
-                                            <i class="icofont-history fs-2 text-success home-icon property-history"
-                                                data-record-id="<?= $row['property_ID']; ?>"
-                                                style="cursor:pointer;"
-                                                title="View Property History"></i>
-                                        </td>
+        <!-- Land / Building Tabs -->
+        <div class="row">
+            <div class="col-12">
 
-                                        <style>
-                                            .home-icon:hover {
-                                                text-shadow: 0 0 10px #f6ff79, 0 0 10px #b0ff48;
-                                                transition: 0.2s ease;
-                                                cursor: pointer;
-                                            }
-                                        </style>
-                                        <td>
-                                            <div class="dropdown">
-                                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    Generate
-                                                </button>
+                <div class="card mb-3">
+                    <div class="card-body p-3">
 
-                                                <ul class="dropdown-menu">
-                                                    <li>
-                                                        <a class="dropdown-item" href="printable_property.php?property_ID=<?= $row['property_ID'] ?>">
-                                                            <i class="icofont-file-document text-secondary"></i> FAAS
-                                                        </a>
-                                                    </li>
+                        <!-- Tab Navigation -->
+                        <style>
+                            #propertyTabs .nav-link.active {
+                                background-color: var(--bs-primary);
+                                color: #fff;
+                                border-color: var(--bs-primary);
+                            }
 
-                                                    <li>
-                                                        <a class="dropdown-item" href="doc/tax_declaration.php?property_ID=<?= $row['property_ID'] ?>">
-                                                            <i class="icofont-law-document text-info"></i> Tax Declaration
-                                                        </a>
-                                                    </li>
+                            #propertyTabs .nav-link {
+                                color: var(--bs-primary);
+                            }
 
-                                                    <li>
-                                                        <a class="dropdown-item" href="land/faas_form.php?mode=gr&property_ID=<?= $row['property_ID'] ?>">
-                                                            <i class="icofont-edit text-success"></i> Edit
-                                                        </a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <?php endwhile; ?>
-                            </tbody>
+                            #propertyTabs .nav-link:hover {
+                                background-color: rgba(var(--bs-primary-rgb), 0.1);
+                            }
+                        </style>
 
-                        </table>
-                    </div>
+                        <ul class="nav nav-tabs mb-3" id="propertyTabs" role="tablist">
 
-                    <div class="modal fade" id="historyModal" tabindex="-1">
-                        <div class="modal-dialog modal-xl">
-                            <div class="modal-content">
+                            <!-- Land Tab -->
+                            <li class="nav-item" role="presentation">
+                                <button
+                                    class="nav-link active fw-bold"
+                                    id="land-tab"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#land-content"
+                                    type="button"
+                                    role="tab"
+                                    aria-controls="land-content"
+                                    aria-selected="true">
+                                    <i class="icofont-landscape me-1"></i>
+                                    Land
+                                </button>
+                            </li>
 
-                                <div class="modal-header bg-success text-white">
-                                    <h5 class="modal-title">
-                                        <i class="icofont-history"></i>
-                                        Property History
-                                    </h5>
-                                    <button type="button" class="btn-close btn-close-white"
-                                        data-bs-dismiss="modal"></button>
-                                </div>
+                            <!-- Building Tab -->
+                            <li class="nav-item" role="presentation">
+                                <button
+                                    class="nav-link fw-bold"
+                                    id="building-tab"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#building-content"
+                                    type="button"
+                                    role="tab"
+                                    aria-controls="building-content"
+                                    aria-selected="false">
+                                    <i class="icofont-building me-1"></i>
+                                    Building
+                                </button>
+                            </li>
 
-                                <div class="modal-body">
+                        </ul>
 
-                                    <div id="historyContent">
-                                        <div class="text-center p-4">
-                                            <div class="spinner-border text-success"></div>
-                                        </div>
-                                    </div>
+
+                        <!-- Tab Contents -->
+                        <div class="tab-content" id="propertyTabsContent">
+
+                            <!-- ================================================= -->
+                            <!-- LAND -->
+                            <!-- ================================================= -->
+                            <div
+                                class="tab-pane fade show active"
+                                id="land-content"
+                                role="tabpanel"
+                                aria-labelledby="land-tab">
+
+                                <div class="table-responsive">
+
+                                    <table
+                                        id="landCompleted"
+                                        class="table table-hover align-middle mb-0"
+                                        style="width:100%">
+
+                                        <thead>
+                                            <tr class="text-center">
+                                                <th>#</th>
+                                                <th>Previous PIN</th>
+                                                <th>Name of Owner</th>
+                                                <th>Location of Property</th>
+                                                <th>Lot #</th>
+                                                <th>Recording Date</th>
+                                                <th>Revision Code</th>
+                                                <th>History</th>
+                                                <th>Generate</th>
+                                                <th>Update Market Value</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+
+                                            <?php
+                                            $results = getPropertiesByBarangayRevision(
+                                                $mun_code,
+                                                $brgy_session,
+                                                NULL,
+                                                NULL,
+                                                $version = 1
+                                            );
+
+                                            $counter = 1;
+
+                                            while ($row = $results->fetch_assoc()):
+                                            ?>
+
+                                                <tr>
+
+                                                    <td class="text-center">
+                                                        <?= $counter++ ?>
+                                                    </td>
+
+                                                    <td>
+                                                        <?= htmlspecialchars($row['previous_pin']) ?>
+                                                    </td>
+
+                                                    <td>
+                                                        <?= htmlspecialchars($row['owner_name']) ?>
+                                                    </td>
+
+                                                    <td>
+                                                        <?= htmlspecialchars(
+                                                            $row['property_brgy'] . ' ' .
+                                                                $row['property_municipality']
+                                                        ) ?>
+                                                    </td>
+
+                                                    <td>
+                                                        <?= htmlspecialchars($row['lot_no']) ?>
+                                                    </td>
+
+                                                    <td>
+                                                        <?= htmlspecialchars($row['recording_date']) ?>
+                                                    </td>
+
+                                                    <td class="text-center">
+                                                        <span class="badge bg-secondary">
+                                                            <?= htmlspecialchars($row['revision_code']) ?>
+                                                        </span>
+                                                    </td>
+
+                                                    <!-- History -->
+                                                    <td class="text-center">
+
+                                                        <i
+                                                            class="icofont-history fs-2 text-success home-icon property-history"
+                                                            data-record-id="<?= $row['property_ID']; ?>"
+                                                            style="cursor:pointer;"
+                                                            title="View Property History">
+                                                        </i>
+
+                                                    </td>
+
+                                                    <!-- Generate -->
+                                                    <td class="text-center">
+
+                                                        <div class="dropdown">
+
+                                                            <button
+                                                                class="btn btn-outline-secondary dropdown-toggle"
+                                                                type="button"
+                                                                data-bs-toggle="dropdown"
+                                                                aria-expanded="false">
+
+                                                                Generate
+
+                                                            </button>
+
+                                                            <ul class="dropdown-menu">
+
+                                                                <li>
+                                                                    <a
+                                                                        class="dropdown-item"
+                                                                        href="faas.php?property_ID=<?= $row['property_ID'] ?>">
+
+                                                                        <i class="icofont-file-document text-secondary"></i>
+                                                                        FAAS
+
+                                                                    </a>
+                                                                </li>
+
+                                                                <li>
+                                                                    <a
+                                                                        class="dropdown-item"
+                                                                        href="doc/tax_declaration.php?property_ID=<?= $row['property_ID'] ?>">
+
+                                                                        <i class="icofont-law-document text-info"></i>
+                                                                        Tax Declaration
+
+                                                                    </a>
+                                                                </li>
+
+                                                                <li>
+                                                                    <a
+                                                                        class="dropdown-item"
+                                                                        href="land/faas_form.php?mode=gr&property_ID=<?= $row['property_ID'] ?>">
+
+                                                                        <i class="icofont-edit text-success"></i>
+                                                                        Edit
+
+                                                                    </a>
+                                                                </li>
+
+                                                            </ul>
+
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td class="text-center">
+
+                                                        <i
+                                                            class="icofont-building fs-2 text-success home-icon property-history"
+                                                            data-record-id="<?= $row['property_ID']; ?>"
+                                                            style="cursor:pointer;"
+                                                            title="View Property History">
+                                                        </i>
+
+                                                    </td>
+
+                                                </tr>
+
+                                            <?php endwhile; ?>
+
+                                        </tbody>
+
+                                    </table>
 
                                 </div>
 
                             </div>
+
+
+                            <!-- ================================================= -->
+                            <!-- BUILDING -->
+                            <!-- ================================================= -->
+                            <div
+                                class="tab-pane fade"
+                                id="building-content"
+                                role="tabpanel"
+                                aria-labelledby="building-tab">
+
+                                <div class="table-responsive">
+
+                                    <table
+                                        id="buildingCompleted"
+                                        class="table table-hover align-middle mb-0"
+                                        style="width:100%">
+
+                                        <thead>
+
+                                            <tr class="text-center">
+                                                <th>#</th>
+                                                <th>PIN</th>
+                                                <th>Name of Owner</th>
+                                                <th>Location of Property</th>
+                                                <th>Building</th>
+                                                <th>Actions</th>
+                                            </tr>
+
+                                        </thead>
+
+                                        <tbody>
+
+                                            <?php
+
+                                            $sql = "
+                                        SELECT
+                                            bd.*,
+                                            ml.mun_name
+                                        FROM building_desc AS bd
+                                        JOIN municipality_list AS ml
+                                            ON bd.municipality = ml.mun_code
+                                        WHERE bd.municipality = $mun_code
+                                        AND bd.version = 1
+                                        ORDER BY previous_pin ASC 
+                                    ";
+
+                                            $result = $conn->query($sql);
+
+                                            $counter = 1;
+
+                                            while ($row = $result->fetch_assoc()):
+
+                                            ?>
+
+                                                <tr>
+
+                                                    <td class="text-center">
+                                                        <?= $counter++ ?>
+                                                    </td>
+
+                                                    <td class="fw-bold text-secondary">
+
+                                                        <?= htmlspecialchars($row['pin']) ?>
+                                                        -
+                                                        (<?= htmlspecialchars($row['bin']) ?>)
+
+                                                    </td>
+
+                                                    <td>
+                                                        <?= htmlspecialchars($row['owner_name']) ?>
+                                                    </td>
+
+                                                    <td>
+                                                        <?= htmlspecialchars($row['mun_name']) ?>,
+                                                        <?= htmlspecialchars($row['baranggay']) ?>
+                                                    </td>
+
+                                                    <td class="text-center">
+
+                                                        <i
+                                                            class="icofont-building fs-3 text-success"
+                                                            title="Building">
+                                                        </i>
+
+                                                    </td>
+
+                                                    <!-- Actions -->
+                                                    <td class="text-center">
+
+                                                        <div class="dropdown">
+
+                                                            <button
+                                                                class="btn btn-outline-secondary dropdown-toggle"
+                                                                type="button"
+                                                                data-bs-toggle="dropdown"
+                                                                aria-expanded="false">
+
+                                                                Actions
+
+                                                            </button>
+
+                                                            <ul class="dropdown-menu">
+
+                                                                <li>
+                                                                    <a
+                                                                        class="dropdown-item"
+                                                                        href="building/building_form.php?building_id=<?= $row['building_id'] ?>&mode=gr">
+
+                                                                        <i class="icofont-edit text-success"></i>
+                                                                        Edit
+
+                                                                    </a>
+                                                                </li>
+
+                                                                <li>
+                                                                    <a
+                                                                        class="dropdown-item"
+                                                                        href="building/faas_building.php?building_id=<?= $row['building_id'] ?>">
+
+                                                                        <i class="icofont-eye-alt text-info"></i>
+                                                                        View
+
+                                                                    </a>
+                                                                </li>
+
+                                                            </ul>
+
+                                                        </div>
+
+                                                    </td>
+
+                                                </tr>
+
+                                            <?php endwhile; ?>
+
+                                        </tbody>
+
+                                    </table>
+
+                                </div>
+
+                            </div>
+
                         </div>
+
                     </div>
                 </div>
+
             </div>
-            <div class="col-md-4 d-flex">
-                <div class="card mb-3 h-100 w-100">
-                    <div class="card-body d-flex flex-column p-3">
-                        <table id="buildingCompleted" class="table table-hover align-middle mb-0" style="width:100%">
-                            <thead>
-                                <tr class="text-center">
-                                    <th>#</th>
-                                    <th>PIN</th>
-                                    <th>Name of Owner</th>
-                                    <th>Location of Property</th>
+        </div>
 
-                                    <th>Building</th>
 
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php
-                                $sql = "SELECT bd.*, ml.mun_name FROM building_desc AS bd JOIN municipality_list AS ml ON bd.municipality = ml.mun_code WHERE `municipality` = $mun_code ORDER BY previous_pin ASC";
-                                $result = $conn->query($sql);
-                                $counter = 1;
-                                while ($row = $result->fetch_assoc()) { ?>
-                                    <tr class="text-center">
-                                        <td><?= $counter++ ?></td>
-                                        <td class="fw-bold text-secondary"><?= $row['pin'] ?>-(<?= $row['bin'] ?>)</td>
-                                        <td><?= $row['owner_name'] ?></td>
-                                        <td><?= $row['mun_name'] ?>, <?= $row['baranggay'] ?></td>
+        <!-- ========================================================= -->
+        <!-- PROPERTY HISTORY MODAL -->
+        <!-- ========================================================= -->
 
-                                        <style>
-                                            .home-icon:hover {
-                                                text-shadow: 0 0 10px #f6ff79, 0 0 10px #b0ff48;
-                                                transition: 0.2s ease;
-                                                cursor: pointer;
-                                            }
-                                        </style>
+        <div class="modal fade" id="historyModal" tabindex="-1">
 
-                                        <td>
-                                            <div class="dropdown">
-                                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    Actions
-                                                </button>
+            <div class="modal-dialog modal-xl">
 
-                                                <ul class="dropdown-menu">
-                                                    <li>
-                                                        <a class="dropdown-item" href="building/building_form.php?building_id=<?= $row['building_id'] ?>&mode=gr">
-                                                            <i class="icofont-edit text-success"></i> Edit
-                                                        </a>
-                                                    </li>
+                <div class="modal-content">
 
-                                                    <li>
-                                                        <a class="dropdown-item" href="building/faas_building.php?building_id=<?= $row['building_id'] ?>">
-                                                            <i class="icofont-eye-alt text-info"></i> View
-                                                        </a>
-                                                    </li>
+                    <div class="modal-header bg-success text-white">
 
-                                                    <!-- <li>
-                                                        <button type="button"
-                                                            class="dropdown-item delete_property"
-                                                            data-id="<?= $row['building_ID']; ?>">
-                                                            <i class="icofont-ui-delete text-danger"></i> Delete
-                                                        </button>
-                                                    </li> -->
-                                                </ul>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <?php }
+                        <h5 class="modal-title">
+                            <i class="icofont-history"></i>
+                            Property History
+                        </h5>
 
-                                ?>
-                            </tbody>
-                        </table>
+                        <button
+                            type="button"
+                            class="btn-close btn-close-white"
+                            data-bs-dismiss="modal">
+                        </button>
+
                     </div>
-                    <!-- <div class="card-body p-3">
-                        <div class="planned_task client_task">
-                            <div class="dd" data-plugin="nestable">
-                                <ol class="dd-list d-none" id="building_list" style="list-style:none; margin-left: 0; padding-left:0"> -->
-                    <!-- <?php
 
-                            for ($i = 0; $i < 3; $i++) { ?> -->
-                    <!-- <li class="dd-item mb-4">
-                                            <div class="dd-handle">
-                                                <div class="task-info d-flex align-items-center justify-content-between">
-                                                    <h6 class="light-info-bg py-1 px-2 rounded-1 d-inline-block fw-bold small-14 mb-0">040-11-0009-003-18(1001)</h6>
-                                                    <div class="task-priority d-flex flex-column align-items-center justify-content-center">
-                                                        <div class="avatar-list avatar-list-stacked m-0">
-                                                            <i class="icofont-home fs-1 text-success"></i>
-                                                        </div>
-                                                        <span class="badge bg-warning text-end mt-1">4051</span>
-                                                    </div>
-                                                </div>
-                                                <p class="py-2 mb-0">Name of Owner: Juan Dela Cruz</p>
-                                                <p>Address: 123 Main Street</p>
-                                                <p class="py-2 mb-0">Name of Owner: Juan Dela Cruz</p>
-                                                <p class="">Address: 123 Main Street</p>
-                                                <p class="py-2 mb-0">TD No: 0000-000-00</p>
-                                                <div class="tikit-info row g-3 align-items-center">
-                                                    <div class="col-sm">
-                                                    </div>
-                                                    <div class="col-sm text-end">
+                    <div class="modal-body">
 
-                                                        <div class="small text-truncate light-danger-bg py-1 px-2 rounded-1 d-inline-block fw-bold small">
-                                                            <div class="btn-group" role="group" aria-label="Basic outlined example"> <a href="faas_form.php?property_ID=<?= $row['property_ID'] ?>" class="btn btn-outline-secondary"><i class="icofont-edit text-success"></i></a> <a href="printable_property.php?property_ID=<?= $row['property_ID'] ?>" class="btn btn-outline-secondary"><i class="icofont-eye-alt text-info"></i></a> <button type="button" class="btn btn-outline-secondary delete_property" data-id="<?= $row['property_ID']; ?>"><i class="icofont-ui-delete text-danger"></i></button> </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li> -->
-                    <!-- <?php } ?> -->
+                        <div id="historyContent">
 
-                    <!-- </ol>
-                                <script>
-                                    $(document).ready(function() {
+                            <div class="text-center p-4">
 
-                                        $(".buildin_display").click(function() {
-                                            $("#building_list").toggleClass("d-none");
-                                        });
+                                <div class="spinner-border text-success"></div>
 
-                                    });
-                                </script>
                             </div>
-                        </div> -->
-                    <!-- <i class="icofont-home" style="font-size: 6rem;"></i> -->
-                </div>
-            </div>
 
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
 
         </div>
+
     </div>
 </div><!-- Row End -->
 

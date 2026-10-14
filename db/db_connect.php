@@ -2,7 +2,7 @@
 $dbHost = 'localhost';
 $dbUser = 'root';
 $dbPass = '';
-$dbName = 'faas_db';
+$dbName = 'property_antique_2027';
 
 $conn = new mysqli($dbHost, $dbUser, $dbPass, $dbName);
 

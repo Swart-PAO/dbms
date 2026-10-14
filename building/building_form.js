@@ -234,7 +234,74 @@ $("#structural_materials_btn").on("click", function (e) {
 
           // Redirect after 1.5 seconds
           setTimeout(() => {
-            window.location.href = BASE_URL + "/index.php?page=land";
+            // window.location.href = BASE_URL + "/index.php?page=land";
+            navigateTo("property_appraisal");
+          }, 500);
+        }, 1000);
+      } else {
+        alert("❌ " + res.message + "\n" + (res.error ?? ""));
+      }
+    },
+    error: function (xhr) {
+      console.log(xhr.responseText);
+      alert("Server Error: " + xhr.status);
+    },
+  });
+});
+
+$("#appraisal_save_btn").on("click", function (e) {
+  e.preventDefault();
+
+  let form = $(this).closest("form")[0];
+
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+
+  // 👉 get building_id from another form/input
+  let building_id = $("#input_property_ID").val();
+  // alert("Building ID: " + building_id);
+  // OR: let building_id = $("#other_form input[name='building_id']").val();
+
+  let formData = $(form).serializeArray();
+
+  // append building_id
+  formData.push({
+    name: "building_id",
+    value: building_id,
+  });
+
+  $.ajax({
+    url: "ajax.php?action=save_appraisal",
+    type: "POST",
+    data: $.param(formData), // convert to query string
+    dataType: "json",
+    success: function (res) {
+      // alert("Saving... Please wait.");
+      if (res.success) {
+        let modalEl = document.getElementById("form_success_saved");
+        let modal = new bootstrap.Modal(modalEl);
+
+        // Reset states
+        $("#loadingState").show();
+        $("#successState").hide();
+
+        modal.show();
+
+        $("#faasSaveBtn").prop("disabled", true);
+
+        // Simulate slight delay for better UX (optional)
+        setTimeout(() => {
+          // Switch to success UI
+          $("#loadingState").hide();
+          $("#successState").show();
+          $("#successMessage").text(res.message);
+
+          // Redirect after 1.5 seconds
+          setTimeout(() => {
+            navigateTo("property_assessment");
+            // window.location.href = BASE_URL + "/index.php?page=land";
           }, 500);
         }, 1000);
       } else {
@@ -320,9 +387,20 @@ function navigateTo(stepId) {
 function to_building_description() {
   navigateTo("building_description");
 }
-
 function to_structural_materials() {
   navigateTo("structural_material");
+}
+function to_property_appraisal() {
+  navigateTo("property_appraisal");
+}
+function to_property_assessment() {
+  navigateTo("property_assessment");
+}
+function to_appraisal_approval() {
+  navigateTo("appraisal_approval");
+}
+function to_superseded_record() {
+  navigateTo("superseded_record");
 }
 // --- NEW: AUTO-NAVIGATE AFTER PHP REDIRECT ---
 document.addEventListener("DOMContentLoaded", function () {
@@ -366,6 +444,136 @@ document.addEventListener("DOMContentLoaded", function () {
     );
   }
 });
+
+function addRow() {
+  const tableBody = document.getElementById("assessment_table_body");
+  // Get the "Total" row so we can insert the new row before it
+  const totalRow = tableBody.querySelector(".table-secondary");
+
+  const newRow = document.createElement("tr");
+  newRow.innerHTML = `
+        <td>
+            <input
+                type="text"
+                name="actual_use[]"
+                class="form-control form-control-sm"
+            >
+        </td>
+
+        <td>
+            <div class="input-group input-group-sm">
+                <span class="input-group-text">₱</span>
+
+                <input
+                    type="text"
+                    name="market_value[]"
+                    class="form-control text-end"
+                >
+            </div>
+        </td>
+
+        <td>
+            <div class="input-group input-group-sm">
+
+                <input
+                    type="text"
+                    name="assessment_level[]"
+                    class="form-control text-end"
+                >
+
+                <span class="input-group-text">%</span>
+
+            </div>
+        </td>
+
+        <td>
+
+                                    <select
+                                        class="form-select form-select-sm border-success"
+                                        name="taxable[]"
+                                        id="taxable">
+                                        <option value="">Select Tax Status</option>
+                                        <option value="TAXABLE">TAXABLE</option>
+                                        <option value="EXEMPT">EXEMPT</option>
+                                    </select>
+                                </td>
+
+        <td>
+            <div class="input-group input-group-sm">
+
+                <span class="input-group-text">₱</span>
+
+                <input
+                    type="text"
+                    name="assessed_value[]"
+                    class="form-control text-end"
+                    readonly
+                >
+
+            </div>
+        </td>
+
+       <td>
+                <button type="button" class="btn btn-danger" onclick="this.closest('tr').remove()">Remove</button>
+            </td>
+    `;
+
+  // Insert the new row right before the "Total" row
+  tableBody.insertBefore(newRow, totalRow);
+}
+
+$("#assessment_form").on("submit", function (e) {
+  e.preventDefault();
+
+  let rowCount = $("#assessment_table_body tr.assessment-row").length;
+
+  if (rowCount < 1) {
+    alert("Please add at least one assessment before saving.");
+    return;
+  }
+
+  let buidling_ID = $("#input_property_ID").val();
+
+  // let totalAreaResid =
+  //   parseFloat($("#total-area-non_agricultural").text()) || 0;
+  // let totalBMWResid = parseFloat($("#total-bmv-non_agricultural").text()) || 0;
+
+  // This will automatically collect all fields including arrays
+  let formData = $(this).serialize();
+  formData += "&building_ID=" + encodeURIComponent(buidling_ID);
+  // formData += "&total_non_agri_area=" + encodeURIComponent(totalAreaResid);
+  // formData += "&total_non_agri_mv=" + encodeURIComponent(totalBMWResid);
+
+  $.ajax({
+    url: "insert_assessment.php",
+    type: "POST",
+    data: formData, // send raw form data
+    success: function (response) {
+      alert(response);
+      // Disable all inputs so the inserted values remain visible
+      $("#assessment_table_body select").prop("disabled", true);
+      $("#assessment_table_body input").prop("disabled", true);
+
+      // FIX #5: this selector was ".remove-row" but the buttons use
+      // class "remove-row-non_agricultural" — it never matched anything.
+      $("#assessment_table_body .remove-row-non_agricultural").prop(
+        "disabled",
+        true,
+      );
+
+      // Disable Add button
+      $("#add-row-non_agricultural").prop("disabled", true);
+
+      // Disable Save button
+      $("#assessment_save_btn").prop("disabled", true);
+      location.reload();
+    },
+    error: function (xhr, status, error) {
+      alert("Error: " + error);
+    },
+  });
+});
+
 // Mapping for Materials Checkboxes
 
 // const codeToNameMap = {

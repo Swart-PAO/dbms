@@ -3,7 +3,7 @@
 $host = "localhost";
 $username = "root";
 $password = "";
-$database = "faas_db";
+$database = "property_antique_2027";
 
 $conn = new mysqli($host, $username, $password, $database);
 
